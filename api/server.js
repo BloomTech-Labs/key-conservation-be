@@ -1,27 +1,19 @@
-// Import dependencies and general middleware
-const express = require("express");
-const configureMiddleware = require("./middleware.js");
+const express = require('express');
 const server = express();
 
-// Pass server through middleware file
-configureMiddleware(server);
+const helmet = require('helmet');
+const cors = require('cors');
 
-// Custom restricted middleware import
-const restricted = require("../auth/restricted.js");
+server.use(express.json());
+server.use(express());
+server.use(helmet());
+server.use(cors());
 
-// Import various split API routes
-const usersRouter = require("../users/usersRouter.js");
-const authRouter = require("../auth/authRouter.js");
-
-// Router assignments
-server.use("/api/restricted/users", restricted, usersRouter);
-server.use("/api/auth", authRouter);
-
-// Generic / route for initial server online status check
-const projectName = process.env.PROJECT_NAME || "test";
-server.get("/", (req, res) => {
-  res.send(`The ${projectName} server is up and running!`);
+server.get('/', (req, res) => {
+  res.send(`<h1>Server live</h1>`);
 });
 
-// Server export to be used in index.js
+// defined routes
+server.use('/api/cons', require('../Routes/consRouter'));
+
 module.exports = server;
