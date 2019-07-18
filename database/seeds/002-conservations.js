@@ -1,10 +1,10 @@
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries
-  return knex('conservations')
+  return knex('conservationists')
     .del()
     .then(function() {
       // Inserts seed entries
-      return knex('conservations').insert([
+      return knex('conservationists').insert([
         {
           id: 1,
           org_name: 'Beaver Town',
