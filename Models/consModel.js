@@ -24,10 +24,20 @@ function insert(conservationist) {
     .returning('id');
 }
 
-function update(id, conservationist) {
-  return db('conservationists')
+// function update(id, conservationist) {
+//   return db('conservationists')
+//     .where({ id })
+//     .update(conservationist);
+// }
+
+async function update(conservationist, id) {
+  const editedCon = await db('conservationists')
     .where({ id })
     .update(conservationist);
+  if (editedCon) {
+    const con = await findById(id);
+    return con;
+  }
 }
 
 function remove(id) {
