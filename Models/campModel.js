@@ -3,6 +3,7 @@ const db = require('../database/dbConfig');
 module.exports = {
   find,
   findById,
+  findCampById,
   insert,
   update,
   remove
@@ -18,6 +19,10 @@ function findById(id) {
     .first();
 }
 
+function findCampById(users_id) {
+  return db('campaigns').where({ users_id: users_id });
+}
+
 async function insert(campaign) {
   const [id] = await db('campaigns')
     .insert(campaign)
@@ -27,11 +32,6 @@ async function insert(campaign) {
     return camp;
   }
 }
-// function insert(campaign) {
-//   return db('campaigns')
-//     .insert(campaign)
-//     .returning('id');
-// }
 
 async function update(campaign, id) {
   const editedCamp = await db('campaigns')
