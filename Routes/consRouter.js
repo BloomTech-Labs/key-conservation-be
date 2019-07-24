@@ -39,10 +39,9 @@ router.post('/', async (req, res) => {
   try {
     if (
       !cons.org_name ||
-      !cons.org_link ||
+      !cons.org_link_url ||
       !cons.about_us ||
-      !cons.species ||
-      !cons.habitats ||
+      !cons.species_and_habitats ||
       !cons.issues
     ) {
       res.status(404).json({ msg: 'You need org link, about us' });

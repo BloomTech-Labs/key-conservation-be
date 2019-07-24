@@ -31,6 +31,26 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+router.get('/camp/:id', async (req, res) => {
+  try {
+    const camp = await Camp.findCampById(req.params.id);
+    if (camp) {
+      res
+        .status(200)
+        .json({ camp, msg: 'The campaigns were found for this org' });
+    } else {
+      res
+        .status(404)
+        .json({ msg: 'Did not find the campaign by this user id(' });
+    }
+  } catch (e) {
+    console.log(e);
+    res
+      .status(500)
+      .json({ e, msg: 'Unable to find that Campagain by user ID' });
+  }
+});
+
 router.post('/', async (req, res) => {
   const camp = req.body;
 

@@ -6,31 +6,37 @@ exports.seed = function(knex, Promise) {
       // Inserts seed entries
       return knex('conservationists').insert([
         {
-          id: 1,
+          users_id: 1,
           org_name: 'Beaver Town',
-          org_link: 'google.com',
+          org_link_url: 'google.com',
+          org_link_title: 'google.com',
+          mini_bio: null,
           about_us: 'Lorem IpsOn',
-          species: 'beavers',
-          habitats: 'da dam',
-          issues: 'wood'
+          species_and_habitats: 'beavers in da dam',
+          issues: 'wood',
+          support_us: null
         },
         {
-          id: 2,
+          users_id: 2,
           org_name: 'Panda Lovers',
-          org_link: 'google.com',
+          org_link_url: 'google.com',
+          org_link_title: 'google.com',
+          mini_bio: null,
           about_us: 'Lorem IpsOn',
-          species: 'pandas',
-          habitats: 'forest',
-          issues: 'sleep'
+          species_and_habitats: 'pandas sleep on cloud 9',
+          issues: 'sleep',
+          support_us: null
         },
         {
-          id: 3,
+          users_id: 3,
           org_name: 'Giraffe 2 Tall',
-          org_link: 'google.com',
+          org_link_url: 'google.com',
+          org_link_title: 'google.com',
+          mini_bio: null,
           about_us: 'Lorem IpsOn',
-          species: 'giraffes',
-          habitats: 'savannah',
-          issues: 'too tall'
+          species_and_habitats: 'the air up there',
+          issues: 'too tall',
+          support_us: null
         }
       ]);
     });
