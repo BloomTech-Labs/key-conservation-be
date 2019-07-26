@@ -3,6 +3,7 @@ const db = require("../database/dbConfig.js");
 module.exports = {
   find,
   findById,
+  insert,
   remove,
   update
 };
@@ -47,6 +48,19 @@ async function findById(id) {
       )
       .first();
   } else {
+    return user;
+  }
+}
+
+async function insert(user, role) {
+  const [id] = await db('users')
+    .insert(user)
+    .returning('id');
+  if (id) {
+    if (role === "conservationist") {
+      db('conservationists').insert({ "users_id": id })
+    }
+    const user = await findById(user);
     return user;
   }
 }
