@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const Camp = require('../Models/campModel');
+const Camp = require('./campModel');
 
 router.get('/', async (req, res) => {
   try {
