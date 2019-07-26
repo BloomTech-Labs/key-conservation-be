@@ -11,21 +11,21 @@ module.exports = {
 
 function find() {
   return db('campaigns')
-    .join('users', 'users.id', 'campaigns.user_id')
+    .join('users', 'users.id', 'campaigns.users_id')
     .select('users.username', 'users.profile_image', 'users.location', 'campaigns.*');
 }
 
 function findById(camp_id) {
   return db('campaigns')
     .where({ camp_id })
-    .join('users', 'users.id', 'campaigns.user_id')
+    .join('users', 'users.id', 'campaigns.users_id')
     .select('users.username', 'users.profile_image', 'users.location', 'campaigns.*')
     .first();
 }
 
 function findCampById(users_id) {
   return db('campaigns').where({ users_id: users_id })
-    .join('users', 'users.id', 'campaigns.user_id')
+    .join('users', 'users.id', 'campaigns.users_id')
     .select('users.username', 'users.profile_image', 'users.location', 'campaigns.*');
 }
 
