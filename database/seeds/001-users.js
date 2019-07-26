@@ -22,6 +22,12 @@ exports.seed = function(knex, Promise) {
           email: 'giraffe2tall@gmail.com',
           location: 'Paris, France',
           roles: 'conservationist'
+        },
+        {
+          username: 'Sally McUserface',
+          email: 'example@gmail.com',
+          location: 'Rent free in your head',
+          roles: 'supporter'
         }
       ]);
     });

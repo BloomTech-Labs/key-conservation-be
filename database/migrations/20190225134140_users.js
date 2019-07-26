@@ -11,6 +11,7 @@ exports.up = function(knex, Promise) {
       .defaultTo(
         'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
       );
+    tbl.timestamp('created_at').defaultTo(knex.fn.now());
     tbl.string('location', 250).notNullable();
     tbl.string('twitter', 150);
     tbl.string('facebook', 150);

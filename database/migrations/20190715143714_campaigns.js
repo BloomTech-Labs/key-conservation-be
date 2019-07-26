@@ -1,6 +1,6 @@
 exports.up = function(knex, Promise) {
   return knex.schema.createTable('campaigns', tbl => {
-    tbl.increments('id');
+    tbl.increments('camp_id');
     tbl
       .integer('users_id')
       .notNullable()
@@ -9,10 +9,11 @@ exports.up = function(knex, Promise) {
       .inTable('users')
       .onDelete('RESTRICT')
       .onUpdate('CASCADE');
-    tbl.string('campaign_img', 255).notNullable();
-    tbl.string('campaign_name', 500).notNullable();
-    tbl.text('campaign_desc', 500).notNullable();
-    tbl.string('campaign_cta', 1000);
+    tbl.timestamp('created_at').defaultTo(knex.fn.now());
+    tbl.string('camp_img', 255).notNullable();
+    tbl.string('camp_name', 500).notNullable();
+    tbl.text('camp_desc', 500).notNullable();
+    tbl.string('camp_cta', 1000);
   });
 };
 

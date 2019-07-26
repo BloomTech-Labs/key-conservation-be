@@ -13,9 +13,9 @@ function find() {
   return db('campaigns');
 }
 
-function findById(id) {
+function findById(camp_id) {
   return db('campaigns')
-    .where({ id })
+    .where({ camp_id })
     .first();
 }
 
@@ -24,27 +24,27 @@ function findCampById(users_id) {
 }
 
 async function insert(campaign) {
-  const [id] = await db('campaigns')
+  const [camp_id] = await db('campaigns')
     .insert(campaign)
-    .returning('id');
-  if (id) {
-    const camp = await findById(id);
+    .returning('camp_id');
+  if (camp_id) {
+    const camp = await findById(camp_id);
     return camp;
   }
 }
 
-async function update(campaign, id) {
+async function update(campaign, camp_id) {
   const editedCamp = await db('campaigns')
-    .where({ id })
+    .where({ camp_id })
     .update(campaign);
   if (editedCamp) {
-    const camp = await findById(id);
+    const camp = await findById(camp_id);
     return camp;
   }
 }
 
-function remove(id) {
+function remove(camp_id) {
   return db('campaigns')
-    .where({ id })
+    .where({ camp_id })
     .del();
 }

@@ -7,8 +7,8 @@ const pg = require('pg');
 const localPgConnection = {
   host: 'localhost',
   user: 'postgres',
-  password: '7522',
-  database: 'testcons'
+  password: 'postgrespass',
+  database: 'ourFunDB'
 };
 
 // Production database connection
@@ -37,13 +37,12 @@ module.exports = {
   },
 
   testing: {
-    client: 'sqlite3',
-    connection: {
-      filename: './database/test.db3'
-    },
+    client: 'pg',
+    connection: dbConnection,
     useNullAsDefault: true,
     migrations: {
-      directory: './database/migrations'
+      directory: './database/migrations',
+      tablename: 'knex_migrations'
     },
     seeds: {
       directory: './database/seeds'
