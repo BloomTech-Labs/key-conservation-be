@@ -10,7 +10,7 @@ module.exports = {
 };
 
 function find() {
-  return db('campaigns');
+  return db('campaigns')
     .join('users', 'users.id', 'campaigns.user_id')
     .select('users.username', 'users.profile_image', 'users.location', 'campaigns.*');
 }
