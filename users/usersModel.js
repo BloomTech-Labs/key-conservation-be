@@ -80,12 +80,13 @@ async function findBySub(sub) {
   }
 }
 
-async function insert(user, role) {
+async function insert(user) {
+  const { roles } = user;
   const [id] = await db('users')
     .insert(user)
     .returning('id');
   if (id) {
-    if (role === "conservationist") {
+    if (roles === "conservationist") {
       db('conservationists').insert({ "users_id": id })
     }
     const user = await findById(user);
