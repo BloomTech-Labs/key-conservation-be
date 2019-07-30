@@ -34,6 +34,20 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+router.get('/sub/:sub', async (req, res) => {
+  try {
+    const user = await Users.findBySub(req.params.sub);
+
+    if (user) {
+      res.status(200).json({ user, msg: 'The user was found' });
+    } else {
+      res.status(404).json({ msg: 'User not found in the database' });
+    }
+  } catch (err) {
+    res.status(500).json({ err, msg: 'Unable to make request to server' });
+  }
+});
+
 router.post('/', async (req, res) => {
   const user = req.body;
 

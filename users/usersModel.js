@@ -3,6 +3,7 @@ const db = require("../database/dbConfig.js");
 module.exports = {
   find,
   findById,
+  findBySub,
   insert,
   remove,
   update
@@ -52,12 +53,40 @@ async function findById(id) {
   }
 }
 
-async function insert(user, role) {
+async function findBySub(sub) {
+  const user = await db("users")
+    .where({ sub })
+    .first();
+  
+  if (user.roles === "conservationist") {
+    return db("users")
+      .leftJoin("conservationists as cons", "cons.users_id", "users.id")
+      .where("users.id", id)
+      .select(
+        "users.*",
+        "cons.cons_id",
+        "cons.org_name",
+        "cons.org_link_url",
+        "cons.org_link_title",
+        "cons.mini_bio",
+        "cons.about_us",
+        "cons.species_and_habitats",
+        "cons.issues",
+        "cons.support_us"
+      )
+      .first();
+  } else {
+    return user;
+  }
+}
+
+async function insert(user) {
+  const { roles } = user;
   const [id] = await db('users')
     .insert(user)
     .returning('id');
   if (id) {
-    if (role === "conservationist") {
+    if (roles === "conservationist") {
       db('conservationists').insert({ "users_id": id })
     }
     const user = await findById(user);
