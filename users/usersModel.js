@@ -89,7 +89,7 @@ async function insert(user) {
     if (roles === "conservationist") {
       db('conservationists').insert({ "users_id": id })
     }
-    const user = await findById(user);
+    const user = await findById(id);
     return user;
   }
 }
