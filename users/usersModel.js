@@ -1,4 +1,5 @@
 const db = require("../database/dbConfig.js");
+const Camp = require("./campModel");
 
 module.exports = {
   find,
@@ -30,9 +31,10 @@ async function findById(id) {
   const user = await db("users")
     .where({ id })
     .first();
-  
+
   if (user.roles === "conservationist") {
-    return db("users")
+    const campaigns = Camp.findCampById(id);
+    user = db("users")
       .leftJoin("conservationists as cons", "cons.users_id", "users.id")
       .where("users.id", id)
       .select(
@@ -48,18 +50,19 @@ async function findById(id) {
         "cons.support_us"
       )
       .first();
-  } else {
-    return user;
+    user.campaigns = campaigns;
   }
+  return user;
 }
 
 async function findBySub(sub) {
   const user = await db("users")
     .where({ sub })
     .first();
-  
+
   if (user.roles === "conservationist") {
-    return db("users")
+    const campaigns = Camp.findCampById(id);
+    user = db("users")
       .leftJoin("conservationists as cons", "cons.users_id", "users.id")
       .where("users.id", id)
       .select(
@@ -75,19 +78,19 @@ async function findBySub(sub) {
         "cons.support_us"
       )
       .first();
-  } else {
-    return user;
+    user.campaigns = campaigns;
   }
+  return user;
 }
 
 async function insert(user) {
   const { roles } = user;
-  const [id] = await db('users')
+  const [id] = await db("users")
     .insert(user)
-    .returning('id');
+    .returning("id");
   if (id) {
     if (roles === "conservationist") {
-      db('conservationists').insert({ "users_id": id })
+      db("conservationists").insert({ users_id: id });
     }
     const user = await findById(id);
     return user;
