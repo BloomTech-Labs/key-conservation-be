@@ -1,5 +1,5 @@
 const db = require("../database/dbConfig.js");
-const Camp = require("./campModel");
+const Camp = require("../campaigns/campModel.js");
 
 module.exports = {
   find,
