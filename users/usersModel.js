@@ -28,13 +28,13 @@ function find() {
 }
 
 async function findById(id) {
-  const user = await db("users")
+  let user = await db("users")
     .where({ id })
     .first();
 
   if (user.roles === "conservationist") {
-    const campaigns = Camp.findCampById(id);
-    user = db("users")
+    const campaigns = await Camp.findCampById(id);
+    user = await db("users")
       .leftJoin("conservationists as cons", "cons.users_id", "users.id")
       .where("users.id", id)
       .select(
