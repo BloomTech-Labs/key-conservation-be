@@ -56,9 +56,11 @@ async function findById(id) {
 }
 
 async function findBySub(sub) {
-  const user = await db("users")
+  let user = await db("users")
     .where({ sub })
     .first();
+  
+  const { id } = user
 
   if (user.roles === "conservationist") {
     const campaigns = Camp.findCampById(id);
@@ -97,26 +99,95 @@ async function insert(user) {
   }
 }
 
+// async function update(user, id) {
+//   const userColumns = [
+//     "username",
+//     "email",
+//     "profile_image",
+//     "location",
+//     "twitter",
+//     "facebook",
+//     "instagram",
+//     "phone_number"
+//   ];
+//   const consColumns = [
+//     "org_name",
+//     "org_link_url",
+//     "org_link_text",
+//     "org_cta",
+//     "mini_bio",
+//     "about_us",
+//     "species_and_habitats",
+//     "issues",
+//     "support_us"
+//   ];
+
+//   let userUpdate = {}, consUpdate = {};
+
+//   const keys = Object.keys(user);
+//   console.log(keys);
+
+//   keys.forEach(key => {
+//     if (userColumns.includes(key)) {
+//       userUpdate = {...userUpdate, [key]: user[key]}
+//     } else if (consColumns.includes(key)) {
+//       consUpdate = {...consUpdate, [key]: user[key]}
+//     }
+//   });
+
 async function update(user, id) {
-  const editedUser = await db("users")
-    .leftJoin("conservationists as cons", "cons.users_id", "users.id")
-    .where("users.id", id)
-    .select(
-      "users.*",
-      "cons.cons_id",
-      "cons.org_name",
-      "cons.org_link_url",
-      "cons.org_link_title",
-      "cons.mini_bio",
-      "cons.about_us",
-      "cons.species_and_habitats",
-      "cons.issues",
-      "cons.support_us"
-    )
-    .update(user);
-  if (editedUser) {
-    const user = await findById(id);
-    return user;
+  const userColumns = [
+    "username",
+    "email",
+    "profile_image",
+    "location",
+    "twitter",
+    "facebook",
+    "instagram",
+    "phone_number"
+  ];
+  const consColumns = [
+    "org_name",
+    "org_link_url",
+    "org_link_text",
+    "org_cta",
+    "mini_bio",
+    "about_us",
+    "species_and_habitats",
+    "issues",
+    "support_us"
+  ];
+
+  let userUpdate = {},
+    consUpdate = {},
+    triggerUsers = false,
+    triggerCons = false;
+
+  const keys = Object.keys(user);
+
+  keys.forEach(key => {
+    if (userColumns.includes(key)) {
+      triggerUsers = true;
+      userUpdate = { ...userUpdate, [key]: user[key] };
+    } else if (consColumns.includes(key)) {
+      triggerCons = true;
+      consUpdate = { ...consUpdate, [key]: user[key] };
+    }
+  });
+
+  if (triggerUsers) {
+    await db("users")
+      .where("id", id)
+      .update(userUpdate);
+  }
+  if (triggerCons) {
+    await db("conservationists")
+      .where("users_id", id)
+      .update(consUpdate);
+  }
+  if (triggerUsers || triggerCons) {
+    const newUser = await findById(id);
+    return newUser;
   }
 }
 

@@ -11,7 +11,8 @@ exports.up = function(knex, Promise) {
       .onUpdate('CASCADE');
     tbl.string('org_name', 50);
     tbl.string('org_link_url', 500);
-    tbl.string('org_link_title', 50);
+    tbl.string('org_link_text', 50);
+    tbl.string('org_cta', 500);
     tbl.string('mini_bio', 280);
     tbl.text('about_us', 1000);
     tbl.text('species_and_habitats', 1000);
