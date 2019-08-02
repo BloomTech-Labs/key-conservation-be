@@ -56,9 +56,11 @@ async function findById(id) {
 }
 
 async function findBySub(sub) {
-  const user = await db("users")
+  let user = await db("users")
     .where({ sub })
     .first();
+  
+  const { id } = user
 
   if (user.roles === "conservationist") {
     const campaigns = Camp.findCampById(id);
