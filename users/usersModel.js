@@ -95,7 +95,7 @@ async function insert(user) {
     .returning("id");
   if (id) {
     if (roles === "conservationist") {
-      db("conservationists").insert({ users_id: id });
+      await db("conservationists").insert({ users_id: id });
     }
     const user = await findById(id);
     return user;
