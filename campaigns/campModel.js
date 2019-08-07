@@ -49,8 +49,13 @@ async function update(campaign, camp_id) {
   }
 }
 
-function remove(camp_id) {
-  return db('campaigns')
+async function remove(camp_id) {
+  const deleted = await db('campaigns')
     .where({ camp_id })
     .del();
+  if (deleted) {
+    return camp_id
+  } else {
+    return 0
+  }
 }
