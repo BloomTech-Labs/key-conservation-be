@@ -14,7 +14,7 @@ To get the server running locally:
 ## Endpoints
 https://documenter.getpostman.com/view/7671243/SVYtNdSZ?version=latest
 
-# Data Model
+## Data Model
 
 #### USERS
 
