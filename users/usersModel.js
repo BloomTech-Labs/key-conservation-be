@@ -13,6 +13,7 @@ module.exports = {
 function find() {
   return db("users")
     .leftJoin("conservationists as cons", "cons.users_id", "users.id")
+    .leftJoin("supporters as sup", "sup.users_id", "users.id")
     .select(
       "users.*",
       "cons.cons_id",
@@ -20,11 +21,10 @@ function find() {
       "cons.org_link_url",
       "cons.org_link_text",
       "cons.org_cta",
-      "cons.mini_bio",
       "cons.about_us",
-      "cons.species_and_habitats",
       "cons.issues",
-      "cons.support_us"
+      "cons.support_us",
+      "sup.sup_name"
     );
 }
 
@@ -45,15 +45,23 @@ async function findById(id) {
         "cons.org_link_url",
         "cons.org_link_text",
         "cons.org_cta",
-        "cons.mini_bio",
         "cons.about_us",
-        "cons.species_and_habitats",
         "cons.issues",
         "cons.support_us"
       )
       .first();
     user.campaigns = campaigns;
+  } else if (user.roles === "supporter") {
+    user = await db("users")
+      .leftJoin("supporters as sup", "sup.users_id", "users.id")
+      .where("users.id", id)
+      .select(
+        "users.*",
+        "sup.sup_name"
+      )
+      .first();
   }
+
   return user;
 }
 
@@ -76,15 +84,23 @@ async function findBySub(sub) {
         "cons.org_link_url",
         "cons.org_link_text",
         "cons.org_cta",
-        "cons.mini_bio",
         "cons.about_us",
-        "cons.species_and_habitats",
         "cons.issues",
         "cons.support_us"
       )
       .first();
     user.campaigns = campaigns;
+  } else if (user.roles === "supporter") {
+    user = await db("users")
+      .leftJoin("supporters as sup", "sup.users_id", "users.id")
+      .where("users.id", id)
+      .select(
+        "users.*",
+        "sup.sup_name"
+      )
+      .first();
   }
+
   return user;
 }
 
@@ -96,48 +112,13 @@ async function insert(user) {
   if (id) {
     if (roles === "conservationist") {
       db("conservationists").insert({ users_id: id });
+    } else if (roles === "supporter") {
+      db("supporters").insert({ users_id: id });
     }
     const user = await findById(id);
     return user;
   }
 }
-
-// async function update(user, id) {
-//   const userColumns = [
-//     "username",
-//     "email",
-//     "profile_image",
-//     "location",
-//     "twitter",
-//     "facebook",
-//     "instagram",
-//     "phone_number"
-//   ];
-//   const consColumns = [
-//     "org_name",
-//     "org_link_url",
-//     "org_link_text",
-//     "cons.org_cta",
-//     "org_cta",
-//     "mini_bio",
-//     "about_us",
-//     "species_and_habitats",
-//     "issues",
-//     "support_us"
-//   ];
-
-//   let userUpdate = {}, consUpdate = {};
-
-//   const keys = Object.keys(user);
-//   console.log(keys);
-
-//   keys.forEach(key => {
-//     if (userColumns.includes(key)) {
-//       userUpdate = {...userUpdate, [key]: user[key]}
-//     } else if (consColumns.includes(key)) {
-//       consUpdate = {...consUpdate, [key]: user[key]}
-//     }
-//   });
 
 async function update(user, id) {
   const userColumns = [
@@ -145,6 +126,8 @@ async function update(user, id) {
     "email",
     "profile_image",
     "location",
+    "mini_bio",
+    "species_and_habitats",
     "twitter",
     "facebook",
     "instagram",
@@ -156,17 +139,20 @@ async function update(user, id) {
     "org_link_text",
     "cons.org_cta",
     "org_cta",
-    "mini_bio",
     "about_us",
-    "species_and_habitats",
     "issues",
     "support_us"
+  ];
+  const supColumns = [
+    "sup_name"
   ];
 
   let userUpdate = {},
     consUpdate = {},
+    supUpdate = {},
     triggerUsers = false,
     triggerCons = false;
+    triggerSup = false;
 
   const keys = Object.keys(user);
 
@@ -177,6 +163,9 @@ async function update(user, id) {
     } else if (consColumns.includes(key)) {
       triggerCons = true;
       consUpdate = { ...consUpdate, [key]: user[key] };
+    } else if (supColumns.includes(key)) {
+      triggerSup = true;
+      supUpdate = { ...supUpdate, [key]: user[key] };
     }
   });
 
@@ -190,14 +179,13 @@ async function update(user, id) {
       .where("users_id", id)
       .update(consUpdate);
   }
-  if (triggerUsers || triggerCons) {
+  if (triggerSup) {
+    await db("supporters")
+      .where("users_id", id)
+      .update(supUpdate);
+  }
+  if (triggerUsers || triggerCons || triggerSup) {
     const newUser = await findById(id);
     return newUser;
   }
-}
-
-function remove(id) {
-  return db("users")
-    .where({ id })
-    .del();
 }

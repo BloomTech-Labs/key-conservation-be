@@ -10,6 +10,7 @@ exports.seed = function(knex, Promise) {
           username: 'Dam Fine',
           email: 'info@beavertown.org',
           location: 'Pittsburg, PA',
+          species_and_habitats: 'beavers in da dam',
           roles: 'conservationist'
         },
         {
@@ -17,6 +18,7 @@ exports.seed = function(knex, Promise) {
           username: 'Love Them Pandas',
           email: 'pandalover234@hotmail.com',
           location: 'Phoenix, AZ',
+          species_and_habitats: 'pandas sleep on cloud 9',
           roles: 'conservationist'
         },
         {
@@ -24,14 +26,8 @@ exports.seed = function(knex, Promise) {
           username: 'Giraffe 2 Tall',
           email: 'giraffe2tall@gmail.com',
           location: 'Paris, France',
+          species_and_habitats: 'the air up there',
           roles: 'conservationist'
-        },
-        {
-          sub: "666666666666666663",
-          username: 'Sally McUserface',
-          email: 'example@gmail.com',
-          location: 'Rent free in your head',
-          roles: 'supporter'
         }
       ]);
     });

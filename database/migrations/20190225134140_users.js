@@ -14,6 +14,8 @@ exports.up = function(knex, Promise) {
       );
     tbl.timestamp('created_at').defaultTo(knex.fn.now());
     tbl.string('location', 250);
+    tbl.string('mini_bio', 280);
+    tbl.text('species_and_habitats', 1000);
     tbl.string('twitter', 150);
     tbl.string('facebook', 150);
     tbl.string('instagram', 150);
