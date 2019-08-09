@@ -82,21 +82,21 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const user = await Users.remove(id);
+// router.delete('/:id', async (req, res) => {
+//   const { id } = req.params;
+//   try {
+//     const user = await Users.remove(id);
 
-    if (user) {
-      res.status(200).json(user);
-    } else {
-      res.status(404).json({ msg: 'Unable to find user ID' });
-    }
-  } catch (err) {
-    res
-      .status(500)
-      .json({ err, msg: 'Unable to delete user from database' });
-  }
-});
+//     if (user) {
+//       res.status(200).json(user);
+//     } else {
+//       res.status(404).json({ msg: 'Unable to find user ID' });
+//     }
+//   } catch (err) {
+//     res
+//       .status(500)
+//       .json({ err, msg: 'Unable to delete user from database' });
+//   }
+// });
 
 module.exports = router;
