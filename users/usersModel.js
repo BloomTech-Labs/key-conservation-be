@@ -73,8 +73,8 @@ async function findBySub(sub) {
   const { id } = user
 
   if (user.roles === "conservationist") {
-    const campaigns = Camp.findCampById(id);
-    user = db("users")
+    const campaigns = await Camp.findCampById(id);
+    user = await db("users")
       .leftJoin("conservationists as cons", "cons.users_id", "users.id")
       .where("users.id", id)
       .select(
@@ -111,9 +111,9 @@ async function insert(user) {
     .returning("id");
   if (id) {
     if (roles === "conservationist") {
-      db("conservationists").insert({ users_id: id });
+      await db("conservationists").insert({ users_id: id });
     } else if (roles === "supporter") {
-      db("supporters").insert({ users_id: id });
+      await db("supporters").insert({ users_id: id });
     }
     const user = await findById(id);
     return user;
