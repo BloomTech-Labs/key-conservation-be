@@ -6,7 +6,6 @@ module.exports = {
   findById,
   findBySub,
   insert,
-  remove,
   update
 };
 
