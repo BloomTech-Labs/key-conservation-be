@@ -10,9 +10,7 @@ exports.seed = function(knex, Promise) {
           org_name: 'Beaver Town',
           org_link_url: 'google.com',
           org_link_text: 'google.com',
-          mini_bio: null,
           about_us: 'Lorem IpsOn',
-          species_and_habitats: 'beavers in da dam',
           issues: 'wood',
           support_us: null
         },
@@ -21,9 +19,7 @@ exports.seed = function(knex, Promise) {
           org_name: 'Panda Lovers',
           org_link_url: 'google.com',
           org_link_text: 'google.com',
-          mini_bio: null,
           about_us: 'Lorem IpsOn',
-          species_and_habitats: 'pandas sleep on cloud 9',
           issues: 'sleep',
           support_us: null
         },
@@ -32,9 +28,7 @@ exports.seed = function(knex, Promise) {
           org_name: 'Giraffe 2 Tall',
           org_link_url: 'google.com',
           org_link_text: 'google.com',
-          mini_bio: null,
           about_us: 'Lorem IpsOn',
-          species_and_habitats: 'the air up there',
           issues: 'too tall',
           support_us: null
         }
