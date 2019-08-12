@@ -150,7 +150,7 @@ async function update(user, id) {
     consUpdate = {},
     supUpdate = {},
     triggerUsers = false,
-    triggerCons = false;
+    triggerCons = false,
     triggerSup = false;
 
   const keys = Object.keys(user);
