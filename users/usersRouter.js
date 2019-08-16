@@ -3,6 +3,8 @@ const router = express.Router();
 
 const Users = require('./usersModel');
 
+const mw = require('../middleware/s3Upload')
+
 router.get('/', async (req, res) => {
   try {
     const users = await Users.find();
@@ -62,9 +64,15 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
-  const { id } = req.params;
-  const newUser = req.body;
+router.put('/:id', mw.upload.single('photo'), async (req, res) => {
+  const { id } = req.params
+  const { location } = req.file
+
+  const newUser = {
+    ...req.body,
+    profile_image: location
+  }
+
   try {
     const editUser = await Users.update(newUser, id);
 

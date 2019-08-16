@@ -3,35 +3,7 @@ const router = express.Router();
 
 const Camp = require('./campModel');
 
-const aws = require("aws-sdk");
-const multer = require("multer");
-const multerS3 = require("multer-s3");
-
-// This creates an authenticated S3 instance
-const s3 = new aws.S3({
-    apiVersion: "2006-03-01",
-    region: process.env.S3_BUCKET_REGION,
-    credentials: {
-        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-        accessKeyId: process.env.S3_ACCESS_KEY_ID
-    }
-});
-
-// This is middleware that will process the multipart file upload
-const upload = multer({
-    storage: multerS3({
-        s3, // The s3 instance from above
-        // The name of your S3 bucket
-        bucket: process.env.S3_BUCKET_NAME,
-        acl: 'public-read',
-        key: (req, file, next) => {
-            // This names the file. This example prepends the
-            // UNIX timestamp to original name of the file,
-            // which helps with duplicate file names
-            next(null, `files/${Date.now()}_${file.originalname}`);
-        }
-    })
-});
+const mw = require('../middleware/s3Upload')
 
 router.get('/', async (req, res) => {
   try {
@@ -81,15 +53,11 @@ router.get('/camp/:id', async (req, res) => {
   }
 });
 
-router.post('/', upload.single('photo'), async (req, res) => {
-  const { camp_cta, camp_desc, camp_name, users_id } = req.body
+router.post('/', mw.upload.single('photo'), async (req, res) => {
   const { location } = req.file
 
   const postCamp = {
-    camp_cta: camp_cta,
-    camp_desc: camp_desc,
-    camp_name: camp_name,
-    users_id: users_id,
+    ...req.body,
     camp_img: location
   }
 
@@ -113,9 +81,15 @@ router.post('/', upload.single('photo'), async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', mw.upload.single('photo'), async (req, res) => {
   const { id } = req.params;
-  const newCamps = req.body;
+  const { location } = req.file
+
+  const newCamps = {
+    ...req.body,
+    camp_img: location
+  }
+
   try {
     const editCamp = await Camp.update(newCamps, id);
     if (editCamp) {

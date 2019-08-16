@@ -1,10 +1,10 @@
-const express = require("express");
-const router = express.Router();
-
-// Dependencies
 const aws = require("aws-sdk");
 const multer = require("multer");
 const multerS3 = require("multer-s3");
+
+module.exports = {
+  upload
+}
 
 // This creates an authenticated S3 instance
 const s3 = new aws.S3({
@@ -24,7 +24,6 @@ const upload = multer({
         bucket: process.env.S3_BUCKET_NAME,
         acl: 'public-read',
         key: (req, file, next) => {
-            console.log(file)
             // This names the file. This example prepends the
             // UNIX timestamp to original name of the file,
             // which helps with duplicate file names
@@ -32,18 +31,3 @@ const upload = multer({
         }
     })
 });
-
-// The upload object from above has a `.single` method that runs as middleware,
-// and then adds `file` to the `request` object. "file" is the `name` from
-// the file upload form.
-router.post("/upload", upload.single('photo'), (req, res) => {
-
-    // Return the URL the file was uploaded to- optionally, store it
-    // in a database first.
-    console.log(req.file, "post")
-    // console.log(req, "post")
-    // console.log(request)
-    res.json({data: req.file.location});
-});
-
-module.exports = router;
