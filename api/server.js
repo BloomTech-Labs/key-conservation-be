@@ -4,6 +4,7 @@ const server = express();
 const helmet = require('helmet');
 const cors = require('cors');
 
+server.use(express.urlencoded({extended: true}))
 server.use(express.json());
 server.use(express());
 server.use(helmet());
@@ -16,5 +17,6 @@ server.get('/', (req, res) => {
 // defined routes
 server.use('/api/users', require('../users/usersRouter'));
 server.use('/api/campaigns', require('../campaigns/campRouter'));
+server.use('/api/s3-uploads', require('../upload/s3-uploads-router'));
 
 module.exports = server;
