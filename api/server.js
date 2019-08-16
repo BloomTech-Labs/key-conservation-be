@@ -17,6 +17,5 @@ server.get('/', (req, res) => {
 // defined routes
 server.use('/api/users', require('../users/usersRouter'));
 server.use('/api/campaigns', require('../campaigns/campRouter'));
-server.use('/api/s3-uploads', require('../upload/s3-uploads-router'));
 
 module.exports = server;
