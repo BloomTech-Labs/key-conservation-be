@@ -65,8 +65,11 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:id', mw.upload.single('photo'), async (req, res) => {
-  const { id } = req.params
-  const { location } = req.file
+  const { id } = req.params;
+  let location;
+  if (req.file) {
+    location = req.file.location
+  }
 
   const newUser = {
     ...req.body,
