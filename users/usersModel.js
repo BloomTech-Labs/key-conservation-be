@@ -35,7 +35,7 @@ async function findById(id) {
 
   if (user.roles === "conservationist") {
     const campaigns = await Camp.findCampById(id);
-    const campaignUpdates = await CampUpdate.findUpdatesByUser(id);
+    // const campaignUpdates = await CampUpdate.findUpdatesByUser(id);
     user = await db("users")
       .leftJoin("conservationists as cons", "cons.users_id", "users.id")
       .where("users.id", id)
@@ -51,7 +51,8 @@ async function findById(id) {
         "cons.support_us"
       )
       .first();
-    user.campaigns = campaigns.concat(campaignUpdates);
+    // user.campaigns = campaigns.concat(campaignUpdates);
+    user.campaigns = campaigns;
   } else if (user.roles === "supporter") {
     user = await db("users")
       .leftJoin("supporters as sup", "sup.users_id", "users.id")
@@ -75,7 +76,7 @@ async function findBySub(sub) {
 
   if (user.roles === "conservationist") {
     const campaigns = await Camp.findCampById(id);
-    const campaignUpdates = await CampUpdate.findUpdatesByUser(id);
+    // const campaignUpdates = await CampUpdate.findUpdatesByUser(id);
     user = await db("users")
       .leftJoin("conservationists as cons", "cons.users_id", "users.id")
       .where("users.id", id)
@@ -91,8 +92,9 @@ async function findBySub(sub) {
         "cons.support_us"
       )
       .first();
-    user.campaigns = campaigns.concat(campaignUpdates);
-  } else if (user.roles === "supporter") {
+      // user.campaigns = campaigns.concat(campaignUpdates);
+      user.campaigns = campaigns
+    } else if (user.roles === "supporter") {
     user = await db("users")
       .leftJoin("supporters as sup", "sup.users_id", "users.id")
       .where("users.id", id)
