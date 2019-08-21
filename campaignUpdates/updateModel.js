@@ -4,6 +4,7 @@ module.exports = {
   find,
   findById,
   findUpdatesByCamp,
+  findUpdatesByUser,
   insert,
   update,
   remove
@@ -12,23 +13,33 @@ module.exports = {
 function find() {
   return db('campaignUpdates')
   .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
-  .join('users', 'users.id', 'campaigns.users_id')
-  .select('users.username', 'users.profile_image', 'users.location', 'campaigns.camp_name', 'campaigns.users_id', 'campaignUpdates.*')
+  .join('users', 'users.id', 'campaignUpdates.users_id')
+  .select('users.username', 'users.profile_image', 'users.location', 'campaigns.camp_name', 'campaignUpdates.*')
 }
 
 function findById(update_id) {
   return db('campaignUpdates')
     .where({ update_id })
     .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
-    .join('users', 'users.id', 'campaigns.users_id')
-    .select('users.username', 'users.profile_image', 'users.location', 'campaigns.camp_name', 'campaigns.users_id', 'campaignUpdates.*')
+    .join('users', 'users.id', 'campaignUpdates.users_id')
+    .select('users.username', 'users.profile_image', 'users.location', 'campaigns.camp_name', 'campaignUpdates.*')
     .first();
 }
 
 function findUpdatesByCamp(camp_id) {
   return db('campaignUpdates')
-    .where({ camp_id: camp_id })
+    .where({ camp_id })
+    .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
+    .join('users', 'users.id', 'campaignUpdates.users_id')
+    .select('users.username', 'users.profile_image', 'users.location', 'campaigns.camp_name', 'campaignUpdates.*')
+}
 
+function findUpdatesByUser(users_id) {
+  return db('campaignUpdates')
+    .where({ users_id })
+    .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
+    .join('users', 'users.id', 'campaignUpdates.users_id')
+    .select('users.username', 'users.profile_image', 'users.location', 'campaigns.camp_name', 'campaignUpdates.*')
 }
 
 async function insert(campUpdate) {
