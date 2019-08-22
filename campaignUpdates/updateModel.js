@@ -19,26 +19,26 @@ function find() {
 
 function findById(update_id) {
   return db('campaignUpdates')
-    .where({ update_id })
     .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
     .join('users', 'users.id', 'campaignUpdates.users_id')
+    .where('campaignUpdates.update_id', update_id)
     .select('users.username', 'users.profile_image', 'users.location', 'campaigns.camp_name', 'campaignUpdates.*')
     .first();
 }
 
 function findUpdatesByCamp(camp_id) {
   return db('campaignUpdates')
-    .where({ camp_id })
     .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
     .join('users', 'users.id', 'campaignUpdates.users_id')
+    .where('campaignUpdates.camp_id', camp_id)
     .select('users.username', 'users.profile_image', 'users.location', 'campaigns.camp_name', 'campaignUpdates.*')
 }
 
 function findUpdatesByUser(users_id) {
   return db('campaignUpdates')
-    .where({ users_id })
     .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
     .join('users', 'users.id', 'campaignUpdates.users_id')
+    .where('campaignUpdates.users_id', users_id)
     .select('users.username', 'users.profile_image', 'users.location', 'campaigns.camp_name', 'campaignUpdates.*')
 }
 
