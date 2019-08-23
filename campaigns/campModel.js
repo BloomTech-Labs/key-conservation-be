@@ -1,9 +1,11 @@
 const db = require('../database/dbConfig');
 
+const CampUpdate = require("../campaignUpdates/updateModel.js");
+
 module.exports = {
   find,
   findById,
-  findCampById,
+  findCampByUserId,
   insert,
   update,
   remove
@@ -15,18 +17,26 @@ function find() {
     .select('users.username', 'users.profile_image', 'users.location', 'campaigns.*');
 }
 
-function findById(camp_id) {
-  return db('campaigns')
+async function findById(camp_id) {
+  const campaign = await db('campaigns')
     .where({ camp_id })
     .join('users', 'users.id', 'campaigns.users_id')
     .select('users.username', 'users.profile_image', 'users.location', 'campaigns.*')
     .first();
+  campaign.updates = await CampUpdate.findUpdatesByCamp(camp_id)
+  return campaign;
 }
 
-function findCampById(users_id) {
-  return db('campaigns').where({ users_id: users_id })
+async function findCampByUserId(users_id) {
+  const campaigns = await db('campaigns').where({ users_id: users_id })
     .join('users', 'users.id', 'campaigns.users_id')
     .select('users.username', 'users.profile_image', 'users.location', 'campaigns.*');
+  const withUpdates = campaigns.map(async camp => {
+    camp.updates = await CampUpdate.findUpdatesByCamp(camp.camp_id)
+    return camp
+  })
+  const result = await Promise.all(withUpdates)
+  return result;
 }
 
 async function insert(campaign) {

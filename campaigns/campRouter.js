@@ -35,7 +35,7 @@ router.get('/:id', async (req, res) => {
 
 router.get('/camp/:id', async (req, res) => {
   try {
-    const camp = await Camp.findCampById(req.params.id);
+    const camp = await Camp.findCampByUserId(req.params.id);
     if (camp) {
       res
         .status(200)
