@@ -34,7 +34,7 @@ async function findById(id) {
     .first();
 
   if (user.roles === "conservationist") {
-    const campaigns = await Camp.findCampById(id);
+    const campaigns = await Camp.findCampByUserId(id);
     const campaignUpdates = await CampUpdate.findUpdatesByUser(id);
     user = await db("users")
       .leftJoin("conservationists as cons", "cons.users_id", "users.id")
