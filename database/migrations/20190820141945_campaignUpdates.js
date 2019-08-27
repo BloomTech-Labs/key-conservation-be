@@ -7,7 +7,7 @@ exports.up = function(knex, Promise) {
       .unsigned()
       .references('camp_id')
       .inTable('campaigns')
-      .onDelete('RESTRICT')
+      .onDelete('CASCADE')
       .onUpdate('CASCADE');
     tbl.timestamp('created_at').defaultTo(knex.fn.now());
     tbl
