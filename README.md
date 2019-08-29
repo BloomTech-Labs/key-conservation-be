@@ -1,6 +1,8 @@
 # API Documentation
 
-#### Backend deployed at [Heroku](https://key-conservation-staging.herokuapp.com/) (Staging Server)<br>
+#### Backend deployed at [Heroku]:
+  (https://key-conservation.herokuapp.com/) (Production Server)<br>
+  (https://key-conservation-staging.herokuapp.com/) (Staging Server)<br>
 
 ## Getting started
 
@@ -29,6 +31,8 @@ https://documenter.getpostman.com/view/7671243/SVYtNdSZ?version=latest
   "profile_image": STRING,
   "created_at": TIMESTAMP,
   "location": STRING,
+  "mini-bio": STRING,
+  "species-and-habitats": STRING,
   "twitter": STRING,
   "facebook": STRING,
   "instagram": STRING,
@@ -43,17 +47,27 @@ https://documenter.getpostman.com/view/7671243/SVYtNdSZ?version=latest
 
 ```
 {
-  cons_id: UUID
-  users_id: UUID foreign key in USERS table
+  "cons_id": UUID,
+  "users_id": FOREIGN KEY - "id" in USERS table,
   "org_name": STRING,
   "org_link_url": STRING,
   "org_link_text": STRING,
   "org_cta": STRING,
-  "mini_bio": STRING,
   "about_us": STRING,
-  "species_and_habitats": STRING,
   "issues": STRING,
   "support_us": STRING
+}
+```
+
+#### SUPPORTERS
+
+---
+
+```
+{
+  "sup_id": UUID,
+  "users_id": FOREIGN KEY - "id" in USERS table,
+  "sup_name": STRING
 }
 ```
 
@@ -63,13 +77,28 @@ https://documenter.getpostman.com/view/7671243/SVYtNdSZ?version=latest
 
 ```
 {
-  camp_id: UUID
-  users_id: UUID foreign key in USERS table
+  "camp_id": UUID,
+  "users_id": FOREIGN KEY - "id" in USERS table,
   "created_at": TIMESTAMP,
   "camp_img": STRING,
   "camp_name": STRING,
   "camp_desc": STRING,
   "camp_cta": STRING
+}
+```
+
+#### CAMPAIGNUPDATES
+
+---
+
+```
+{
+  "update_id": UUID,
+  "users_id": FOREIGN KEY - "id" in USERS table,
+  "camp_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
+  "created_at": TIMESTAMP,
+  "update_img": STRING,
+  "update_desc": STRING
 }
 ```
     
