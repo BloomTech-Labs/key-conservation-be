@@ -83,7 +83,7 @@ https://documenter.getpostman.com/view/7671243/SVYtNdSZ?version=latest
   "comment_id": UUID,
   "users_id": UUID foreign key in USERS table,
   "created_at": TIMESTAMP,
-  "camp_id": UUID foreign key in USERS table,
+  "camp_id": UUID foreign key in CAMPAIGNS table,
   "comment_body": TEXT
 }
 ```
