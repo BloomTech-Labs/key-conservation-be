@@ -36,6 +36,38 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+router.put('/com/:id', async (req, res) => {
+  const id = req.params.id;
+  const changes = req.body;
+  try {
+    const data = await Comments.update(id, changes);
+    if (data) {
+      res.status(200).json({ data, msg: 'Comment was updated' });
+    } else {
+      res.status(400).json({ msg: 'Comment was not found in the database' });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ err, msg: 'Unable to edit this comment' });
+  }
+});
+
+router.delete('/com/:id', async (req, res) => {
+  const id = req.params.id;
+  try {
+    const data = await Comments.delete(id);
+    if (data) {
+      res.status(200).json({ msg: 'Comment was deleted' });
+    } else {
+      res.status(400).json({ msg: 'Comment was not found in the database' });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ err, msg: 'Unable to delete this comment' });
+  }
+});
+
+// Retrieves all comments in the database. Only use for testing.
 router.get(`/`, async (req, res) => {
   const comments = await Comments.find();
   try {

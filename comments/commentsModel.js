@@ -4,11 +4,19 @@ const CampaignModel = require('../campaigns/campModel');
 module.exports = {
   find,
   findCampaignComments,
-  insert
+  insert,
+  update,
+  remove
 };
 
 function find() {
   return db('comments');
+}
+
+function findById(id) {
+  return db('comments')
+    .where({ comment_id: id })
+    .first();
 }
 
 function findCampaignComments(id) {
@@ -26,6 +34,17 @@ function insert(comment) {
   return db('comments').insert(comment);
 }
 
-function update(comment) {}
+function update(id, changes) {
+  return db('comments')
+    .where({ comment_id: id })
+    .update(changes)
+    .then(() => {
+      return findById(id);
+    });
+}
 
-function remove() {}
+function remove(id) {
+  return db('tech')
+    .where({ comment_id: id })
+    .del();
+}
