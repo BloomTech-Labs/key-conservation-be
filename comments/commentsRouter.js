@@ -22,13 +22,27 @@ router.post('/:id', async (req, res) => {
   }
 });
 
+router.get('/:id', async (req, res) => {
+  try {
+    const data = await Comments.findCampaignComments(req.params.id);
+    if (data) {
+      res.status(200).json({ data, msg: 'Comments were retrieved' });
+    } else {
+      res.status(400).json({ msg: 'Comments were not found in the database' });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ err, msg: 'Unable to retrieve comments' });
+  }
+});
+
 router.get(`/`, async (req, res) => {
   const comments = await Comments.find();
   try {
     if (comments) {
       res.status(200).json(comments);
     } else {
-      console.log(err);
+      console.log('There was an error');
     }
   } catch (err) {
     res.status(500).json({ msg: 'Unable to retrieve comments' });
