@@ -42,11 +42,10 @@ console.log(checkJwt);
 // # End Auth0 Middleware # //
 
 // defined routes
-server.use('/api/users', checkJwt, require('../users/usersRouter'));
-server.use('/api/campaigns', checkJwt, require('../campaigns/campRouter'));
+server.use('/api/users', require('../users/usersRouter'));
+server.use('/api/campaigns', require('../campaigns/campRouter'));
 server.use(
   '/api/updates',
-  checkJwt,
   require('../campaignUpdates/updateRouter')
 );
 

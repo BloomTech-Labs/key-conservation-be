@@ -7,8 +7,8 @@ const pg = require('pg');
 const localPgConnection = {
   host: 'localhost',
   user: 'postgres',
-  password: 'key',
-  database: 'key'
+  password: 'KEY',
+  database: 'keylocal'
 };
 
 // Production database connection
