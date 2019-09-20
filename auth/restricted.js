@@ -1,7 +1,7 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 
 // Import secret from config file
-const secrets = require("../config/secrets.js");
+const secrets = require('../config/secrets.js');
 
 module.exports = (req, res, next) => {
   const token = req.headers.authorization; // Select token from headers in req
@@ -10,7 +10,7 @@ module.exports = (req, res, next) => {
       if (err) {
         res
           .status(401)
-          .json({ message: "Not authorized. Please try logging in again." });
+          .json({ message: 'Not authorized. Please try logging in again.' });
       } else {
         req.decodedToken = decodedToken;
         next();
@@ -19,6 +19,6 @@ module.exports = (req, res, next) => {
   } else {
     res
       .status(401)
-      .json({ message: "Please include a login token and try again." });
+      .json({ message: 'Please include a login token and try again.' });
   }
 };

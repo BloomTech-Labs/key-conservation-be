@@ -48,5 +48,6 @@ server.use(
   '/api/updates',
   require('../campaignUpdates/updateRouter')
 );
+server.use('/api/comments', require('../comments/commentsRouter'));
 
 module.exports = server;

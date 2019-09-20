@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
       res.status(200).json({ users, msg: 'The users were found' });
     } else {
       res
-        .status(404)
+        .status(400)
         .json({ msg: 'Users were not found in the database' });
     }
   } catch (err) {
@@ -30,10 +30,10 @@ router.get('/:id', (req, res) => {
         console.log(userId, 'user')
         if (userId) {
           Users.findById(id)
-          .then(user => res.status(200).json({ user, msg: 'The user was found' }))
-          .catch(err => res.status(500).json({ msg: 'Unable to make request to server' }));
+            .then(user => res.status(200).json({ user, msg: 'The user was found' }))
+            .catch(err => res.status(500).json({ msg: 'Unable to make request to server' }));
         } else {
-          res.status(404).json({ msg: 'User not found in the database' });
+          res.status(400).json({ msg: 'User not found in the database' });
         }
       })
       

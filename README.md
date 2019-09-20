@@ -14,6 +14,7 @@ To get the server running locally:
 - **npm run test** to start server using testing environment
 
 ## Endpoints
+
 https://documenter.getpostman.com/view/7671243/SVYtNdSZ?version=latest
 
 ## Data Model
@@ -87,32 +88,32 @@ https://documenter.getpostman.com/view/7671243/SVYtNdSZ?version=latest
 }
 ```
 
-#### CAMPAIGNUPDATES
+#### COMMENTS
 
 ---
 
 ```
 {
-  "update_id": UUID,
-  "users_id": FOREIGN KEY - "id" in USERS table,
-  "camp_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
+  "comment_id": UUID,
+  "users_id": UUID foreign key in USERS table,
   "created_at": TIMESTAMP,
-  "update_img": STRING,
-  "update_desc": STRING
+  "camp_id": UUID foreign key in CAMPAIGNS table,
+  "comment_body": TEXT
 }
 ```
-    
+
 ## Contributing
 
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.
 
 ### Issue/Bug Request
 
- **If you are having an issue with the existing project code, please submit a bug report under the following guidelines:**
- - Check first to see if your issue has already been reported.
- - Check to see if the issue has recently been fixed by attempting to reproduce the issue using the latest master branch in the repository.
- - Create a live example of the problem.
- - Submit a detailed bug report including your environment & browser, steps to reproduce the issue, actual and expected outcomes,  where you believe the issue is originating from, and any potential solutions you have considered.
+**If you are having an issue with the existing project code, please submit a bug report under the following guidelines:**
+
+- Check first to see if your issue has already been reported.
+- Check to see if the issue has recently been fixed by attempting to reproduce the issue using the latest master branch in the repository.
+- Create a live example of the problem.
+- Submit a detailed bug report including your environment & browser, steps to reproduce the issue, actual and expected outcomes, where you believe the issue is originating from, and any potential solutions you have considered.
 
 ### Feature Requests
 
