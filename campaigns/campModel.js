@@ -1,6 +1,6 @@
 const db = require('../database/dbConfig');
 
-const CampUpdate = require("../campaignUpdates/updateModel.js");
+const CampUpdate = require('../campaignUpdates/updateModel.js');
 
 module.exports = {
   find,
@@ -14,28 +14,54 @@ module.exports = {
 function find() {
   return db('campaigns')
     .join('users', 'users.id', 'campaigns.users_id')
-    .select('users.username', 'users.profile_image', 'users.location', 'campaigns.*');
+    .select(
+      'users.username',
+      'users.profile_image',
+      'users.location',
+      'campaigns.*'
+    )
+    .then(campaigns => {
+      return db('comments').then(comments => {
+        campaigns.map(cam => {
+          return (cam.comments_length = comments.filter(
+            com => com.camp_id === cam.camp_id
+          ).length);
+        });
+        return campaigns;
+      });
+    });
 }
 
 async function findById(camp_id) {
   const campaign = await db('campaigns')
     .where({ camp_id })
     .join('users', 'users.id', 'campaigns.users_id')
-    .select('users.username', 'users.profile_image', 'users.location', 'campaigns.*')
+    .select(
+      'users.username',
+      'users.profile_image',
+      'users.location',
+      'campaigns.*'
+    )
     .first();
-  campaign.updates = await CampUpdate.findUpdatesByCamp(camp_id)
+  campaign.updates = await CampUpdate.findUpdatesByCamp(camp_id);
   return campaign;
 }
 
 async function findCampByUserId(users_id) {
-  const campaigns = await db('campaigns').where({ users_id: users_id })
+  const campaigns = await db('campaigns')
+    .where({ users_id: users_id })
     .join('users', 'users.id', 'campaigns.users_id')
-    .select('users.username', 'users.profile_image', 'users.location', 'campaigns.*');
+    .select(
+      'users.username',
+      'users.profile_image',
+      'users.location',
+      'campaigns.*'
+    );
   const withUpdates = campaigns.map(async camp => {
-    camp.updates = await CampUpdate.findUpdatesByCamp(camp.camp_id)
-    return camp
-  })
-  const result = await Promise.all(withUpdates)
+    camp.updates = await CampUpdate.findUpdatesByCamp(camp.camp_id);
+    return camp;
+  });
+  const result = await Promise.all(withUpdates);
   return result;
 }
 
@@ -64,8 +90,8 @@ async function remove(camp_id) {
     .where({ camp_id })
     .del();
   if (deleted) {
-    return camp_id
+    return camp_id;
   } else {
-    return 0
+    return 0;
   }
 }

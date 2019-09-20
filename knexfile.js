@@ -1,14 +1,14 @@
-require("dotenv").config();
+require('dotenv').config();
 
 // Postgres imports
-const pg = require("pg");
+const pg = require('pg');
 // pg.defaults.ssl = true;
 
 const localPgConnection = {
-  host: "localhost",
-  user: "postgres",
-  password: "key",
-  database: "key"
+  host: 'localhost',
+  user: 'postgres',
+  password: 'key',
+  database: 'key'
 };
 
 // Production database connection
@@ -20,14 +20,14 @@ const dbConnection = process.env.DATABASE_URL || localPgConnection;
 // knex seed:run --env production
 module.exports = {
   development: {
-    client: "pg",
+    client: 'pg',
     connection: dbConnection,
     migrations: {
-      directory: "./database/migrations",
-      tablename: "knex_migrations"
+      directory: './database/migrations',
+      tablename: 'knex_migrations'
     },
     seeds: {
-      directory: "./database/seeds"
+      directory: './database/seeds'
     },
     pool: {
       min: 2,
@@ -37,32 +37,32 @@ module.exports = {
   },
 
   testing: {
-    client: "pg",
+    client: 'pg',
     connection: dbConnection,
     useNullAsDefault: true,
     migrations: {
-      directory: "./database/migrations",
-      tablename: "knex_migrations"
+      directory: './database/migrations',
+      tablename: 'knex_migrations'
     },
     seeds: {
-      directory: "./database/seeds"
+      directory: './database/seeds'
     },
     useNullAsDefault: true
   },
 
   production: {
-    client: "pg",
+    client: 'pg',
     connection: dbConnection,
     pool: {
       min: 2,
       max: 10
     },
     migrations: {
-      directory: "./database/migrations",
-      tableName: "knex_migrations"
+      directory: './database/migrations',
+      tableName: 'knex_migrations'
     },
     seeds: {
-      directory: "./database/seeds"
+      directory: './database/seeds'
     },
     useNullAsDefault: true
   }
