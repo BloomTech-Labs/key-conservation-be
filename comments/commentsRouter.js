@@ -9,15 +9,16 @@ router.post('/:id', async (req, res) => {
     camp_id: req.params.id
   };
   try {
-    const dataBaseResp = await Comments.insert(newComment);
-    if (dataBaseResp) {
-      res.status(201).json({ dataBaseResp, msg: 'Comment added to database' });
+    const data = await Comments.insert(newComment);
+    if (data) {
+      res.status(201).json({ data, msg: 'Comment added to database' });
     } else {
       if (!comment_body) {
         res.status(404).json({ msg: 'Please add a body to this comment' });
       }
     }
   } catch (err) {
+    console.log(err);
     res.status(500).json({ err, msg: 'Unable to add comment' });
   }
 });
