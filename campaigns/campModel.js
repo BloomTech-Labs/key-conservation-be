@@ -1,11 +1,11 @@
 const db = require('../database/dbConfig');
 
 const CampUpdate = require('../campaignUpdates/updateModel.js');
+const CampComments = require('../comments/commentsModel.js');
 
 module.exports = {
   find,
   findById,
-  findCampaignWithComments,
   findCampByUserId,
   insert,
   update,
@@ -45,20 +45,7 @@ async function findById(camp_id) {
     )
     .first();
   campaign.updates = await CampUpdate.findUpdatesByCamp(camp_id);
-  return campaign;
-}
-
-async function findCampaignWithComments(camp_id) {
-  const campaign = await db('campaigns')
-    .where({ camp_id })
-    .join('users', 'users.id', 'campaigns.users_id')
-    .select(
-      'users.profile_image',
-      'campaigns.created_at',
-      'campaigns.camp_name',
-      'campaigns.camp_desc'
-    )
-    .first();
+  campaign.comments = await CampComments.findCampaignComments(camp_id);
   return campaign;
 }
 

@@ -1,5 +1,4 @@
 const db = require('../database/dbConfig');
-const CampaignModel = require('../campaigns/campModel');
 
 module.exports = {
   find,
@@ -20,14 +19,7 @@ function findById(id) {
 }
 
 function findCampaignComments(id) {
-  return CampaignModel.findCampaignWithComments(id).then(campaign => {
-    return db('comments')
-      .where({ camp_id: id })
-      .then(comments => {
-        campaign.comments = comments;
-        return campaign;
-      });
-  });
+  return db('comments').where({ camp_id: id });
 }
 
 function insert(comment) {
