@@ -31,36 +31,38 @@ function insert(comment) {
   return db('comments')
     .insert(comment)
     .then(() => {
-      return db('campaigns')
-        .where({ camp_id: comment.camp_id })
-        .join('users', 'users.id', 'campaigns.users_id')
-        .select(
-          'users.username',
-          'users.profile_image',
-          'users.location',
-          'campaigns.*'
-        )
-        .first()
-        .then(campaign => {
-          return CampUpdate.findUpdatesByCamp(comment.camp_id)
-            .then(updates => {
-              campaign.updates = updates;
-              return campaign;
-            })
-            .then(campaign => {
-              return findCampaignComments(comment.camp_id)
-                .then(comments => {
-                  campaign.comments = comments;
-                  return campaign;
-                })
-                .then(campaign => {
-                  return campaign;
-                });
-            });
-        });
+      return findCampaignComments(comment.camp_id);
+      // return db('campaigns')
+      //   .where({ camp_id: comment.camp_id })
+      //   .join('users', 'users.id', 'campaigns.users_id')
+      //   .select(
+      //     'users.username',
+      //     'users.profile_image',
+      //     'users.location',
+      //     'campaigns.*'
+      //   )
+      //   .first()
+      //   .then(campaign => {
+      //     return CampUpdate.findUpdatesByCamp(comment.camp_id)
+      //       .then(updates => {
+      //         campaign.updates = updates;
+      //         return campaign;
+      //       })
+      //       .then(campaign => {
+      //         return findCampaignComments(comment.camp_id)
+      //           .then(comments => {
+      //             campaign.comments = comments;
+      //             return campaign;
+      //           })
+      //           .then(campaign => {
+      //             return campaign;
+      //           });
+      //       });
+      //   });
     });
 }
 // Possible circular dependency issue prevented me from simply calling findById from campModel.js in the above function
+// Commented out for now, while I investigate issues on the dev server
 
 function update(id, changes) {
   return db('comments')
