@@ -56,9 +56,9 @@ router.put('/com/:id', async (req, res) => {
 router.delete('/com/:id', async (req, res) => {
   const id = req.params.id;
   try {
-    const data = await Comments.delete(id);
+    const data = await Comments.remove(id);
     if (data) {
-      res.status(200).json({ msg: 'Comment was deleted' });
+      res.status(200).json({ data, msg: 'Comment was deleted' });
     } else {
       res.status(400).json({ msg: 'Comment was not found in the database' });
     }
