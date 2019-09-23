@@ -74,7 +74,10 @@ function update(id, changes) {
 }
 
 function remove(id) {
-  return db('tech')
+  return db('comments')
     .where({ comment_id: id })
-    .del();
+    .del()
+    .then(() => {
+      return id;
+    });
 }
