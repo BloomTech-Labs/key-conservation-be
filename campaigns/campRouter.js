@@ -36,24 +36,20 @@ router.get('/:id', (req, res) => {
 
 });
 
-router.get('/camp/:id', async (req, res) => {
-  try {
-    const camp = await Camp.findCampByUserId(req.params.id);
-    if (camp) {
-      res
-        .status(200)
-        .json({ camp, msg: 'The campaigns were found for this org' });
-    } else {
-      res
-        .status(404)
-        .json({ msg: 'Did not find the campaign by this user id(' });
-    }
-  } catch (e) {
-    console.log(e);
-    res
-      .status(500)
-      .json({ e, msg: 'Unable to find that Campagain by user ID' });
-  }
+router.get('/camp/:id', (req, res) => {
+  const { id } = req.params
+
+  Camp.findUser(id)
+    .then(result => {
+      console.log(result, 'result')
+      if (result) {
+        Camp.findCampByUserId(id)
+          .then(camp => res.status(200).json({ camp, msg: 'The campaigns were found for this org' }))
+          .catch(err => res.status(500).json({ msg: 'Unable to find that Campagain by user ID' }))
+      } else {
+        res.status(404).json({ msg: 'Did not find the campaign by this user id' })
+      }
+    })
 });
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {

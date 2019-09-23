@@ -7,6 +7,7 @@ module.exports = {
   findCampaign,
   findById,
   findCampaignWithComments,
+  findUser,
   findCampByUserId,
   insert,
   update,
@@ -67,6 +68,12 @@ async function findCampaignWithComments(camp_id) {
     )
     .first();
   return campaign;
+}
+
+function findUser(id) {
+  return db('users')
+    .where({ id })
+    .first()
 }
 
 async function findCampByUserId(users_id) {
