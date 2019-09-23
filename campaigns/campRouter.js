@@ -66,7 +66,7 @@ router.post('/', mw.upload.single('photo'), async (req, res) => {
       console.log(newCamps);
       res.status(201).json({ newCamps, msg: 'Campaign added to database' });
     } else {
-      if (!campaign_img || !campaign_name || !campaign_desc || !campaign_cta) {
+      if (!camp_img || !camp_name || !camp_desc || !camp_cta) {
         console.log('no data');
         res.status(404).json({
           msg:

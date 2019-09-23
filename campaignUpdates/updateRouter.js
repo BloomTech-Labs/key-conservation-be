@@ -31,24 +31,26 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.get('/camp/:id', async (req, res) => {
-  try {
-    const campUpdates = await CampUpdate.findUpdatesByCamp(req.params.id);
-    if (campUpdates) {
-      res
-        .status(200)
-        .json({ campUpdates, msg: 'The updates were found for this campaign' });
-    } else {
-      res
-        .status(404)
-        .json({ msg: 'Did not find any updates by this campaign id' });
-    }
-  } catch (err) {
-    console.log(err);
-    res
-      .status(500)
-      .json({ err, msg: 'Unable to make request to server' });
-  }
+router.get('/camp/:id', (req, res) => {
+  const { id } = req.params
+
+  CampUpdate.findCamp(id)
+    .then(result => {
+      if (result) {
+        CampUpdate.findUpdatesByCamp(id)
+          .then(campUpdates => {
+            console.log(campUpdates, 'updates')
+            if (campUpdates[0]) {
+              res.status(200).json({ campUpdates, msg: 'The updates were found for this campaign' })
+            } else {
+              res.status(400).json({ msg: 'This campaign does not have an update yet' })
+            }
+          })
+          .catch(err => res.status(500).json({ err, msg: 'Unable to make request to server' }))
+      } else {
+        res.status(400).json({ msg: 'This campaign does not exist' })
+      }
+    })
 });
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
