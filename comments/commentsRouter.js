@@ -9,15 +9,16 @@ router.post('/:id', async (req, res) => {
     camp_id: req.params.id
   };
   try {
-    const dataBaseResp = await Comments.insert(newComment);
-    if (dataBaseResp) {
-      res.status(201).json({ dataBaseResp, msg: 'Comment added to database' });
+    const data = await Comments.insert(newComment);
+    if (data) {
+      res.status(201).json({ data, msg: 'Comment added to database' });
     } else {
       if (!comment_body) {
         res.status(404).json({ msg: 'Please add a body to this comment' });
       }
     }
   } catch (err) {
+    console.log(err);
     res.status(500).json({ err, msg: 'Unable to add comment' });
   }
 });
@@ -55,9 +56,9 @@ router.put('/com/:id', async (req, res) => {
 router.delete('/com/:id', async (req, res) => {
   const id = req.params.id;
   try {
-    const data = await Comments.delete(id);
+    const data = await Comments.remove(id);
     if (data) {
-      res.status(200).json({ msg: 'Comment was deleted' });
+      res.status(200).json({ data, msg: 'Comment was deleted' });
     } else {
       res.status(400).json({ msg: 'Comment was not found in the database' });
     }

@@ -49,6 +49,6 @@ server.use(
   checkJwt,
   require('../campaignUpdates/updateRouter')
 );
-server.use('/api/comments', require('../comments/commentsRouter'));
+server.use('/api/comments', checkJwt, require('../comments/commentsRouter'));
 
 module.exports = server;
