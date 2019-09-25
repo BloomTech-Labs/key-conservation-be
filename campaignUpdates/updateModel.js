@@ -3,6 +3,7 @@ const db = require('../database/dbConfig');
 module.exports = {
   find,
   findById,
+  findCamp,
   findUpdatesByCamp,
   findUpdatesByUser,
   insert,
@@ -24,6 +25,12 @@ function findById(update_id) {
     .where('campaignUpdates.update_id', update_id)
     .select('users.username', 'users.profile_image', 'users.location', 'campaigns.camp_name', 'campaignUpdates.*')
     .first();
+}
+
+function findCamp(camp_id) {
+  return db('campaigns')
+    .where({ camp_id })
+    .first()
 }
 
 function findUpdatesByCamp(camp_id) {

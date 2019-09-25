@@ -5,7 +5,9 @@ const CampComments = require('../comments/commentsModel.js');
 
 module.exports = {
   find,
+  findCampaign,
   findById,
+  findUser,
   findCampByUserId,
   insert,
   update,
@@ -33,6 +35,12 @@ function find() {
     });
 }
 
+function findCampaign(camp_id) {
+  return db('campaigns')
+    .where({ camp_id })
+    .first()
+}
+
 async function findById(camp_id) {
   const campaign = await db('campaigns')
     .where({ camp_id })
@@ -47,6 +55,12 @@ async function findById(camp_id) {
   campaign.updates = await CampUpdate.findUpdatesByCamp(camp_id);
   campaign.comments = await CampComments.findCampaignComments(camp_id);
   return campaign;
+}
+
+function findUser(id) {
+  return db('users')
+    .where({ id })
+    .first()
 }
 
 async function findCampByUserId(users_id) {
