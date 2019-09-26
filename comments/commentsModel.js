@@ -24,7 +24,7 @@ function findCampaignComments(id) {
   return db('comments')
     .where({ camp_id: id })
     .join('users', 'users.id', 'comments.users_id')
-    .select(`comments.*`, 'users.profile_image', 'users.username');
+    .select(`comments.*`, 'users.profile_image', 'users.username')
 }
 
 function insert(comment) {
