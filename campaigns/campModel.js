@@ -24,9 +24,9 @@ function find() {
     .then(campaigns => {
       return db('comments').then(comments => {
         campaigns.map(cam => {
-          return (cam.comments_length = comments.filter(
+          return (cam.comments = comments.filter(
             com => com.camp_id === cam.camp_id
-          ).length);
+          ));
         });
         return campaigns;
       });
