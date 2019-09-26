@@ -22,14 +22,17 @@ function find() {
       'campaigns.*'
     )
     .then(campaigns => {
-      return db('comments').then(comments => {
-        campaigns.map(cam => {
-          return (cam.comments = comments.filter(
-            com => com.camp_id === cam.camp_id
-          ));
+      return db('comments')
+        .join('users', 'users.id', 'comments.users_id')
+        .select(`comments.*`, 'users.profile_image', 'users.username')
+        .then(comments => {
+          campaigns.map(cam => {
+            return (cam.comments = comments.filter(
+              com => com.camp_id === cam.camp_id
+            ));
+          });
+          return campaigns;
         });
-        return campaigns;
-      });
     });
 }
 
