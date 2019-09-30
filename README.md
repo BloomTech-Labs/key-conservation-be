@@ -141,7 +141,7 @@ https://documenter.getpostman.com/view/7671243/SVYtNdSZ?version=latest
 ```
 
 {
-"bookmar_id": UUID,
+"bookmark_id": UUID,
 "users_id": FOREIGN KEY - "id" in USERS table,
 "camp_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
 }
