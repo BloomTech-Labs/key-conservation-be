@@ -24,6 +24,16 @@ function find() {
       'campaigns.*'
     )
     .then(campaigns => {
+      return db('likes').then(likes => {
+        campaigns.map(cam => {
+          return (cam.likes = likes.filter(
+            like => like.camp_id === cam.camp_id
+          ));
+        });
+        return campaigns;
+      });
+    })
+    .then(campaigns => {
       return db('comments')
         .join('users', 'users.id', 'comments.users_id')
         .select(`comments.*`, 'users.profile_image', 'users.username')
@@ -41,7 +51,7 @@ function find() {
 function findCampaign(camp_id) {
   return db('campaigns')
     .where({ camp_id })
-    .first()
+    .first();
 }
 
 async function findById(camp_id) {
@@ -63,7 +73,7 @@ async function findById(camp_id) {
 function findUser(id) {
   return db('users')
     .where({ id })
-    .first()
+    .first();
 }
 
 async function findCampByUserId(users_id) {
