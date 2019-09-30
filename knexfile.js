@@ -7,7 +7,7 @@ const pg = require('pg');
 const localPgConnection = {
   host: 'localhost',
   user: 'postgres',
-  password: process.env.KEY,
+  password: 'key',
   database: 'keylocal'
 };
 
