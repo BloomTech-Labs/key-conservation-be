@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
       res.status(200).json({ users, msg: 'The users were found' });
     } else {
       res
-        .status(404)
+        .status(400)
         .json({ msg: 'Users were not found in the database' });
     }
   } catch (err) {
@@ -22,19 +22,23 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
-  try {
-    const user = await Users.findById(req.params.id);
-
-    if (user) {
-      res.status(200).json({ user, msg: 'The user was found' });
-    } else {
-      res.status(404).json({ msg: 'User not found in the database' });
-    }
-  } catch (err) {
-    res.status(500).json({ err, msg: 'Unable to make request to server' });
+router.get('/:id', (req, res) => {
+    const { id } = req.params
+    
+    Users.findUser(id)
+      .then(userId => {
+        console.log(userId, 'user')
+        if (userId) {
+          Users.findById(id)
+            .then(user => res.status(200).json({ user, msg: 'The user was found' }))
+            .catch(err => res.status(500).json({ msg: 'Unable to make request to server' }));
+        } else {
+          res.status(400).json({ msg: 'User not found in the database' });
+        }
+      })
+      
   }
-});
+);
 
 router.get('/sub/:sub', async (req, res) => {
   try {

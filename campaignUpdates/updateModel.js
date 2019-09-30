@@ -3,6 +3,7 @@ const db = require('../database/dbConfig');
 module.exports = {
   find,
   findById,
+  findCamp,
   findUpdatesByCamp,
   findUpdatesByUser,
   insert,
@@ -12,9 +13,25 @@ module.exports = {
 
 function find() {
   return db('campaignUpdates')
-  .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
-  .join('users', 'users.id', 'campaignUpdates.users_id')
-  .select('users.username', 'users.profile_image', 'users.location', 'campaigns.camp_name', 'campaignUpdates.*')
+    .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
+    .join('users', 'users.id', 'campaignUpdates.users_id')
+    .select(
+      'users.username',
+      'users.profile_image',
+      'users.location',
+      'campaigns.camp_name',
+      'campaignUpdates.*'
+    )
+    .then(updates => {
+      return db('likes').then(likes => {
+        updates.map(up => {
+          return (up.likes = likes.filter(
+            like => like.update_id === up.update_id
+          ));
+        });
+        return updates;
+      });
+    });
 }
 
 function findById(update_id) {
@@ -22,7 +39,19 @@ function findById(update_id) {
     .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
     .join('users', 'users.id', 'campaignUpdates.users_id')
     .where('campaignUpdates.update_id', update_id)
-    .select('users.username', 'users.profile_image', 'users.location', 'campaigns.camp_name', 'campaignUpdates.*')
+    .select(
+      'users.username',
+      'users.profile_image',
+      'users.location',
+      'campaigns.camp_name',
+      'campaignUpdates.*'
+    )
+    .first();
+}
+
+function findCamp(camp_id) {
+  return db('campaigns')
+    .where({ camp_id })
     .first();
 }
 
@@ -31,7 +60,13 @@ function findUpdatesByCamp(camp_id) {
     .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
     .join('users', 'users.id', 'campaignUpdates.users_id')
     .where('campaignUpdates.camp_id', camp_id)
-    .select('users.username', 'users.profile_image', 'users.location', 'campaigns.camp_name', 'campaignUpdates.*')
+    .select(
+      'users.username',
+      'users.profile_image',
+      'users.location',
+      'campaigns.camp_name',
+      'campaignUpdates.*'
+    );
 }
 
 function findUpdatesByUser(users_id) {
@@ -39,7 +74,13 @@ function findUpdatesByUser(users_id) {
     .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
     .join('users', 'users.id', 'campaignUpdates.users_id')
     .where('campaignUpdates.users_id', users_id)
-    .select('users.username', 'users.profile_image', 'users.location', 'campaigns.camp_name', 'campaignUpdates.*')
+    .select(
+      'users.username',
+      'users.profile_image',
+      'users.location',
+      'campaigns.camp_name',
+      'campaignUpdates.*'
+    );
 }
 
 async function insert(campUpdate) {
@@ -67,8 +108,8 @@ async function remove(update_id) {
     .where({ update_id })
     .del();
   if (deleted) {
-    return update_id
+    return update_id;
   } else {
-    return 0
+    return 0;
   }
 }

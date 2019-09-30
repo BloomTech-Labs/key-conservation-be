@@ -1,8 +1,9 @@
 # API Documentation
 
 #### Backend deployed at [Heroku]:
-  (https://key-conservation.herokuapp.com/) (Production Server)<br>
-  (https://key-conservation-staging.herokuapp.com/) (Staging Server)<br>
+
+(https://key-conservation.herokuapp.com/) (Production Server)<br>
+(https://key-conservation-staging.herokuapp.com/) (Staging Server)<br>
 
 ## Getting started
 
@@ -14,6 +15,7 @@ To get the server running locally:
 - **npm run test** to start server using testing environment
 
 ## Endpoints
+
 https://documenter.getpostman.com/view/7671243/SVYtNdSZ?version=latest
 
 ## Data Model
@@ -95,24 +97,69 @@ https://documenter.getpostman.com/view/7671243/SVYtNdSZ?version=latest
 {
   "update_id": UUID,
   "users_id": FOREIGN KEY - "id" in USERS table,
-  "camp_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
   "created_at": TIMESTAMP,
   "update_img": STRING,
-  "update_desc": STRING
+  "update_desc": STRING,
 }
 ```
-    
+
+#### COMMENTS
+
+---
+
+```
+
+{
+"comment_id": UUID,
+"users_id": FOREIGN KEY - "id" in USERS table,
+"created_at": TIMESTAMP,
+"camp_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
+"comment_body": TEXT
+}
+
+```
+
+#### LIKES
+
+---
+
+```
+
+{
+"like_id": UUID,
+"users_id": FOREIGN KEY - "id" in USERS table,
+"camp_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
+"update_id": FOREIGN KEY - "update_id" in CAMPAIGNUPDATES table
+}
+
+```
+
+#### BOOKMARKS
+
+---
+
+```
+
+{
+"bookmark_id": UUID,
+"users_id": FOREIGN KEY - "id" in USERS table,
+"camp_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
+}
+
+```
+
 ## Contributing
 
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.
 
 ### Issue/Bug Request
 
- **If you are having an issue with the existing project code, please submit a bug report under the following guidelines:**
- - Check first to see if your issue has already been reported.
- - Check to see if the issue has recently been fixed by attempting to reproduce the issue using the latest master branch in the repository.
- - Create a live example of the problem.
- - Submit a detailed bug report including your environment & browser, steps to reproduce the issue, actual and expected outcomes,  where you believe the issue is originating from, and any potential solutions you have considered.
+**If you are having an issue with the existing project code, please submit a bug report under the following guidelines:**
+
+- Check first to see if your issue has already been reported.
+- Check to see if the issue has recently been fixed by attempting to reproduce the issue using the latest master branch in the repository.
+- Create a live example of the problem.
+- Submit a detailed bug report including your environment & browser, steps to reproduce the issue, actual and expected outcomes, where you believe the issue is originating from, and any potential solutions you have considered.
 
 ### Feature Requests
 
@@ -139,3 +186,7 @@ These contribution guidelines have been adapted from [this good-Contributing.md-
 ## Documentation
 
 See [Key Conservation](https://github.com/labs14-key-conservation/Frontend-Mobile) for details on the frontend of our project.
+
+```
+
+```
