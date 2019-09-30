@@ -1,8 +1,9 @@
 # API Documentation
 
 #### Backend deployed at [Heroku]:
-  (https://key-conservation.herokuapp.com/) (Production Server)<br>
-  (https://key-conservation-staging.herokuapp.com/) (Staging Server)<br>
+
+(https://key-conservation.herokuapp.com/) (Production Server)<br>
+(https://key-conservation-staging.herokuapp.com/) (Staging Server)<br>
 
 ## Getting started
 
@@ -88,18 +89,62 @@ https://documenter.getpostman.com/view/7671243/SVYtNdSZ?version=latest
 }
 ```
 
-#### COMMENTS
+#### CAMPAIGNUPDATES
 
 ---
 
 ```
 {
-  "comment_id": UUID,
-  "users_id": UUID foreign key in USERS table,
+  "update_id": UUID,
+  "users_id": FOREIGN KEY - "id" in USERS table,
   "created_at": TIMESTAMP,
-  "camp_id": UUID foreign key in CAMPAIGNS table,
-  "comment_body": TEXT
+  "update_img": STRING,
+  "update_desc": STRING,
 }
+
+#### COMMENTS
+
+---
+
+```
+
+{
+"comment_id": UUID,
+"users_id": FOREIGN KEY - "id" in USERS table,
+"created_at": TIMESTAMP,
+"camp_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
+"comment_body": TEXT
+}
+
+```
+
+#### LIKES
+
+---
+
+```
+
+{
+"like_id": UUID,
+"users_id": FOREIGN KEY - "id" in USERS table,
+"camp_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
+"update_id": FOREIGN KEY - "update_id" in CAMPAIGNUPDATES table
+}
+
+```
+
+#### BOOKMARKS
+
+---
+
+```
+
+{
+"bookmar_id": UUID,
+"users_id": FOREIGN KEY - "id" in USERS table,
+"camp_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
+}
+
 ```
 
 ## Contributing
@@ -140,3 +185,4 @@ These contribution guidelines have been adapted from [this good-Contributing.md-
 ## Documentation
 
 See [Key Conservation](https://github.com/labs14-key-conservation/Frontend-Mobile) for details on the frontend of our project.
+```
