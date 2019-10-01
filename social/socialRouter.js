@@ -21,7 +21,7 @@ router.post('/likes/:id', async (req, res) => {
 
 router.delete('/likes/:id', async (req, res) => {
   try {
-    const data = await Social.remove(req.body);
+    const data = await Social.remove(req.params.id);
     if (data) {
       res.status(200).json({ data, msg: 'Like removed from the database' });
     } else {

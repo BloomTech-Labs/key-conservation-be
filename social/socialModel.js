@@ -1,6 +1,7 @@
 const db = require('../database/dbConfig');
 
 module.exports = {
+  findCampaignLikes,
   insert,
   remove
 };
