@@ -8,7 +8,7 @@ const localPgConnection = {
   host: 'localhost',
   user: 'postgres',
   password: 'key',
-  database: 'key'
+  database: 'keylocal'
 };
 
 // Production database connection

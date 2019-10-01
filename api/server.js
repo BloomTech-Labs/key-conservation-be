@@ -50,5 +50,6 @@ server.use(
   require('../campaignUpdates/updateRouter')
 );
 server.use('/api/comments', checkJwt, require('../comments/commentsRouter'));
+server.use('api/social', checkJwt, require('../social/socialRouter'));
 
 module.exports = server;
