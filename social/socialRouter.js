@@ -35,7 +35,7 @@ router.delete('/likes/:id/:user', async (req, res) => {
   }
 });
 
-router.delete('/likes/update/:id/:user'),
+router.delete('/update/:id/:user'),
   async (req, res) => {
     try {
       const data = await Social.updateRemove(req.params.id, req.params.user);
