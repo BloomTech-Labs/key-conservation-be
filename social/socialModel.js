@@ -18,8 +18,8 @@ function insert(like) {
     });
 }
 
-function remove(id) {
+function remove(campId, userId) {
   return db('likes')
-    .where({ like_id: id })
+    .where({ camp_id: campId, users_id: userId })
     .del();
 }
