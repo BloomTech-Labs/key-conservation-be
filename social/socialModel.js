@@ -3,7 +3,8 @@ const db = require('../database/dbConfig');
 module.exports = {
   findCampaignLikes,
   insert,
-  remove
+  remove,
+  updateRemove
 };
 
 function findCampaignLikes(id) {
@@ -21,5 +22,11 @@ function insert(like) {
 function remove(campId, userId) {
   return db('likes')
     .where({ camp_id: campId, users_id: userId })
+    .del();
+}
+
+function updateRemove(updateId, userId) {
+  return db('likes')
+    .where({ update_id: updateId, users_id: userId })
     .del();
 }
