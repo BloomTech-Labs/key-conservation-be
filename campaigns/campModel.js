@@ -5,7 +5,9 @@ const CampComments = require('../comments/commentsModel.js');
 
 module.exports = {
   find,
+  findCampaign,
   findById,
+  findUser,
   findCampByUserId,
   insert,
   update,
@@ -22,6 +24,16 @@ function find() {
       'campaigns.*'
     )
     .then(campaigns => {
+      return db('likes').then(likes => {
+        campaigns.map(cam => {
+          return (cam.likes = likes.filter(
+            like => like.camp_id === cam.camp_id
+          ));
+        });
+        return campaigns;
+      });
+    })
+    .then(campaigns => {
       return db('comments')
         .join('users', 'users.id', 'comments.users_id')
         .select(`comments.*`, 'users.profile_image', 'users.username')
@@ -34,6 +46,12 @@ function find() {
           return campaigns;
         });
     });
+}
+
+function findCampaign(camp_id) {
+  return db('campaigns')
+    .where({ camp_id })
+    .first();
 }
 
 async function findById(camp_id) {
@@ -50,6 +68,12 @@ async function findById(camp_id) {
   campaign.updates = await CampUpdate.findUpdatesByCamp(camp_id);
   campaign.comments = await CampComments.findCampaignComments(camp_id);
   return campaign;
+}
+
+function findUser(id) {
+  return db('users')
+    .where({ id })
+    .first();
 }
 
 async function findCampByUserId(users_id) {
