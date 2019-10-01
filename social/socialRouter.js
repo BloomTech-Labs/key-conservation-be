@@ -35,21 +35,20 @@ router.delete('/likes/:id/:user', async (req, res) => {
   }
 });
 
-router.delete('/update/:id/:user'),
-  async (req, res) => {
-    try {
-      const data = await Social.updateRemove(req.params.id, req.params.user);
-      if (data) {
-        res.status(200).json({ data, msg: 'Like removed from the database' });
-      } else {
-        res
-          .status(404)
-          .json({ msg: 'That like object does not exist in the database' });
-      }
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({ err, msg: 'Unable to remove like' });
+router.delete('/update/:id/:user', async (req, res) => {
+  try {
+    const data = await Social.updateRemove(req.params.id, req.params.user);
+    if (data) {
+      res.status(200).json({ data, msg: 'Like removed from the database' });
+    } else {
+      res
+        .status(404)
+        .json({ msg: 'That like object does not exist in the database' });
     }
-  };
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ err, msg: 'Unable to remove like' });
+  }
+});
 
 module.exports = router;
