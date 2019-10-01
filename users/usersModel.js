@@ -4,6 +4,7 @@ const CampUpdate = require("../campaignUpdates/updateModel.js");
 
 module.exports = {
   find,
+  findUser,
   findById,
   findBySub,
   insert,
@@ -26,6 +27,12 @@ function find() {
       "cons.support_us",
       "sup.sup_name"
     );
+}
+
+function findUser(id) {
+  return db('users')
+    .where({ id })
+    .first()
 }
 
 async function findById(id) {
