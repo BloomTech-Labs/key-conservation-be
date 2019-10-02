@@ -3,6 +3,22 @@ const router = express.Router();
 
 const Social = require('./socialModel');
 
+router.get('/likes/:id', async (req, res) => {
+  try {
+    const data = await Social.findCampaignLikes(req.params.id);
+    if (data) {
+      res.status(200).json({ data, msg: 'Retrieved likes' });
+    } else {
+      res
+        .status(404)
+        .json({ msg: 'No object with that id exists in the database' });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ err, msg: 'Unable to retrieve likes' });
+  }
+});
+
 router.post('/likes/:id', async (req, res) => {
   try {
     const data = await Social.insert(req.body);
