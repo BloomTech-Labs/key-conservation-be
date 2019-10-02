@@ -9,7 +9,7 @@ module.exports = {
   insert,
   update,
   remove
-};
+}
 
 function find() {
   return db('campaignUpdates')
