@@ -2,6 +2,7 @@ const db = require('../database/dbConfig');
 
 const CampUpdate = require('../campaignUpdates/updateModel.js');
 const CampComments = require('../comments/commentsModel.js');
+const CampLikes = require('../social/socialModel.js');
 
 module.exports = {
   find,
@@ -88,6 +89,8 @@ async function findCampByUserId(users_id) {
     );
   const withUpdates = campaigns.map(async camp => {
     camp.updates = await CampUpdate.findUpdatesByCamp(camp.camp_id);
+    camp.comments = await CampComments.findCampaignComments(camp.camp_id);
+    camp.likes = await CampLikes.findCampaignLikes(camp.camp_id);
     return camp;
   });
   const result = await Promise.all(withUpdates);
