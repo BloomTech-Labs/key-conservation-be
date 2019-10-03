@@ -66,7 +66,17 @@ function findUpdatesByCamp(camp_id) {
       'users.location',
       'campaigns.camp_name',
       'campaignUpdates.*'
-    );
+    )
+    .then(updates => {
+      return db('likes').then(likes => {
+        updates.map(u => {
+          return (u.likes = likes.filter(
+            like => like.update_id === u.update_id
+          ));
+        });
+        return updates;
+      });
+    });
 }
 
 function findUpdatesByUser(users_id) {
@@ -80,7 +90,17 @@ function findUpdatesByUser(users_id) {
       'users.location',
       'campaigns.camp_name',
       'campaignUpdates.*'
-    );
+    )
+    .then(updates => {
+      return db('likes').then(likes => {
+        updates.map(u => {
+          return (u.likes = likes.filter(
+            like => like.update_id === u.update_id
+          ));
+        });
+        return updates;
+      });
+    });
 }
 
 async function insert(campUpdate) {
