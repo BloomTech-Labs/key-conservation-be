@@ -63,11 +63,13 @@ async function findById(id) {
     user.bookmarks = bookmarks;
     user.campaigns = campaigns.concat(campaignUpdates);
   } else if (user.roles === 'supporter') {
+    const bookmarks = await Bookmarks.findUserBookmarks(id);
     user = await db('users')
       .leftJoin('supporters as sup', 'sup.users_id', 'users.id')
       .where('users.id', id)
       .select('users.*', 'sup.sup_name')
       .first();
+    user.bookmarks = bookmarks;
   }
 
   return user;
@@ -82,6 +84,7 @@ async function findBySub(sub) {
   const { id } = user;
 
   if (user.roles === 'conservationist') {
+    const bookmarks = await Bookmarks.findUserBookmarks(id);
     user = await db('users')
       .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
       .where('users.id', id)
@@ -97,12 +100,15 @@ async function findBySub(sub) {
         'cons.support_us'
       )
       .first();
+    user.bookmarks = bookmarks;
   } else if (user.roles === 'supporter') {
+    const bookmarks = await Bookmarks.findUserBookmarks(id);
     user = await db('users')
       .leftJoin('supporters as sup', 'sup.users_id', 'users.id')
       .where('users.id', id)
       .select('users.*', 'sup.sup_name')
       .first();
+    user.bookmarks = bookmarks;
   }
 
   return user;
