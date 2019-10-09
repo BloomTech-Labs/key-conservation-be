@@ -8,6 +8,7 @@ exports.up = function(knex, Promise) {
         .notNullable()
       species.string('spec_hab_photo')
         .notNullable()
+        // add a default photo if none is included
       species.text('spec_hab_type')
         .notNullable()
         // either 'species' or 'habitat'
