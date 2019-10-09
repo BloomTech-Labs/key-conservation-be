@@ -51,5 +51,6 @@ server.use(
 );
 server.use('/api/comments', checkJwt, require('../comments/commentsRouter'));
 server.use('/api/social', checkJwt, require('../social/socialRouter'));
+server.use('/api/species', checkJwt, require('../species/speciesRouter'))
 
 module.exports = server;
