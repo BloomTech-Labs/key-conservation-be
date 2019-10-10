@@ -35,6 +35,22 @@ router.post('/likes/:id', async (req, res) => {
   }
 });
 
+router.post('/update/:id', async (req, res) => {
+  try {
+    const data = await Social.updateInsert(req.body);
+    if (data) {
+      res.status(201).json({ data, msg: 'Like added to database' });
+    } else {
+      res
+        .status(404)
+        .json({ msg: 'The like object was not properly formatted' });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ err, msg: 'Unable to add like' });
+  }
+});
+
 router.delete('/likes/:id/:user', async (req, res) => {
   try {
     const data = await Social.remove(req.params.id, req.params.user);
