@@ -42,7 +42,7 @@ console.log(checkJwt);
 // # End Auth0 Middleware # //
 
 // defined routes
-server.use('/api/users', checkJwt, require('../users/usersRouter'));
+server.use('/api/users', require('../users/usersRouter'));
 server.use('/api/campaigns', checkJwt, require('../campaigns/campRouter'));
 server.use(
   '/api/updates',
@@ -51,6 +51,6 @@ server.use(
 );
 server.use('/api/comments', checkJwt, require('../comments/commentsRouter'));
 server.use('/api/social', checkJwt, require('../social/socialRouter'));
-server.use('/api/species', checkJwt, require('../species/speciesRouter'))
+server.use('/api/species', require('../species/speciesRouter'))
 
 module.exports = server;
