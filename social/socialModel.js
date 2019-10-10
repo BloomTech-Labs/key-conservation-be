@@ -2,7 +2,9 @@ const db = require('../database/dbConfig');
 
 module.exports = {
   findCampaignLikes,
+  findUpdateLikes,
   insert,
+  updateInsert,
   remove,
   updateRemove,
   findUserBookmarks,
@@ -14,11 +16,23 @@ function findCampaignLikes(id) {
   return db('likes').where({ camp_id: id });
 }
 
+function findUpdateLikes(id) {
+  return db('likes').where({ update_id: id });
+}
+
 function insert(like) {
   return db('likes')
     .insert(like)
     .then(() => {
       return findCampaignLikes(like.camp_id);
+    });
+}
+
+function updateInsert(like) {
+  return db('likes')
+    .insert(like)
+    .then(() => {
+      return findUpateLikes(like.update_id);
     });
 }
 
