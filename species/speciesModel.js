@@ -26,20 +26,38 @@ function findConsSpecs(consId) {
 }
 
 function insertSpecs(specAdded) {
-  db('conservationCats')
+  return db('conservationCats')
     .insert(specAdded)
     .returning('updatedSpecs')
 }
 
 function deleteSpecs(specRemoved) {
-  db('conservationCats')
+  return db('conservationCats')
     .where(specRemoved)
     .del()
 }
 
 async function modifySpecs(consId, specArray) {
   const consCurrent = await findConsSpecs(consId)
-  for (i = 0; i < consCurrent.length; i++) {
-    if 
-  }
+  let addedSpecs;
+  let removedSpecs;
+
+  specArray.map(update => {
+    if (consCurrent.find(old => old.spec_hab_id === update.spec_hab_id)) {
+        console.log(update)
+      } else {
+        addedSpecs.push(update)
+      }
+  })
+  
+  consCurrent.map(old => {
+    if (specArray.find(update => update.spec_hab_id)) {
+      console.log(old)
+    } else {
+      removedSpecs.push(old)
+    }
+  })
+
+
+
 }
