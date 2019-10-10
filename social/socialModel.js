@@ -32,7 +32,7 @@ function updateInsert(like) {
   return db('likes')
     .insert(like)
     .then(() => {
-      return findUpateLikes(like.update_id);
+      return findUpdateLikes(like.update_id);
     });
 }
 
