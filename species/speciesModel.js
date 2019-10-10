@@ -38,26 +38,49 @@ function deleteSpecs(specRemoved) {
 }
 
 async function modifySpecs(consId, specArray) {
-  const consCurrent = await findConsSpecs(consId)
   let addedSpecs;
   let removedSpecs;
 
-  specArray.map(update => {
-    if (consCurrent.find(old => old.spec_hab_id === update.spec_hab_id)) {
-        console.log(update)
+  const consCurrent = await findConsSpecs(consId)
+  // Taking the old information (consCurrent) and new information (specArray)
+  // to find any differences to be added or deleted
+  if (consCurrent) {
+    specArray.map(update => {
+      if (consCurrent.find(old => old.spec_hab_id === update.spec_hab_id)) {
+          console.log(update)
+        } else {
+          addedSpecs.push(update)
+        }
+    })
+    
+    consCurrent.map(old => {
+      if (specArray.find(update => update.spec_hab_id === old.spec_hab_id)) {
+        console.log(old)
       } else {
-        addedSpecs.push(update)
+        removedSpecs.push(old)
       }
-  })
-  
-  consCurrent.map(old => {
-    if (specArray.find(update => update.spec_hab_id)) {
-      console.log(old)
-    } else {
-      removedSpecs.push(old)
-    }
-  })
+    })
+  } else {
+    return consCurrent
+  }
 
-
+  // Determining whether to run the insert or delete functions
+  if (addedSpecs.length > 0 && removedSpecs.length > 0) {
+    console.log('we in both')
+    let updates = await Promise.all([
+      insertSpecs(addedSpecs),
+      deleteSpecs(removedSpecs)
+    ])
+    return updates
+  } else if (addedSpecs.length > 0) {
+    console.log('we in added')
+    return insertSpecs(addedSpecs)
+  } else if (removedSpecs.length > 0) {
+    console.log('we in removed')
+    return deleteSpecs(removedSpecs)
+  } else {
+    console.log('we hit the return nothin')
+    return consCurrent
+  }
 
 }
