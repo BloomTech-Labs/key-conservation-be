@@ -8,6 +8,7 @@ module.exports = {
   findUser,
   findById,
   findBySub,
+  findUserStatus,
   insert,
   update
 };
@@ -112,6 +113,21 @@ async function findBySub(sub) {
   }
 
   return user;
+}
+
+async function findUserStatus(sub) {
+  let user = await db('users')
+    .where({ sub })
+    .first();
+  console.log(user.sub)
+
+  if (user.sub) {
+    let subCheck = true
+    return subCheck
+  } else {
+    let subCheck = false
+    return subCheck
+  }
 }
 
 async function insert(user) {
