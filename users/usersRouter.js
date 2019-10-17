@@ -63,12 +63,12 @@ router.get('/subcheck/:sub', async (request, response) => {
 
   Users.findUserStatus(subID)
     .then(check => {
-      console.log(check, 'this is the user yes/no')
-      response.status(200).json({check, msg: 'Verification check for users on the DB' })
+      console.log(check, 'This is yes/no from server about if user is on DB')
+      response.status(200).json({ check, message: 'Verification check for users on the DB' })
     })
     .catch(error => {
       console.log(error)
-      response.status(500).json({ err, msg: 'Could not communicate with server to check for Users.' })
+      response.status(500).json({ error, message: 'Could not communicate with server to check for Users.' })
     })
 })
 

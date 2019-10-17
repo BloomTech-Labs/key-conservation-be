@@ -115,13 +115,14 @@ async function findBySub(sub) {
   return user;
 }
 
+//// DO NOT MODIFY. This model is available to the outside.
 async function findUserStatus(sub) {
   let user = await db('users')
     .where({ sub })
     .first();
   console.log(user.sub)
 
-  if (user.sub) {
+  if (user.id) {
     let subCheck = true
     return subCheck
   } else {

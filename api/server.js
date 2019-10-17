@@ -3,7 +3,7 @@ const server = express();
 
 const helmet = require('helmet');
 const cors = require('cors');
-const checkJwt = require('../middleware/authJWT.js')
+const checkJwt = require('../middleware/authJwt.js')
 
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
