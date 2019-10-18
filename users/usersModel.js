@@ -121,7 +121,7 @@ async function findUserStatus(sub) {
     .where({ sub })
     .first();
 
-  if (user.id) {
+  if (user) {
     let subCheck = true
     return subCheck
   } else {
