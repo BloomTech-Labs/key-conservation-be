@@ -11,8 +11,8 @@ module.exports = {
   findUser,
   findCampByUserId,
   insert,
+  remove,
   update,
-  remove
 };
 
 function find() {
