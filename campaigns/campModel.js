@@ -52,13 +52,7 @@ function find() {
 function findCampaign(camp_id) {
   return db('campaigns')
     .where({ camp_id })
-    .first()
-    .then(camp => {
-      return db('likes').then(likes => {
-        camp.likes = likes.filter(l => l.camp_id === camp.camp_id);
-        return camp;
-      });
-    });
+    .first();
 }
 
 async function findById(camp_id) {
@@ -74,6 +68,7 @@ async function findById(camp_id) {
     .first();
   campaign.updates = await CampUpdate.findUpdatesByCamp(camp_id);
   campaign.comments = await CampComments.findCampaignComments(camp_id);
+  campaign.likes = await CampLikes.findCampaignLikes(camp.camp_id);
   return campaign;
 }
 
