@@ -4,8 +4,9 @@ const router = express.Router();
 const Users = require('./usersModel');
 
 const mw = require('../middleware/s3Upload')
+const restricted = require('../middleware/authJwt.js')
 
-router.get('/', async (req, res) => {
+router.get('/', restricted, async (req, res) => {
   try {
     const users = await Users.find();
 
@@ -22,7 +23,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', restricted, (req, res) => {
     const { id } = req.params
     
     Users.findUser(id)
@@ -40,7 +41,7 @@ router.get('/:id', (req, res) => {
   }
 );
 
-router.get('/sub/:sub', async (req, res) => {
+router.get('/sub/:sub', restricted, async (req, res) => {
   try {
     const user = await Users.findBySub(req.params.sub);
 
@@ -54,7 +55,24 @@ router.get('/sub/:sub', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+//// This route is specifically for the loading page - DO NOT USE ANYWHERE ELSE
+// Checks to see if a user has a sub and/or row in the DB to determine further navigation.
+// DO NOT CHANGE MODEL TO RETURN ADDITIONAL DATA - This route is unprotected.
+router.get('/subcheck/:sub', async (request, response) => {
+  const subID = request.params.sub
+
+  Users.findUserStatus(subID)
+    .then(check => {
+      console.log(check, 'This is yes/no from server about if user is on DB')
+      response.status(200).json({ check, message: 'Verification check for users on the DB' })
+    })
+    .catch(error => {
+      console.log(error)
+      response.status(500).json({ error, message: 'Could not communicate with server to check for Users.' })
+    })
+})
+
+router.post('/', restricted, async (req, res) => {
   const user = req.body;
 
   try {
@@ -68,7 +86,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:id', mw.upload.single('photo'), async (req, res) => {
+router.put('/:id', restricted, mw.upload.single('photo'), async (req, res) => {
   const { id } = req.params;
   let location;
   let newUser = req.body;
@@ -97,7 +115,7 @@ router.put('/:id', mw.upload.single('photo'), async (req, res) => {
   }
 });
 
-// router.delete('/:id', async (req, res) => {
+// router.delete('/:id', restricted, async (req, res) => {
 //   const { id } = req.params;
 //   try {
 //     const user = await Users.remove(id);
