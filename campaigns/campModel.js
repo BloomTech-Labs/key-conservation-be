@@ -68,7 +68,7 @@ async function findById(camp_id) {
     .first();
   campaign.updates = await CampUpdate.findUpdatesByCamp(camp_id);
   campaign.comments = await CampComments.findCampaignComments(camp_id);
-  campaign.likes = await CampLikes.findCampaignLikes(camp.camp_id);
+  campaign.likes = await CampLikes.findCampaignLikes(camp_id);
   return campaign;
 }
 
