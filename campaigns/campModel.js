@@ -52,7 +52,13 @@ function find() {
 function findCampaign(camp_id) {
   return db('campaigns')
     .where({ camp_id })
-    .first();
+    .first()
+    .then(camp => {
+      db('likes').then(likes => {
+        return (camp.likes = likes.filter(l => l.camp_id === camp.camp_id));
+      });
+      return camp;
+    });
 }
 
 async function findById(camp_id) {
