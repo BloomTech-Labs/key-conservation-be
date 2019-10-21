@@ -56,7 +56,7 @@ function findCampaign(camp_id) {
     .then(camp => {
       return db('likes').then(likes => {
         camp.likes = likes.filter(l => l.camp_id === camp.camp_id);
-        return likes;
+        return camp;
       });
     });
 }
