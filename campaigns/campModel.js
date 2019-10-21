@@ -54,10 +54,10 @@ function findCampaign(camp_id) {
     .where({ camp_id })
     .first()
     .then(camp => {
-      db('likes').then(likes => {
-        return (camp.likes = likes.filter(l => l.camp_id === camp.camp_id));
+      return db('likes').then(likes => {
+        camp.likes = likes.filter(l => l.camp_id === camp.camp_id);
+        return likes;
       });
-      return camp;
     });
 }
 
