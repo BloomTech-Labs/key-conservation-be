@@ -12,7 +12,7 @@ module.exports = {
   findCampByUserId,
   insert,
   remove,
-  update,
+  update
 };
 
 function find() {
@@ -52,11 +52,7 @@ function find() {
 function findCampaign(camp_id) {
   return db('campaigns')
     .where({ camp_id })
-    .first()
-    .then(camp => {
-      camp.likes = await CampLikes.findCampaignLikes(camp.camp_id)
-      return camp
-    })
+    .first();
 }
 
 async function findById(camp_id) {
