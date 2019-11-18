@@ -58,7 +58,11 @@ async function findById(id) {
         'cons.org_cta',
         'cons.about_us',
         'cons.issues',
-        'cons.support_us'
+        'cons.support_us',
+        'cons.city',
+        'cons.country',
+        'cons.point_of_contact_name',
+        'cons.point_of_contact_email'
       )
       .first();
     user.bookmarks = bookmarks;
