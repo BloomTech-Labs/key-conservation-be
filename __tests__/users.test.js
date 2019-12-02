@@ -10,7 +10,7 @@ describe("user routes", () => {
 })
 
 describe("it registers a new user", () => {
-    it ("adds new user to database", async () => {
+    it ("won't add a new user without a token", async () => {
         let newConservationist = {
             id: 557,
             sub: "blahdumblee",
@@ -23,5 +23,16 @@ describe("it registers a new user", () => {
         await supertest(server)
             .post('/api/users', newConservationist)
             .expect(401)
-    } )
+    })
+
+    it("will not register a user with incomplete creds", async () => {
+        let anotherNewConservationist = {
+            sub: "tu madre",
+            username: "votre maman"
+        }
+
+        await supertest(server)
+            .post("/api/users", anotherNewConservationist)
+            .expect(401)
+    })
 })
