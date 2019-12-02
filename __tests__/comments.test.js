@@ -18,3 +18,15 @@ describe("comment get request", () => {
     })
 })
 
+// describe("post a new comment", () => {
+//     it ("will post a new comment", async () => {
+//         const newComment = {
+//             users_id: 1, 
+//             camp_id: 2,
+//             comment_id: 5,
+//             comment_body: "Your mum"
+//         };
+//         const postNewComment = await commentsModel.insert(newComment);
+//         expect(postNewComment).toBeDefined();
+//     })
+// })
