@@ -1,6 +1,5 @@
 const supertest = require("supertest");
 const server = require("../api/server.js");
-const Users = require("../users/usersModel");
 const db = require('../database/dbConfig')
 
 describe("user routes", () => {
