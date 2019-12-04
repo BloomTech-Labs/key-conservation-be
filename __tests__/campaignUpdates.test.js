@@ -1,6 +1,7 @@
 const supertest = require("supertest");
 const server = require("../api/server.js");
-const db = require('../database/dbConfig')
+const db = require('../database/dbConfig');
+const updateModel = require('../campaignUpdates/updateModel')
 
 describe("user routes", () => {
     beforeEach(async () => {
@@ -15,4 +16,12 @@ describe("campaign routes", () => {
                 .get("/api/updates")
                 .expect(401) 
     })
+})
+
+describe("campaign updates 'find' functionality", () => {
+    it ("will find and return an array", async () => {
+        const results = await updateModel.find()
+        expect(results).toBeDefined();
+        expect(results).toStrictEqual([]);
+    } )
 })
