@@ -18,7 +18,13 @@ To get the server running locally:
 
 https://documenter.getpostman.com/view/7671243/SVYtNdSZ?version=latest
 
+
+
 ## Data Model
+
+#### Airtable Key Access
+
+The airtable key is stored in the config vars in heroku. To keep it secret in the front end, we access the key through a get request. The endpoint is /api/airtable, and the route is found in airtableRouter in the airtable-key-retrieval directory.
 
 #### USERS
 
