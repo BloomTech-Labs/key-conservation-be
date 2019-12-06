@@ -26,5 +26,7 @@ server.use(
 server.use('/api/comments', checkJwt, require('../comments/commentsRouter'));
 server.use('/api/social', checkJwt, require('../social/socialRouter'));
 server.use('/api/airtable', checkJwt, require('../airtable-key-retrieval/airtableRouter'))
+server.use('/api/maps', require('../maps/mapRouter'));
+
 
 module.exports = server
