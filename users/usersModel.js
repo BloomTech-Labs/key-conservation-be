@@ -171,7 +171,9 @@ async function update(user, id) {
     'org_cta',
     'about_us',
     'issues',
-    'support_us'
+    'support_us', 
+    'longitude',
+    'latitude'
   ];
   const supColumns = ['sup_name'];
 
