@@ -61,7 +61,7 @@ function insert(comment) {
       //   });
     });
 }
-// Possible circular dependency issue prevented me from simply calling findById from campignModel.js in the above function
+// Possible circular dependency issue prevented me from simply calling findById from campaignModel.js in the above function
 // Commented out for now, while I investigate issues on the dev server
 
 function update(id, changes) {

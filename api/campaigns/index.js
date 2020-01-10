@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const Camp = require('../../models/campignModel');
+const Camp = require('../../models/campaignModel');
 
 const mw = require('../../middleware/s3Upload');
 

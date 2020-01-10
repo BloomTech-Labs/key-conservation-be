@@ -1,5 +1,5 @@
 const db = require('../database/dbConfig.js');
-const Camp = require('./campignModel.js');
+const Camp = require('./campaignModel.js');
 const CampUpdate = require('./updateModel.js');
 const Bookmarks = require('./socialModel');
 
