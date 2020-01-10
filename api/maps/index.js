@@ -1,7 +1,7 @@
 const express = require('express');
 const mapRouter = express.Router();
 
-const Maps = require('./mapModel')
+const Maps = require('../../models/mapModel')
 
 mapRouter.get('/', (req, res) => {
     Maps.findConservationOrganizations()

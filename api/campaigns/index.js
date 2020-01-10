@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
-const Camp = require('./campModel');
+const Camp = require('../../models/campignModel');
 
-const mw = require('../middleware/s3Upload');
+const mw = require('../../middleware/s3Upload');
 
 router.get('/', async (req, res) => {
   try {
+    console.log("here");
     const camp = await Camp.find();
 
     if (camp) {

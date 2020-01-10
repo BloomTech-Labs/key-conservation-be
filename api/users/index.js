@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-const Users = require('./usersModel');
+const Users = require('../../models/usersModel');
 
-const mw = require('../middleware/s3Upload')
-const restricted = require('../middleware/authJwt.js')
+const mw = require('../../middleware/s3Upload')
+const restricted = require('../../middleware/authJwt.js')
 
 router.get('/', restricted, async (req, res) => {
   try {
@@ -25,7 +25,7 @@ router.get('/', restricted, async (req, res) => {
 
 router.get('/:id', restricted, (req, res) => {
     const { id } = req.params
-    
+
     Users.findUser(id)
       .then(userId => {
         console.log(userId, 'user')
@@ -37,7 +37,7 @@ router.get('/:id', restricted, (req, res) => {
           res.status(400).json({ msg: 'User not found in the database' });
         }
       })
-      
+
   }
 );
 

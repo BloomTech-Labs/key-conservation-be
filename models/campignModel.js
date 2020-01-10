@@ -1,8 +1,8 @@
 const db = require('../database/dbConfig');
 
-const CampUpdate = require('../campaignUpdates/updateModel.js');
-const CampComments = require('../comments/commentsModel.js');
-const CampLikes = require('../social/socialModel.js');
+const CampUpdate = require('./updateModel.js');
+const CampComments = require('./commentsModel.js');
+const CampLikes = require('./socialModel.js');
 
 module.exports = {
   find,
@@ -16,6 +16,7 @@ module.exports = {
 };
 
 function find() {
+  console.log("asdasd");
   return db('campaigns')
     .join('users', 'users.id', 'campaigns.users_id')
     .select(

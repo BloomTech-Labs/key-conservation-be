@@ -1,5 +1,5 @@
 const supertest = require("supertest");
-const server = require("../api/server.js");
+const server = require("../index");
 const db = require('../database/dbConfig')
 
 describe("user routes", () => {
@@ -28,9 +28,9 @@ describe("it registers a new user", () => {
             username: "tralalalalala",
             email: "tralala@lala.tra",
             roles: "conservationist"
-    
+
         }
-        
+
         await supertest(server)
             .post('/api/users', newConservationist)
             .expect(401)

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const Social = require('./socialModel');
+const Social = require('../../models/socialModel');
 
 router.get('/likes/:id', async (req, res) => {
   try {

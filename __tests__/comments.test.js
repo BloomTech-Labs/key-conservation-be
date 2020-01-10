@@ -1,5 +1,5 @@
 const supertest = require("supertest");
-const server = require("../api/server.js");
+const server = require("../index");
 const db = require('../database/dbConfig');
 const commentsModel = require('../comments/commentsModel')
 
@@ -21,7 +21,7 @@ describe("comment get request", () => {
 // describe("post a new comment", () => {
 //     it ("will post a new comment", async () => {
 //         const newComment = {
-//             users_id: 1, 
+//             users_id: 1,
 //             camp_id: 2,
 //             comment_id: 5,
 //             comment_body: "Your mum"

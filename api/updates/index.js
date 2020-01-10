@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-const CampUpdate = require('./updateModel');
+const CampUpdate = require('../../models/updateModel');
 
-const mw = require('../middleware/s3Upload')
+const mw = require('../../middleware/s3Upload')
 
 router.get('/', async (req, res) => {
   try {
@@ -89,7 +89,7 @@ router.put('/:id', mw.upload.single('photo'), async (req, res) => {
   if (req.file) {
     location = req.file.location
   }
-  
+
   const newCampUpdates = {
     ...req.body,
     update_img: location

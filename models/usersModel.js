@@ -1,7 +1,7 @@
 const db = require('../database/dbConfig.js');
-const Camp = require('../campaigns/campModel.js');
-const CampUpdate = require('../campaignUpdates/updateModel.js');
-const Bookmarks = require('../social/socialModel');
+const Camp = require('./campignModel.js');
+const CampUpdate = require('./updateModel.js');
+const Bookmarks = require('./socialModel');
 
 module.exports = {
   find,

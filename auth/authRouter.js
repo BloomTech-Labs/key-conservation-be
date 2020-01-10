@@ -1,7 +1,7 @@
 // Import Express
 const express = require("express");
 const bcrypt = require("bcryptjs");
-const Users = require("../users/usersModel.js");
+const Users = require("../models/usersModel.js");
 const tokenService = require("../auth/tokenService.js");
 
 // Creates router for specific API route

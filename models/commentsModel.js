@@ -1,6 +1,6 @@
 const db = require('../database/dbConfig');
 
-const CampUpdate = require('../campaignUpdates/updateModel');
+const CampUpdate = require('./updateModel');
 
 module.exports = {
   find,
@@ -61,7 +61,7 @@ function insert(comment) {
       //   });
     });
 }
-// Possible circular dependency issue prevented me from simply calling findById from campModel.js in the above function
+// Possible circular dependency issue prevented me from simply calling findById from campignModel.js in the above function
 // Commented out for now, while I investigate issues on the dev server
 
 function update(id, changes) {

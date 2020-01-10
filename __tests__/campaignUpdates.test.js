@@ -1,5 +1,5 @@
 const supertest = require("supertest");
-const server = require("../api/server.js");
+const server = require("../index");
 const db = require('../database/dbConfig');
 const updateModel = require('../campaignUpdates/updateModel')
 
@@ -14,7 +14,7 @@ describe("campaign routes", () => {
     it (" will not let you access social route without a token", async () => {
            await supertest(server)
                 .get("/api/updates")
-                .expect(401) 
+                .expect(401)
     })
 })
 
