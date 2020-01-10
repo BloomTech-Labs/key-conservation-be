@@ -1,18 +1,16 @@
-const supertest = require("supertest");
-const server = require("../index");
+const supertest = require('supertest');
+const server = require('../index');
 
-describe("server.js", () => {
-  describe("GET / request", () => {
-    it("responds with 200 OK status", () => {
-      return supertest(server)
-        .get("/")
-        .expect(200);
-    });
+describe('server.js', () => {
+  describe('GET / request', () => {
+    it('responds with 200 OK status', () => supertest(server)
+      .get('/')
+      .expect(200));
 
-    it("responds with 200 OK status", async () => {
+    it('responds with 200 OK status', async () => {
       await supertest(server)
-        .get("/")
-        .expect("Content-Type", /html/i);
+        .get('/')
+        .expect('Content-Type', /html/i);
     });
   });
 });

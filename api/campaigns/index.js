@@ -1,4 +1,6 @@
 const express = require('express');
+const log = require('../../logger');
+
 const router = express.Router();
 
 const Camp = require('../../models/campaignModel');
@@ -7,7 +9,6 @@ const mw = require('../../middleware/s3Upload');
 
 router.get('/', async (req, res) => {
   try {
-    console.log("here");
     const camp = await Camp.find();
 
     if (camp) {
@@ -21,36 +22,35 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-    const { id } = req.params
+  const { id } = req.params;
 
-    Camp.findCampaign(id)
-      .then(result => {
-        console.log(result)
-        if (result) {
-          Camp.findById(id)
-            .then(camp => res.status(200).json({ camp, msg: 'The campaign was found' }))
-            .catch(err => res.status(500).json({ err, msg: 'Unable to make request to server' }))
-        } else {
-          res.status(400).json({ msg: 'Campaign was not found in the database' });
-        }
-      })
-
+  Camp.findCampaign(id)
+    .then((result) => {
+      log.info(result);
+      if (result) {
+        Camp.findById(id)
+          .then((camp) => res.status(200).json({ camp, msg: 'The campaign was found' }))
+          .catch((err) => res.status(500).json({ err, msg: 'Unable to make request to server' }));
+      } else {
+        res.status(400).json({ msg: 'Campaign was not found in the database' });
+      }
+    });
 });
 
 router.get('/camp/:id', (req, res) => {
-  const { id } = req.params
+  const { id } = req.params;
 
   Camp.findUser(id)
-    .then(result => {
-      console.log(result, 'result')
+    .then((result) => {
+      log.info(result);
       if (result) {
         Camp.findCampByUserId(id)
-          .then(camp => res.status(200).json({ camp, msg: 'The campaigns were found for this org' }))
-          .catch(err => res.status(500).json({ msg: 'Unable to find that Campagain by user ID' }))
+          .then((camp) => res.status(200).json({ camp, msg: 'The campaigns were found for this org' }))
+          .catch((err) => res.status(500).json({ msg: 'Unable to find that Campagain by user ID' }));
       } else {
-        res.status(404).json({ msg: 'Did not find the campaign by this user id' })
+        res.status(404).json({ msg: 'Did not find the campaign by this user id' });
       }
-    })
+    });
 });
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
@@ -58,25 +58,23 @@ router.post('/', mw.upload.single('photo'), async (req, res) => {
 
   const postCamp = {
     ...req.body,
-    camp_img: location
+    camp_img: location,
   };
 
   try {
     const newCamps = await Camp.insert(postCamp);
     if (newCamps) {
-      console.log(newCamps);
+      log.info(newCamps);
       res.status(201).json({ newCamps, msg: 'Campaign added to database' });
-    } else {
-      if (!camp_img || !camp_name || !camp_desc || !camp_cta) {
-        console.log('no data');
-        res.status(404).json({
-          msg:
-            'You need campaign image, campaign name, and campaign description'
-        });
-      }
+    } else if (!postCamp.camp_img || !postCamp.camp_name || !postCamp.camp_desc || !postCamp.camp_cta) {
+      log.info('no data');
+      res.status(404).json({
+        msg:
+            'You need campaign image, campaign name, and campaign description',
+      });
     }
   } catch (err) {
-    console.log(err.message);
+    log.error(err.message);
     res.status(500).json({ err, msg: 'Unable to add campaign' });
   }
 });
@@ -90,7 +88,7 @@ router.put('/:id', mw.upload.single('photo'), async (req, res) => {
 
   const newCamps = {
     ...req.body,
-    camp_img: location
+    camp_img: location,
   };
 
   try {
@@ -101,7 +99,7 @@ router.put('/:id', mw.upload.single('photo'), async (req, res) => {
       res.status(404).json({ msg: 'The campaign would not be updated' });
     }
   } catch (err) {
-    console.log(err);
+    log.error(err);
 
     res
       .status(500)

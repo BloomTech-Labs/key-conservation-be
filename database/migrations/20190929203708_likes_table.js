@@ -1,5 +1,5 @@
-exports.up = function(knex, Promise) {
-  return knex.schema.createTable('likes', tbl => {
+exports.up = function (knex, Promise) {
+  return knex.schema.createTable('likes', (tbl) => {
     tbl.increments('like_id');
     tbl
       .integer('users_id')
@@ -26,6 +26,6 @@ exports.up = function(knex, Promise) {
   });
 };
 
-exports.down = function(knex, Promise) {
+exports.down = function (knex, Promise) {
   return knex.schema.dropTableIfExists('likes');
 };

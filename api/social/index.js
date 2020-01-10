@@ -1,4 +1,6 @@
 const express = require('express');
+const log = require('../../logger');
+
 const router = express.Router();
 
 const Social = require('../../models/socialModel');
@@ -14,7 +16,7 @@ router.get('/likes/:id', async (req, res) => {
         .json({ msg: 'No object with that id exists in the database' });
     }
   } catch (err) {
-    console.log(err);
+    log.error(err);
     res.status(500).json({ err, msg: 'Unable to retrieve likes' });
   }
 });
@@ -30,7 +32,7 @@ router.post('/likes/:id', async (req, res) => {
         .json({ msg: 'The like object was not properly formatted' });
     }
   } catch (err) {
-    console.log(err);
+    log.error(err);
     res.status(500).json({ err, msg: 'Unable to add like' });
   }
 });
@@ -46,7 +48,7 @@ router.post('/update/:id', async (req, res) => {
         .json({ msg: 'The like object was not properly formatted' });
     }
   } catch (err) {
-    console.log(err);
+    log.error(err);
     res.status(500).json({ err, msg: 'Unable to add like' });
   }
 });
@@ -62,7 +64,7 @@ router.delete('/likes/:id/:user', async (req, res) => {
         .json({ msg: 'That like object does not exist in the database' });
     }
   } catch (err) {
-    console.log(err);
+    log.error(err);
     res.status(500).json({ err, msg: 'Unable to remove like' });
   }
 });
@@ -78,7 +80,7 @@ router.delete('/update/:id/:user', async (req, res) => {
         .json({ msg: 'That like object does not exist in the database' });
     }
   } catch (err) {
-    console.log(err);
+    log.error(err);
     res.status(500).json({ err, msg: 'Unable to remove like' });
   }
 });
@@ -94,7 +96,7 @@ router.post('/bookmark/:id', async (req, res) => {
         .json({ msg: 'The bookmark object was not properly formatted' });
     }
   } catch (err) {
-    console.log(err);
+    log.error(err);
     res.status(500).json({ err, msg: 'Unable to add bookmark' });
   }
 });
@@ -110,7 +112,7 @@ router.delete('/bookmark/:id/:user', async (req, res) => {
         .json({ msg: 'That bookmark object does not exist in the database' });
     }
   } catch (err) {
-    console.log(err);
+    log.error(err);
     res.status(500).json({ err, msg: 'Unable to remove bookmark' });
   }
 });

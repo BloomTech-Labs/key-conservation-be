@@ -2,14 +2,6 @@ const db = require('../database/dbConfig');
 
 const CampUpdate = require('./updateModel');
 
-module.exports = {
-  find,
-  findCampaignComments,
-  insert,
-  update,
-  remove
-};
-
 function find() {
   return db('comments');
 }
@@ -24,14 +16,13 @@ function findCampaignComments(id) {
   return db('comments')
     .where({ camp_id: id })
     .join('users', 'users.id', 'comments.users_id')
-    .select(`comments.*`, 'users.profile_image', 'users.username')
+    .select('comments.*', 'users.profile_image', 'users.username');
 }
 
 function insert(comment) {
   return db('comments')
     .insert(comment)
-    .then(() => {
-      return findCampaignComments(comment.camp_id);
+    .then(() => findCampaignComments(comment.camp_id),
       // return db('campaigns')
       //   .where({ camp_id: comment.camp_id })
       //   .join('users', 'users.id', 'campaigns.users_id')
@@ -59,7 +50,7 @@ function insert(comment) {
       //           });
       //       });
       //   });
-    });
+    );
 }
 // Possible circular dependency issue prevented me from simply calling findById from campaignModel.js in the above function
 // Commented out for now, while I investigate issues on the dev server
@@ -68,16 +59,20 @@ function update(id, changes) {
   return db('comments')
     .where({ comment_id: id })
     .update(changes)
-    .then(() => {
-      return findById(id);
-    });
+    .then(() => findById(id));
 }
 
 function remove(id) {
   return db('comments')
     .where({ comment_id: id })
     .del()
-    .then(() => {
-      return id;
-    });
+    .then(() => id);
 }
+
+module.exports = {
+  find,
+  findCampaignComments,
+  insert,
+  update,
+  remove,
+};

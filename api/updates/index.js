@@ -1,9 +1,11 @@
 const express = require('express');
+const log = require('../../logger');
+
 const router = express.Router();
 
 const CampUpdate = require('../../models/updateModel');
 
-const mw = require('../../middleware/s3Upload')
+const mw = require('../../middleware/s3Upload');
 
 router.get('/', async (req, res) => {
   try {
@@ -32,53 +34,51 @@ router.get('/:id', async (req, res) => {
 });
 
 router.get('/camp/:id', (req, res) => {
-  const { id } = req.params
+  const { id } = req.params;
 
   CampUpdate.findCamp(id)
-    .then(result => {
+    .then((result) => {
       if (result) {
         CampUpdate.findUpdatesByCamp(id)
-          .then(campUpdates => {
-            console.log(campUpdates, 'updates')
+          .then((campUpdates) => {
+            log.info(campUpdates);
             if (campUpdates[0]) {
-              res.status(200).json({ campUpdates, msg: 'The updates were found for this campaign' })
+              res.status(200).json({ campUpdates, msg: 'The updates were found for this campaign' });
             } else {
-              res.status(400).json({ msg: 'This campaign does not have an update yet' })
+              res.status(400).json({ msg: 'This campaign does not have an update yet' });
             }
           })
-          .catch(err => res.status(500).json({ err, msg: 'Unable to make request to server' }))
+          .catch((err) => res.status(500).json({ err, msg: 'Unable to make request to server' }));
       } else {
-        res.status(400).json({ msg: 'This campaign does not exist' })
+        res.status(400).json({ msg: 'This campaign does not exist' });
       }
-    })
+    });
 });
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
   let postCampUpdate = req.body;
   let location;
   if (req.file) {
-    location = req.file.location
+    location = req.file.location;
     postCampUpdate = {
       ...req.body,
-      update_img: location
-    }
+      update_img: location,
+    };
   }
 
   try {
     const newCampUpdates = await CampUpdate.insert(postCampUpdate);
     if (newCampUpdates) {
-      console.log(newCampUpdates)
+      log.info(newCampUpdates);
       res.status(201).json({ newCampUpdates, msg: 'Campaign update added to database' });
-    } else {
-      if (!update_img || !update_desc) {
-        res.status(404).json({
-          msg:
-            'You need an update image and an update description'
-        });
-      }
+    } else if (!update_img || !update_desc) {
+      res.status(404).json({
+        msg:
+            'You need an update image and an update description',
+      });
     }
   } catch (err) {
-    console.log(err.message)
+    log.error(err.message);
     res.status(500).json({ err, msg: 'Unable to add update' });
   }
 });
@@ -87,13 +87,13 @@ router.put('/:id', mw.upload.single('photo'), async (req, res) => {
   const { id } = req.params;
   let location;
   if (req.file) {
-    location = req.file.location
+    location = req.file.location;
   }
 
   const newCampUpdates = {
     ...req.body,
-    update_img: location
-  }
+    update_img: location,
+  };
 
   try {
     const editCampUpdate = await CampUpdate.update(newCampUpdates, id);
@@ -103,7 +103,7 @@ router.put('/:id', mw.upload.single('photo'), async (req, res) => {
       res.status(404).json({ msg: 'The campaign update would not be updated' });
     }
   } catch (err) {
-    console.log(err);
+    log.error(err);
 
     res
       .status(500)

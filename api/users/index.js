@@ -1,10 +1,12 @@
 const express = require('express');
+const log = require('../../logger');
+
 const router = express.Router();
 
 const Users = require('../../models/usersModel');
 
-const mw = require('../../middleware/s3Upload')
-const restricted = require('../../middleware/authJwt.js')
+const mw = require('../../middleware/s3Upload');
+const restricted = require('../../middleware/authJwt.js');
 
 router.get('/', restricted, async (req, res) => {
   try {
@@ -18,28 +20,26 @@ router.get('/', restricted, async (req, res) => {
         .json({ msg: 'Users were not found in the database' });
     }
   } catch (err) {
-    console.log(err)
+    log.error(err);
     res.status(500).json({ err, msg: 'Unable to make request to server' });
   }
 });
 
 router.get('/:id', restricted, (req, res) => {
-    const { id } = req.params
+  const { id } = req.params;
 
-    Users.findUser(id)
-      .then(userId => {
-        console.log(userId, 'user')
-        if (userId) {
-          Users.findById(id)
-            .then(user => res.status(200).json({ user, msg: 'The user was found' }))
-            .catch(err => res.status(500).json({ msg: 'Unable to make request to server' }));
-        } else {
-          res.status(400).json({ msg: 'User not found in the database' });
-        }
-      })
-
-  }
-);
+  Users.findUser(id)
+    .then((userId) => {
+      log.info(userId);
+      if (userId) {
+        Users.findById(id)
+          .then((user) => res.status(200).json({ user, msg: 'The user was found' }))
+          .catch((err) => res.status(500).json({ msg: 'Unable to make request to server' }));
+      } else {
+        res.status(400).json({ msg: 'User not found in the database' });
+      }
+    });
+});
 
 router.get('/sub/:sub', restricted, async (req, res) => {
   try {
@@ -55,22 +55,22 @@ router.get('/sub/:sub', restricted, async (req, res) => {
   }
 });
 
-//// This route is specifically for the loading page - DO NOT USE ANYWHERE ELSE
+// // This route is specifically for the loading page - DO NOT USE ANYWHERE ELSE
 // Checks to see if a user has a sub and/or row in the DB to determine further navigation.
 // DO NOT CHANGE MODEL TO RETURN ADDITIONAL DATA - This route is unprotected.
 router.get('/subcheck/:sub', async (request, response) => {
-  const subID = request.params.sub
+  const subID = request.params.sub;
 
   Users.findUserStatus(subID)
-    .then(check => {
-      console.log(check, 'This is yes/no from server about if user is on DB')
-      response.status(200).json({ check, message: 'Verification check for users on the DB' })
+    .then((check) => {
+      log.info(check, 'This is yes/no from server about if user is on DB');
+      response.status(200).json({ check, message: 'Verification check for users on the DB' });
     })
-    .catch(error => {
-      console.log(error)
-      response.status(500).json({ error, message: 'Could not communicate with server to check for Users.' })
-    })
-})
+    .catch((error) => {
+      log.error(error);
+      response.status(500).json({ error, message: 'Could not communicate with server to check for Users.' });
+    });
+});
 
 router.post('/', restricted, async (req, res) => {
   const user = req.body;
@@ -91,11 +91,11 @@ router.put('/:id', restricted, mw.upload.single('photo'), async (req, res) => {
   let location;
   let newUser = req.body;
   if (req.file) {
-    location = req.file.location
+    location = req.file.location;
     newUser = {
       ...req.body,
-      profile_image: location
-    }
+      profile_image: location,
+    };
   }
 
   try {
