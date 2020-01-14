@@ -62,7 +62,9 @@ async function findById(id) {
         'cons.city',
         'cons.country',
         'cons.point_of_contact_name',
-        'cons.point_of_contact_email'
+        'cons.point_of_contact_email',
+        'cons.latitude',
+        'cons.longitude'
       )
       .first();
     user.bookmarks = bookmarks;
@@ -102,7 +104,9 @@ async function findBySub(sub) {
         'cons.org_cta',
         'cons.about_us',
         'cons.issues',
-        'cons.support_us'
+        'cons.support_us',
+        'cons.longitude',
+        'cons.latitude'
       )
       .first();
     user.bookmarks = bookmarks;
@@ -171,7 +175,9 @@ async function update(user, id) {
     'org_cta',
     'about_us',
     'issues',
-    'support_us'
+    'support_us', 
+    'longitude',
+    'latitude'
   ];
   const supColumns = ['sup_name'];
 
