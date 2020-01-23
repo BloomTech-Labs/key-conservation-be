@@ -53,6 +53,8 @@ async function findById(id) {
         'cons.country',
         'cons.point_of_contact_name',
         'cons.point_of_contact_email',
+        'cons.latitude',
+        'cons.longitude'
       )
       .first();
     user.bookmarks = bookmarks;
@@ -93,6 +95,8 @@ async function findBySub(sub) {
         'cons.about_us',
         'cons.issues',
         'cons.support_us',
+        'cons.longitude',
+        'cons.latitude'
       )
       .first();
     user.bookmarks = bookmarks;
@@ -161,6 +165,8 @@ async function update(user, id) {
     'about_us',
     'issues',
     'support_us',
+    'longitude',
+    'latitude'
   ];
   const supColumns = ['sup_name'];
 
