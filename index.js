@@ -1,19 +1,23 @@
-// Import DOTENV for dynamic port assignment
 require('dotenv').config();
 
-// Import server from server.js
-// const server = require('./api/server.js');
-const { server } = require('./api');
+const express = require('express');
 
-// Assign port for server use
+const server = express();
+
+const helmet = require('helmet');
+const cors = require('cors');
+
+server.use(express.urlencoded({ extended: true }));
+server.use(express.json());
+server.use(express());
+server.use(helmet());
+server.use(cors());
+
+server.use('/api', require('./api'));
+
+module.exports = server;
+
 const port = process.env.PORT || 8000;
-
-// Server port dynamic assignment and listening
 server.listen(port, () => {
-  console.log(`
-  ----------------------------------
-        Listening on Port ${port}
-  ----------------------------------
-  `);
+  console.log(`listening on port ${port}`);
 });
-

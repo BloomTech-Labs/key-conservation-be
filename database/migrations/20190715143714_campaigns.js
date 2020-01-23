@@ -1,5 +1,5 @@
-exports.up = function(knex, Promise) {
-  return knex.schema.createTable('campaigns', tbl => {
+exports.up = function (knex, Promise) {
+  return knex.schema.createTable('campaigns', (tbl) => {
     tbl.increments('camp_id');
     tbl
       .integer('users_id')
@@ -14,7 +14,7 @@ exports.up = function(knex, Promise) {
       .string('camp_img', 255)
       .notNullable()
       .defaultTo(
-        'https://static.wixstatic.com/media/62bd1e_1047458b0f524502862b0130ced09e98~mv2.gif'
+        'https://static.wixstatic.com/media/62bd1e_1047458b0f524502862b0130ced09e98~mv2.gif',
       );
     tbl.string('camp_name', 500).notNullable();
     tbl.text('camp_desc', 500).notNullable();
@@ -22,6 +22,6 @@ exports.up = function(knex, Promise) {
   });
 };
 
-exports.down = function(knex, Promise) {
+exports.down = function (knex, Promise) {
   return knex.schema.dropTableIfExists('campaigns');
 };
