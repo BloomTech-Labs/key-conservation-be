@@ -1,5 +1,5 @@
 exports.up = function(knex) {
-  knex.schema
+  return knex.schema
     .createTable("reported_posts", tbl => {
       tbl.increments("id");
       // Who reported this item?
@@ -32,5 +32,5 @@ exports.up = function(knex) {
 };
 
 exports.down = function(knex) {
-  knex.schema.dropTableIfExists("reported_posts");
+  return knex.schema.dropTableIfExists("reported_posts");
 };
