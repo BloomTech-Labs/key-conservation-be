@@ -65,7 +65,7 @@ router.post("/login", async (req, res) => {
       const token = tokenService.generateToken(user);
 
       if(user.is_deactivated) 
-        return res.status(401).json({msg: `This account has been deactivated. Please contact support if you think this is a mistake.`})
+        return res.status(401).json({msg: `This account has been deactivated. Please contact support if you think this is a mistake.`, timestamp: user.deactivated_at})
 
       res.status(200).json({
         token,

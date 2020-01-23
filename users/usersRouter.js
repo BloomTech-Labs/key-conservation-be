@@ -32,7 +32,7 @@ router.get("/:id", restricted, (req, res) => {
           if (user.is_deactivated) {
             return res
               .status(401)
-              .json({ msg: "This account has been deactivated" });
+              .json({ msg: "This account has been deactivated", timestamp: user.deactivated_at });
           } else
             return res.status(200).json({ user, msg: "The user was found" });
         })
@@ -53,7 +53,7 @@ router.get("/sub/:sub", restricted, async (req, res) => {
       if (user.is_deactivated)
         return res
           .status(401)
-          .json({ msg: "This account has been deactivated" });
+          .json({ msg: "This account has been deactivated", timestamp: user.deactivated_at });
       return res.status(200).json({ user, msg: "The user was found" });
     } else {
       return res.status(404).json({ msg: "User not found in the database" });
