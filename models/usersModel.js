@@ -1,17 +1,7 @@
 const db = require('../database/dbConfig.js');
-const Camp = require('../campaigns/campModel.js');
-const CampUpdate = require('../campaignUpdates/updateModel.js');
-const Bookmarks = require('../social/socialModel');
-
-module.exports = {
-  find,
-  findUser,
-  findById,
-  findBySub,
-  findUserStatus,
-  insert,
-  update
-};
+const Camp = require('./campaignModel.js');
+const CampUpdate = require('./updateModel.js');
+const Bookmarks = require('./socialModel');
 
 function find() {
   return db('users')
@@ -27,7 +17,7 @@ function find() {
       'cons.about_us',
       'cons.issues',
       'cons.support_us',
-      'sup.sup_name'
+      'sup.sup_name',
     );
 }
 
@@ -123,19 +113,18 @@ async function findBySub(sub) {
   return user;
 }
 
-//// DO NOT MODIFY. This model is available to the outside.
+// // DO NOT MODIFY. This model is available to the outside.
 async function findUserStatus(sub) {
-  let user = await db('users')
+  const user = await db('users')
     .where({ sub })
     .first();
 
   if (user) {
-    let subCheck = true
-    return subCheck
-  } else {
-    let subCheck = false
-    return subCheck
+    const subCheck = true;
+    return subCheck;
   }
+  const subCheck = false;
+  return subCheck;
 }
 
 async function insert(user) {
@@ -165,7 +154,7 @@ async function update(user, id) {
     'twitter',
     'facebook',
     'instagram',
-    'phone_number'
+    'phone_number',
   ];
   const consColumns = [
     'org_name',
@@ -175,22 +164,22 @@ async function update(user, id) {
     'org_cta',
     'about_us',
     'issues',
-    'support_us', 
+    'support_us',
     'longitude',
     'latitude'
   ];
   const supColumns = ['sup_name'];
 
-  let userUpdate = {},
-    consUpdate = {},
-    supUpdate = {},
-    triggerUsers = false,
-    triggerCons = false,
-    triggerSup = false;
+  let userUpdate = {};
+  let consUpdate = {};
+  let supUpdate = {};
+  let triggerUsers = false;
+  let triggerCons = false;
+  let triggerSup = false;
 
   const keys = Object.keys(user);
 
-  keys.forEach(key => {
+  keys.forEach((key) => {
     if (userColumns.includes(key)) {
       triggerUsers = true;
       userUpdate = { ...userUpdate, [key]: user[key] };
@@ -223,3 +212,13 @@ async function update(user, id) {
     return newUser;
   }
 }
+
+module.exports = {
+  find,
+  findUser,
+  findById,
+  findBySub,
+  findUserStatus,
+  insert,
+  update,
+};

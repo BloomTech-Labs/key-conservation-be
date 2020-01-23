@@ -1,3 +1,6 @@
+// Utility that allows checking of required fields in a request
+// body by simpling passing an array of keys
+
 const checkFields = (requiredFields, body) => {
   let error;
   requiredFields.forEach(field => {

@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
 
-const Reports = require("./reportModel");
-const Users = require("../users/usersModel");
+const Reports = require("../../models/reportModel");
+const Users = require("../../models/usersModel");
 
-const checkFields = require("../util/checkFields");
+const checkFields = require("../../util/checkFields");
 
 // Retrieve all reports
 router.get("/", async (req, res) => {

@@ -1,5 +1,5 @@
-exports.up = function(knex, Promise) {
-  return knex.schema.table('campaignUpdates', tbl => {
+exports.up = function (knex, Promise) {
+  return knex.schema.table('campaignUpdates', (tbl) => {
     tbl
       .integer('users_id')
       .notNullable()
@@ -8,11 +8,11 @@ exports.up = function(knex, Promise) {
       .inTable('users')
       .onDelete('RESTRICT')
       .onUpdate('CASCADE');
-  })
+  });
 };
 
-exports.down = function(knex, Promise) {
-  return knex.schema.table('campaignUpdates', tbl => {
-    tbl.dropColumn('users_id')
-  })
+exports.down = function (knex, Promise) {
+  return knex.schema.table('campaignUpdates', (tbl) => {
+    tbl.dropColumn('users_id');
+  });
 };

@@ -1,19 +1,8 @@
 const db = require('../database/dbConfig');
 
-const CampUpdate = require('../campaignUpdates/updateModel.js');
-const CampComments = require('../comments/commentsModel.js');
-const CampLikes = require('../social/socialModel.js');
-
-module.exports = {
-  find,
-  findCampaign,
-  findById,
-  findUser,
-  findCampByUserId,
-  insert,
-  remove,
-  update
-};
+const CampUpdate = require('./updateModel.js');
+const CampComments = require('./commentsModel.js');
+const CampLikes = require('./socialModel.js');
 
 function find() {
   return db('campaigns')
@@ -22,31 +11,23 @@ function find() {
       'users.username',
       'users.profile_image',
       'users.location',
-      'campaigns.*'
+      'campaigns.*',
     )
-    .then(campaigns => {
-      return db('likes').then(likes => {
-        campaigns.map(cam => {
-          return (cam.likes = likes.filter(
-            like => like.camp_id === cam.camp_id
-          ));
-        });
+    .then((campaigns) => db('likes').then((likes) => {
+      campaigns.map((cam) => (cam.likes = likes.filter(
+        (like) => like.camp_id === cam.camp_id,
+      )));
+      return campaigns;
+    }))
+    .then((campaigns) => db('comments')
+      .join('users', 'users.id', 'comments.users_id')
+      .select('comments.*', 'users.profile_image', 'users.username')
+      .then((comments) => {
+        campaigns.map((cam) => (cam.comments = comments.filter(
+          (com) => com.camp_id === cam.camp_id,
+        )));
         return campaigns;
-      });
-    })
-    .then(campaigns => {
-      return db('comments')
-        .join('users', 'users.id', 'comments.users_id')
-        .select(`comments.*`, 'users.profile_image', 'users.username')
-        .then(comments => {
-          campaigns.map(cam => {
-            return (cam.comments = comments.filter(
-              com => com.camp_id === cam.camp_id
-            ));
-          });
-          return campaigns;
-        });
-    });
+      }));
 }
 
 function findCampaign(camp_id) {
@@ -63,7 +44,7 @@ async function findById(camp_id) {
       'users.username',
       'users.profile_image',
       'users.location',
-      'campaigns.*'
+      'campaigns.*',
     )
     .first();
   campaign.updates = await CampUpdate.findUpdatesByCamp(camp_id);
@@ -80,15 +61,15 @@ function findUser(id) {
 
 async function findCampByUserId(users_id) {
   const campaigns = await db('campaigns')
-    .where({ users_id: users_id })
+    .where({ users_id })
     .join('users', 'users.id', 'campaigns.users_id')
     .select(
       'users.username',
       'users.profile_image',
       'users.location',
-      'campaigns.*'
+      'campaigns.*',
     );
-  const withUpdates = campaigns.map(async camp => {
+  const withUpdates = campaigns.map(async (camp) => {
     camp.updates = await CampUpdate.findUpdatesByCamp(camp.camp_id);
     camp.comments = await CampComments.findCampaignComments(camp.camp_id);
     camp.likes = await CampLikes.findCampaignLikes(camp.camp_id);
@@ -124,7 +105,17 @@ async function remove(camp_id) {
     .del();
   if (deleted) {
     return camp_id;
-  } else {
-    return 0;
   }
+  return 0;
 }
+
+module.exports = {
+  find,
+  findCampaign,
+  findById,
+  findUser,
+  findCampByUserId,
+  insert,
+  remove,
+  update,
+};

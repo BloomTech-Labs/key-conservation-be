@@ -1,11 +1,18 @@
-const { forEachFile } = require('../util');
+const express = require('express');
+const checkJwt = require('../middleware/authJwt');
 
-// Requires all utility files.
-let exportUtils = {};
-forEachFile(__dirname, './', file => {
-  const path = `./${file}`;
-  const name = path.slice(2);
-  exportUtils[name] = require(path);
-});
+const router = express.Router();
 
-module.exports = exportUtils;
+// public routes
+router.use('/users', require('./users'));
+
+// private routes
+router.use('/campaigns', checkJwt, require('./campaigns'));
+router.use('/updates', checkJwt, require('./updates'));
+router.use('/comments', checkJwt, require('./comments'));
+router.use('/social', checkJwt, require('./social'));
+router.use('/airtable', checkJwt, require('./airtable'));
+router.use('/maps', checkJwt, require('./maps'));
+router.use('/reports', checkJwt, require('./reports'));
+
+module.exports = router;

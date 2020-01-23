@@ -2,8 +2,8 @@
 const knex = require("knex");
 
 // Knex configuration
-const db = process.env.DB_ENV || "development"; // Setup for deployment on heroku
-const knexConfig = require("../knexfile.js")[db]; // Assignment
+const db = process.env.DB_ENV || 'development'; // Setup for deployment on heroku
+const knexConfig = require('../knexfile.js')[db]; // Assignment
 
 // Export new knex configuration
 module.exports = knex(knexConfig);

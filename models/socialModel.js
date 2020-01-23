@@ -1,17 +1,5 @@
 const db = require('../database/dbConfig');
 
-module.exports = {
-  findCampaignLikes,
-  findUpdateLikes,
-  insert,
-  updateInsert,
-  remove,
-  updateRemove,
-  findUserBookmarks,
-  insertBookmark,
-  removeBookmark
-};
-
 function findCampaignLikes(id) {
   return db('likes').where({ camp_id: id });
 }
@@ -23,17 +11,13 @@ function findUpdateLikes(id) {
 function insert(like) {
   return db('likes')
     .insert(like)
-    .then(() => {
-      return findCampaignLikes(like.camp_id);
-    });
+    .then(() => findCampaignLikes(like.camp_id));
 }
 
 function updateInsert(like) {
   return db('likes')
     .insert(like)
-    .then(() => {
-      return findUpdateLikes(like.update_id);
-    });
+    .then(() => findUpdateLikes(like.update_id));
 }
 
 function remove(campId, userId) {
@@ -61,3 +45,15 @@ function removeBookmark(campId, userId) {
     .where({ camp_id: campId, users_id: userId })
     .del();
 }
+
+module.exports = {
+  findCampaignLikes,
+  findUpdateLikes,
+  insert,
+  updateInsert,
+  remove,
+  updateRemove,
+  findUserBookmarks,
+  insertBookmark,
+  removeBookmark,
+};
