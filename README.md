@@ -46,6 +46,9 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
   "instagram": STRING,
   "phone_number": STRING,
   "roles": STRING,
+  "admin": BOOLEAN,
+  "is_deactivated": BOOLEAN,
+  "deactivated_at": TIMESTAMP
 }
 ```
 
@@ -153,6 +156,21 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 }
 
 ```
+
+#### REPORTED_POSTS
+
+---
+
+```
+
+{
+  "id": UUID,
+  "reported_by": FOREIGN KEY - "id" in USERS table,
+  "post_id": INTEGER,
+  "table_name": STRING,
+  "report_desc": STRING,
+  "reported_at": TIMESTAMP,
+}
 
 ## Contributing
 

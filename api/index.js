@@ -13,5 +13,6 @@ router.use('/comments', checkJwt, require('./comments'));
 router.use('/social', checkJwt, require('./social'));
 router.use('/airtable', checkJwt, require('./airtable'));
 router.use('/maps', checkJwt, require('./maps'));
+router.use('/reports', checkJwt, require('./reports'));
 
 module.exports = router;
