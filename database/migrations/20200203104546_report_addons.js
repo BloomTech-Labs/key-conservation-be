@@ -29,10 +29,6 @@ exports.up = function(knex, Promise) {
       tbl.string('report_desc');
       // When was this report made?
       tbl.timestamp('reported_at').defaultTo(knex.fn.now());
-    }).table('campaignUpdates', tbl => {
-      tbl.boolean('is_archived').defaultTo(false);
-    }).table('campaigns', tbl => {
-      tbl.boolean('is_archived').defaultTo(false);
     });
 };
 
@@ -62,9 +58,5 @@ exports.down = function(knex, Promise) {
       tbl.string('report_desc');
       // When was this report made?
       tbl.timestamp('reported_at').defaultTo(knex.fn.now());
-    }).table('campaignUpdates', tbl => {
-      tbl.dropColumn('is_archived');
-    }).table('campaigns', tbl => {
-      tbl.dropColumn('is_archived');
     });
 };
