@@ -71,39 +71,8 @@ router.get('/', async (req, res) => {
       // backend
       reports: await Promise.all(
         reports.map(async report => {
-          // The two attachments required for the admin control panel
-          // on the frontend. We will retrieve data for them below
-          let image, name;
-
-          // We need to figure out what the id field is called depending
-          // on the table it is in, as each table has a different primary key name
-          const idTag = assignIdTag(report.table_name);
-
           // Get data on the reported item
-          const [target] = await db(report.table_name).where({
-            [idTag]: report.post_id
-          });
-
-          // Users and commnets: Get user (consvervationist or supporter) profile picture
-          // Campagins and campaign updates: Get campaign/update image
-          image =
-            target.profile_image ||
-            target.camp_img ||
-            target.update_img ||
-            (await Users.findById(target.users_id || null)).profile_image;
-
-          // Users and comments: Get username
-          // Campaigns and campaign updates: Get campaign name
-          name =
-            target.username ||
-            target.camp_name ||
-            (target.users_id
-              ? (await Users.findById(target.users_id || null)).username
-              : (
-                  await db('campaigns').where({
-                    camp_id: target.camp_id || null
-                  })
-                ).camp_name);
+          const [user] = await Users.findById(report.reported_user);
 
           // How many times has this item been reported?
           const duplicates = await Reports.find({
@@ -121,8 +90,8 @@ router.get('/', async (req, res) => {
             reported_at: report.reported_at,
             table_name: report.table_name,
             unique_reports, // How many unique reports have been made about this?
-            image, // Image of reported account/post goes here
-            name // Name of the reported account/post
+            image: user.profile_image, // Image of reported account/post goes here
+            name: user.username // Name of the reported account/post
           };
         })
       )
