@@ -124,7 +124,7 @@ router.get('/:id', async (req, res) => {
 
     const otherReports = await Reports.findWhere({reported_user: response.reported_user});
 
-    response.other_reports = otherReports.filter(report => report.id === req.params.id);
+    response.other_reports = otherReports.filter(report => report.id !== req.params.id);
 
     return res.status(200).json(response);
   } catch (err) {
