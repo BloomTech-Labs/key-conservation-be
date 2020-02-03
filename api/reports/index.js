@@ -75,7 +75,7 @@ router.get('/', async (req, res) => {
           const user = await Users.findById(report.reported_user);
 
           // How many times has this item been reported?
-          const duplicates = await Reports.find({
+          const duplicates = await Reports.findWhere({
             reported_user: report.reported_user,
             post_id: report.post_id,
             table_name: report.table_name
@@ -122,7 +122,7 @@ router.get('/:id', async (req, res) => {
 
     const response = await Reports.findById(req.params.id);
 
-    const otherReports = await Reports.find({reported_user: response.reported_user});
+    const otherReports = await Reports.findWhere({reported_user: response.reported_user});
 
     response.other_reports = otherReports.filter(report => report.id === req.params.id);
 
@@ -204,7 +204,7 @@ router.post('/', async (req, res) => {
     }
 
     // Make sure this reported hasn't already been made
-    const duplicates = await Reports.find({
+    const duplicates = await Reports.findWhere({
       reported_by: userId,
       post_id: req.body.postId,
       table_name: req.body.postType,
