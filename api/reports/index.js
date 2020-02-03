@@ -72,7 +72,7 @@ router.get('/', async (req, res) => {
       reports: await Promise.all(
         reports.map(async report => {
           // Get data on the reported item
-          const [user] = await Users.findById(report.reported_user);
+          const user = await Users.findById(report.reported_user);
 
           // How many times has this item been reported?
           const duplicates = await Reports.find({
@@ -124,7 +124,7 @@ router.get('/:id', async (req, res) => {
 
     const otherReports = await Reports.find({reported_user: response.reported_user});
 
-    response.other_reports = otherReports;
+    response.other_reports = otherReports.filter(report => report.id === req.params.id);
 
     return res.status(200).json(response);
   } catch (err) {
@@ -173,7 +173,7 @@ router.post('/', async (req, res) => {
         // Campaigns
 
         // Get the campaign
-        const camp = await db('campaigns').findById(req.body.postId);
+        const [camp] = await db('campaigns').where({camp_id: req.body.postId});
         // Get 'users_id' from campaign
         reportedUserId = camp.users_id;
         break;
@@ -182,9 +182,9 @@ router.post('/', async (req, res) => {
         // Campaign Updates
 
         // Get campaign update
-        const camp_update = await db('campaignUpdates').findById(req.body.postId);
+        const [camp_update] = await db('campaignUpdates').where({update_id: req.body.postId});
         // Get campaign from campaign update
-        const campaign = await db('campaigns').findById(camp_update.camp_id);
+        const [campaign] = await db('campaigns').where({camp_id: camp_update.camp_id});
         // Get 'users_id' from campaign
         reportedUserId = campaign.users_id;
         break;
@@ -192,7 +192,7 @@ router.post('/', async (req, res) => {
       case types[3]: {
         // Comments
         // Get comment
-        const comment = await db('comments').findById(req.body.postId);
+        const [comment] = await db('comments').where({comment_id: req.body.postId});
         // Get 'users_id' from comment
         reportedUserId = comment.users_id;
         break;
