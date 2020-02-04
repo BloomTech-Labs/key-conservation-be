@@ -41,7 +41,7 @@ router.get('/com/:id', async (req, res) => {
   const { id } = req.params;
   
   try {
-    const comment = Comments.findById(id);
+    const comment = await Comments.findById(id);
 
     if(comment) {
       return res.status(200).json(comment);
