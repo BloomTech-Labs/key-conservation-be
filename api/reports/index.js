@@ -1,24 +1,24 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 
-const db = require("../../database/dbConfig");
+const db = require('../../database/dbConfig');
 
-const Reports = require("../../models/reportModel");
-const Users = require("../../models/usersModel");
+const Reports = require('../../models/reportModel');
+const Users = require('../../models/usersModel');
 
-const checkFields = require("../../util/checkFields");
+const checkFields = require('../../util/checkFields');
 
 // This is something I had to do due to the
 // unnecessary variation of primary key names
 const assignIdTag = table_name => {
   switch (table_name) {
-    case "comments": {
+    case 'comments': {
       return `comment_id`;
     }
-    case "campaigns": {
+    case 'campaigns': {
       return `camp_id`;
     }
-    case "campaignUpdates": {
+    case 'campaignUpdates': {
       return `update_id`;
     }
     default: {
@@ -28,7 +28,7 @@ const assignIdTag = table_name => {
 };
 
 // Retrieve all reports
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     // Extract query parameters
     let { page } = req.query;
@@ -41,7 +41,7 @@ router.get("/", async (req, res) => {
 
     // Make sure user making request is an admin
     if (!user.admin)
-      throw new Error("Only an admin is authorized to view reports!");
+      throw new Error('Only an admin is authorized to view reports!');
 
     // Retrieve reports
     let response = await Reports.find();
@@ -71,39 +71,17 @@ router.get("/", async (req, res) => {
       // backend
       reports: await Promise.all(
         reports.map(async report => {
-          // The two attachments required for the admin control panel
-          // on the frontend. We will retrieve data for them below
-          let image, name;
-
-          // We need to figure out what the id field is called depending
-          // on the table it is in, as each table has a different primary key name
-          const idTag = assignIdTag(report.table_name);
-
           // Get data on the reported item
-          const [target] = await db(report.table_name).where({
-            [idTag]: report.post_id
+          const user = await Users.findById(report.reported_user);
+
+          // How many times has this item been reported?
+          const duplicates = await Reports.findWhere({
+            reported_user: report.reported_user,
+            post_id: report.post_id,
+            table_name: report.table_name
           });
 
-          // Users and commnets: Get user (consvervationist or supporter) profile picture
-          // Campagins and campaign updates: Get campaign/update image
-          image =
-            target.profile_image ||
-            target.camp_img ||
-            target.update_img ||
-            (await Users.findById(target.users_id || null)).profile_image;
-
-          // Users and comments: Get username
-          // Campaigns and campaign updates: Get campaign name
-          name =
-            target.username ||
-            target.camp_name ||
-            (target.users_id
-              ? (await Users.findById(target.users_id || null)).username
-              : (
-                  await db("campaigns").where({
-                    camp_id: target.camp_id || null
-                  })
-                ).camp_name);
+          const unique_reports = duplicates.length;
 
           return {
             id: report.id,
@@ -111,8 +89,9 @@ router.get("/", async (req, res) => {
             report_desc: report.report_desc,
             reported_at: report.reported_at,
             table_name: report.table_name,
-            image, // Image of reported account/post goes here
-            name // Name of the reported account/post
+            unique_reports, // How many unique reports have been made about this?
+            image: user.profile_image, // Image of reported account/post goes here
+            name: user.username // Name of the reported account/post
           };
         })
       )
@@ -123,13 +102,13 @@ router.get("/", async (req, res) => {
     // console.log(err.message);
     return res.status(500).json({
       error: err.message,
-      message: "An internal server error occurred"
+      message: 'An internal server error occurred'
     });
   }
 });
 
 // Retrieve a specific report
-router.get("/:id", async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     // Get the user's Auth0 ID (sub)
     const { sub } = req.user;
@@ -139,28 +118,32 @@ router.get("/:id", async (req, res) => {
 
     // Make sure user making request is an admin
     if (!user.admin)
-      throw new Error("Only an admin is authorized to view reports!");
+      throw new Error('Only an admin is authorized to view reports!');
 
     const response = await Reports.findById(req.params.id);
+
+    const otherReports = await Reports.findWhere({reported_user: response.reported_user});
+
+    response.other_reports = otherReports.filter(report => report.id !== parseInt(req.params.id));
 
     return res.status(200).json(response);
   } catch (err) {
     console.log(err.message);
     return res.status(500).json({
       error: err.message,
-      message: "An internal server error occurred"
+      message: 'An internal server error occurred'
     });
   }
 });
 
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     // Make sure body contains all necessary fields
-    const required = ["postId", "postType"];
+    const required = ['postId', 'postType'];
     const error = checkFields(required, req.body);
     if (error) throw new Error(error);
 
-    const types = ["users", "campaigns", "campaignUpdates", "comments"];
+    const types = ['users', 'campaigns', 'campaignUpdates', 'comments'];
 
     // Make sure provided type is a valid table name
     if (!types.includes(req.body.postType))
@@ -182,12 +165,63 @@ router.post("/", async (req, res) => {
     // Get user id
     const userId = (await Users.findBySub(req.user.sub)).id;
 
+    // Who's being reported?
+    let reportedUserId;
+
+    switch(req.body.postType) {
+      case types[1]: {
+        // Campaigns
+
+        // Get the campaign
+        const [camp] = await db('campaigns').where({camp_id: req.body.postId});
+        // Get 'users_id' from campaign
+        reportedUserId = camp.users_id;
+        break;
+      }
+      case types[2]: {
+        // Campaign Updates
+
+        // Get campaign update
+        const [camp_update] = await db('campaignUpdates').where({update_id: req.body.postId});
+        // Get campaign from campaign update
+        const [campaign] = await db('campaigns').where({camp_id: camp_update.camp_id});
+        // Get 'users_id' from campaign
+        reportedUserId = campaign.users_id;
+        break;
+      }
+      case types[3]: {
+        // Comments
+        // Get comment
+        const [comment] = await db('comments').where({comment_id: req.body.postId});
+        // Get 'users_id' from comment
+        reportedUserId = comment.users_id;
+        break;
+      }
+      default: {
+        reportedUserId = req.body.postId;
+        break;
+      }
+    }
+
+    // Make sure this reported hasn't already been made
+    const duplicates = await Reports.findWhere({
+      reported_by: userId,
+      post_id: req.body.postId,
+      table_name: req.body.postType,
+      reported_user: reportedUserId
+    });
+
+    if(duplicates.length > 0) {
+      return res.sendStatus(200);
+    }
+
     // Construct report object
     const report = {
       reported_by: userId,
       post_id: req.body.postId,
       table_name: req.body.postType,
-      report_desc: req.body.desc || ""
+      report_desc: req.body.desc || '',
+      reported_user: reportedUserId
     };
 
     // Save report in database
@@ -198,12 +232,12 @@ router.post("/", async (req, res) => {
   } catch (err) {
     return res.status(500).json({
       error: err.message,
-      message: "An internal server error occurred"
+      message: 'An internal server error occurred'
     });
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     // Get the user's Auth0 ID (sub)
     const { sub } = req.user;
@@ -213,7 +247,7 @@ router.delete("/:id", async (req, res) => {
 
     // Make sure user making request is an admin
     if (!user.admin)
-      throw new Error("Only an admin is authorized to delete reports!");
+      throw new Error('Only an admin is authorized to delete reports!');
 
     // Extract report ID from params
     const { id } = req.params;
@@ -226,7 +260,7 @@ router.delete("/:id", async (req, res) => {
   } catch (err) {
     return res.status(500).json({
       error: err.message,
-      message: "An internal server error occurred."
+      message: 'An internal server error occurred.'
     });
   }
 });

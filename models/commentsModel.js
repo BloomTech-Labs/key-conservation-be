@@ -71,6 +71,7 @@ function remove(id) {
 
 module.exports = {
   find,
+  findById,
   findCampaignComments,
   insert,
   update,
