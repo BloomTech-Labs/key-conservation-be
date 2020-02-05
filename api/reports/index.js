@@ -122,9 +122,24 @@ router.get('/:id', async (req, res) => {
 
     const response = await Reports.findById(req.params.id);
 
-    const otherReports = await Reports.findWhere({reported_user: response.reported_user});
+    const otherReports = await Reports.findWhere({
+      reported_user: response.reported_user
+    });
 
-    response.other_reports = otherReports.filter(report => report.id !== parseInt(req.params.id));
+    response.other_reports = otherReports.filter(
+      report => report.id !== parseInt(req.params.id)
+    );
+
+    // How many times has this item been reported?
+    const duplicates = await Reports.findWhere({
+      reported_user: report.reported_user,
+      post_id: report.post_id,
+      table_name: report.table_name
+    });
+
+    const unique_reports = duplicates.length;
+
+    response.unique_reports = unique_reports;
 
     return res.status(200).json(response);
   } catch (err) {
@@ -168,12 +183,14 @@ router.post('/', async (req, res) => {
     // Who's being reported?
     let reportedUserId;
 
-    switch(req.body.postType) {
+    switch (req.body.postType) {
       case types[1]: {
         // Campaigns
 
         // Get the campaign
-        const [camp] = await db('campaigns').where({camp_id: req.body.postId});
+        const [camp] = await db('campaigns').where({
+          camp_id: req.body.postId
+        });
         // Get 'users_id' from campaign
         reportedUserId = camp.users_id;
         break;
@@ -182,9 +199,13 @@ router.post('/', async (req, res) => {
         // Campaign Updates
 
         // Get campaign update
-        const [camp_update] = await db('campaignUpdates').where({update_id: req.body.postId});
+        const [camp_update] = await db('campaignUpdates').where({
+          update_id: req.body.postId
+        });
         // Get campaign from campaign update
-        const [campaign] = await db('campaigns').where({camp_id: camp_update.camp_id});
+        const [campaign] = await db('campaigns').where({
+          camp_id: camp_update.camp_id
+        });
         // Get 'users_id' from campaign
         reportedUserId = campaign.users_id;
         break;
@@ -192,7 +213,9 @@ router.post('/', async (req, res) => {
       case types[3]: {
         // Comments
         // Get comment
-        const [comment] = await db('comments').where({comment_id: req.body.postId});
+        const [comment] = await db('comments').where({
+          comment_id: req.body.postId
+        });
         // Get 'users_id' from comment
         reportedUserId = comment.users_id;
         break;
@@ -211,7 +234,7 @@ router.post('/', async (req, res) => {
       reported_user: reportedUserId
     });
 
-    if(duplicates.length > 0) {
+    if (duplicates.length > 0) {
       return res.sendStatus(200);
     }
 
