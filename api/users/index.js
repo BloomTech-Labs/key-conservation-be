@@ -128,19 +128,23 @@ router.post("/deactivate/:id", restricted, async (req, res) => {
     // Make sure user making request has admin priveleges
     const { sub } = req.user;
 
+    console.log(req.headers);
+
     const user = await Users.findBySub(sub);
 
     if (!user.admin) {
       throw new Error("Only system administrators may deactivate accounts!");
     }
 
+    const targetUser = await Users.findById(req.params.id);
+
     // Update target user data to reflect deactivation
     const updates = {
       is_deactivated: true,
-      deactivated_at: Date.now()
+      strikes: targetUser.strikes + 1
     };
 
-    await Users.update(updates, req.params.id);
+    // await Users.update(updates, req.params.id);
 
     // Respond with 200 OK
     return res.sendStatus(200);
@@ -149,7 +153,7 @@ router.post("/deactivate/:id", restricted, async (req, res) => {
       .status(500)
       .json({
         error: err.message,
-        message: "An internal server error occurred"
+        message: "Failed to deactivate user. Please try again"
       });
   }
 });

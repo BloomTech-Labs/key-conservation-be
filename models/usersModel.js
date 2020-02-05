@@ -155,6 +155,8 @@ async function update(user, id) {
     'facebook',
     'instagram',
     'phone_number',
+    'is_deactivated',
+    'deactivated_at'
   ];
   const consColumns = [
     'org_name',

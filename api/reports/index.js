@@ -31,7 +31,7 @@ const assignIdTag = table_name => {
 router.get('/', async (req, res) => {
   try {
     // Extract query parameters
-    let { page } = req.query;
+    const { page, type, archive } = req.query;
 
     // Get the user's Auth0 ID (sub)
     const { sub } = req.user;
@@ -45,6 +45,28 @@ router.get('/', async (req, res) => {
 
     // Retrieve reports
     let response = await Reports.find();
+
+    switch (type) {
+      case 'users':
+        response = response.filter(report => report.table_name === 'users');
+        break;
+      case 'campaigns':
+        response = response.filter(
+          report =>
+            report.table_name === 'campaigns' ||
+            report.table_name === 'campaignUpdates'
+        );
+        break;
+      case 'comments':
+        response = response.filter(report => report.table_name === 'comments');
+        break;
+    }
+
+    response = response.filter(report => {
+      if(archive === 'true') {
+        return report.is_archived;
+      } else return !report.is_archived;
+    })
 
     // Calculate section of response to be returned
     const RESULTS_PER_PAGE = 25;
@@ -141,6 +163,13 @@ router.get('/:id', async (req, res) => {
 
     response.unique_reports = unique_reports;
 
+    const reported_by = await Users.find(response.reported_by);
+
+    response.reported_by = {
+      id: reported_by.id,
+      username: reported_by.username
+    }
+
     return res.status(200).json(response);
   } catch (err) {
     console.log(err.message);
@@ -154,7 +183,7 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     // Make sure body contains all necessary fields
-    const required = ['postId', 'postType'];
+    const required = ['postId', 'postType', 'desc'];
     const error = checkFields(required, req.body);
     if (error) throw new Error(error);
 
@@ -259,6 +288,20 @@ router.post('/', async (req, res) => {
     });
   }
 });
+
+router.post('/archive/:id', async (req, res) => {
+  try {
+    const updates = {
+      is_archived: true
+    }
+
+    await Reports.update(req.params.id, updates);
+
+    return res.sendStatus(200);
+  } catch (err) {
+    return res.status(500).json({message: err.message || 'An error occurred while archiving this report'});
+  }
+})
 
 router.delete('/:id', async (req, res) => {
   try {
