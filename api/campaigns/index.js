@@ -107,6 +107,11 @@ router.put('/:id', mw.upload.single('photo'), async (req, res) => {
   }
 });
 
+router.post('/archive/:id', async (req, res) => {
+  const { id } = req.params;
+  // TODO: Logic to archive campaigns and campaign updates
+})
+
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {

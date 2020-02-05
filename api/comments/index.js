@@ -37,6 +37,20 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+router.get('/com/:id', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const comment = await Comments.findById(id);
+
+    if(comment) {
+      return res.status(200).json(comment);
+    } else return res.status(404).json({message: "Comment not found!"});
+  } catch (err) {
+    return res.status(500).json({message: err.message || 'An error occurred retreiving this comment'})
+  }
+})
+
 router.put('/com/:id', async (req, res) => {
   const { id } = req.params;
   const changes = req.body;
