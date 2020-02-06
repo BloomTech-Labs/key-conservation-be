@@ -83,6 +83,7 @@ router.get('/subcheck/:sub', async (request, response) => {
   Users.findUserStatus(subID)
     .then(check => {
       log.info(check, 'This is yes/no from server about if user is on DB');
+      console.log(check.deactivated);
       if (check.deactivated) {
         return response
           .status(401)
@@ -90,8 +91,7 @@ router.get('/subcheck/:sub', async (request, response) => {
             msg: `Your account has been deactivated. If you believe this is a mistake, please contact support via our website`,
             logout: true
           });
-      } else
-        response
+      } else return response
           .status(200)
           .json({ check, message: 'Verification check for users on the DB' });
     })
