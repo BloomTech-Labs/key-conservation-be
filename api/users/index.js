@@ -15,8 +15,7 @@ router.get('/', restricted, async (req, res) => {
     if (users) {
       const reqUsr = Users.findBySub(req.user.sub);
 
-      if(!reqUsr.admin)
-        users = users.filter(usr => !usr.is_deactivated)
+      if (!reqUsr.admin) users = users.filter(usr => !usr.is_deactivated);
 
       res.status(200).json({ users, msg: 'The users were found' });
     } else {
@@ -84,18 +83,24 @@ router.get('/subcheck/:sub', async (request, response) => {
   Users.findUserStatus(subID)
     .then(check => {
       log.info(check, 'This is yes/no from server about if user is on DB');
-      response
-        .status(200)
-        .json({ check, message: 'Verification check for users on the DB' });
+      if (check.deactivated) {
+        return response
+          .status(401)
+          .json({
+            msg: `Your account has been deactivated. If you believe this is a mistake, please contact support via our website`,
+            logout: true
+          });
+      } else
+        response
+          .status(200)
+          .json({ check, message: 'Verification check for users on the DB' });
     })
     .catch(error => {
       log.error(error);
-      response
-        .status(500)
-        .json({
-          error,
-          message: 'Could not communicate with server to check for Users.'
-        });
+      response.status(500).json({
+        error,
+        message: 'Could not communicate with server to check for Users.'
+      });
     });
 });
 
