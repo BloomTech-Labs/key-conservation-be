@@ -18,8 +18,6 @@ To get the server running locally:
 
 https://documenter.getpostman.com/view/7671243/SVYtNdSZ?version=latest
 
-
-
 ## Data Model
 
 #### Airtable Key Access
@@ -64,7 +62,7 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
   "org_link_url": STRING,
   "org_link_text": STRING,
   "org_cta": STRING,
-  "about_us": STRING,
+  "mission": STRING,
   "issues": STRING,
   "support_us": STRING
 }
@@ -210,6 +208,8 @@ These contribution guidelines have been adapted from [this good-Contributing.md-
 ## Documentation
 
 See [Key Conservation](https://github.com/labs14-key-conservation/Frontend-Mobile) for details on the frontend of our project.
+
+```
 
 ```
 
