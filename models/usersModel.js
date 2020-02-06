@@ -123,7 +123,6 @@ async function findUserStatus(sub) {
 
   if (user) {
     subCheck = true;
-    return subCheck;
   }
   subCheck = false;
 

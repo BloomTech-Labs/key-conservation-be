@@ -83,7 +83,7 @@ router.get('/subcheck/:sub', async (request, response) => {
   Users.findUserStatus(subID)
     .then(check => {
       log.info(check, 'This is yes/no from server about if user is on DB');
-      console.log(check.deactivated);
+      // console.log(check);
       if (check.deactivated) {
         return response
           .status(401)
