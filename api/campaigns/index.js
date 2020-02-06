@@ -3,6 +3,7 @@ const log = require('../../logger');
 
 const router = express.Router();
 
+const Users = require('../../models/usersModel');
 const Camp = require('../../models/campaignModel');
 
 const mw = require('../../middleware/s3Upload');
@@ -25,31 +26,67 @@ router.get('/:id', (req, res) => {
   const { id } = req.params;
 
   Camp.findCampaign(id)
-    .then((result) => {
+    .then(result => {
       log.info(result);
       if (result) {
-        Camp.findById(id)
-          .then((camp) => res.status(200).json({ camp, msg: 'The campaign was found' }))
-          .catch((err) => res.status(500).json({ err, msg: 'Unable to make request to server' }));
+        return Camp.findById(id);
       } else {
         res.status(400).json({ msg: 'Campaign was not found in the database' });
       }
-    });
+    })
+    .then(async camp => {
+      // If this campaign belongs to a deactivated account, then
+      // only an admin should be able to see it
+      if (camp.is_deactivated) {
+        const user = await Users.findBySub(req.user.sub);
+
+        if (!user.admin) {
+          return res.status(401).json({
+            msg: 'This campaign may only be viewed by an administrator'
+          });
+        }
+      }
+
+      return res.status(200).json({ camp, msg: 'The campaign was found' });
+    })
+    .catch(err =>
+      res.status(500).json({ err, msg: 'Unable to make request to server' })
+    );
 });
 
 router.get('/camp/:id', (req, res) => {
   const { id } = req.params;
 
   Camp.findUser(id)
-    .then((result) => {
+    .then(result => {
       log.info(result);
       if (result) {
-        Camp.findCampByUserId(id)
-          .then((camp) => res.status(200).json({ camp, msg: 'The campaigns were found for this org' }))
-          .catch((err) => res.status(500).json({ msg: 'Unable to find that Campagain by user ID' }));
+        if (result.is_deactivated) {
+          return Users.findBySub(req.user.sub);
+        }
       } else {
-        res.status(404).json({ msg: 'Did not find the campaign by this user id' });
+        return res
+          .status(404)
+          .json({ msg: 'Did not find the campaign by this user id' });
       }
+    })
+    .then(user => {
+      if (user && !user.admin) {
+        return res
+          .status(401)
+          .json({
+            msg: "This user's campaigns may only be viewed by an administrator"
+          });
+      } else return Camp.findCampByUserId(id);
+    })
+    .then(camp => {
+      if (camp)
+        return res
+          .status(200)
+          .json({ camp, msg: 'The campaigns were found for this org' });
+    })
+    .catch(err => {
+      return res.status(500).json({ msg: err.message });
     });
 });
 
@@ -58,7 +95,7 @@ router.post('/', mw.upload.single('photo'), async (req, res) => {
 
   const postCamp = {
     ...req.body,
-    camp_img: location,
+    camp_img: location
   };
 
   try {
@@ -66,11 +103,15 @@ router.post('/', mw.upload.single('photo'), async (req, res) => {
     if (newCamps) {
       log.info(newCamps);
       res.status(201).json({ newCamps, msg: 'Campaign added to database' });
-    } else if (!postCamp.camp_img || !postCamp.camp_name || !postCamp.camp_desc || !postCamp.camp_cta) {
+    } else if (
+      !postCamp.camp_img ||
+      !postCamp.camp_name ||
+      !postCamp.camp_desc ||
+      !postCamp.camp_cta
+    ) {
       log.info('no data');
       res.status(404).json({
-        msg:
-            'You need campaign image, campaign name, and campaign description',
+        msg: 'You need campaign image, campaign name, and campaign description'
       });
     }
   } catch (err) {
@@ -88,10 +129,17 @@ router.put('/:id', mw.upload.single('photo'), async (req, res) => {
 
   const newCamps = {
     ...req.body,
-    camp_img: location,
+    camp_img: location
   };
 
   try {
+    const camp = await Camp.findById(id);
+    const user = await Users.findBySub(req.user.sub);
+
+    if(camp.users_id !== user.id && !user.admin) {
+      return res.status(401).json({msg: "Unauthorized: You may not modify this campaign"})
+    }
+
     const editCamp = await Camp.update(newCamps, id);
     if (editCamp) {
       res.status(200).json({ msg: 'Successfully updated campaign', editCamp });
@@ -107,14 +155,18 @@ router.put('/:id', mw.upload.single('photo'), async (req, res) => {
   }
 });
 
-router.post('/archive/:id', async (req, res) => {
-  const { id } = req.params;
-  // TODO: Logic to archive campaigns and campaign updates
-})
-
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
+
   try {
+    const user = await Users.findBySub(req.user.sub);
+
+    const camp = await Camp.findById(id);
+
+    if(camp.users_id !== user.id && !user.admin) {
+      return res.status(401).json({msg: 'Unauthorized: You may not delete this campaign'});
+    }
+
     const camps = await Camp.remove(id);
     if (camps) {
       res.status(200).json(camps);

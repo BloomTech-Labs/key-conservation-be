@@ -25,13 +25,14 @@ function find() {
     .then(campaigns =>
       db('comments')
         .join('users', 'users.id', 'comments.users_id')
-        .select('comments.*', 'users.profile_image', 'users.username')
+        .select('comments.*', 'users.profile_image', 'users.username', 'users.is_deactivated')
         .then(comments => {
           campaigns.map(
             cam =>
               (cam.comments = comments.filter(
-                com => com.camp_id === cam.camp_id
-              ))
+                com => {
+                  return com.camp_id === cam.camp_id && !com.is_deactivated;
+                }))
           );
           return campaigns;
         })
@@ -40,9 +41,7 @@ function find() {
       db('users').then(users => {
         return campaigns.filter(camp => {
           const [user] = users.filter(user => user.id === camp.users_id);
-          console.log(user.username, user.is_deactivated);
           if (user.is_deactivated) {
-            console.log("Deactivated User");
             return false;
           } else return true;
         });
@@ -64,6 +63,7 @@ async function findById(camp_id) {
       'users.username',
       'users.profile_image',
       'users.location',
+      'users.is_deactivated',
       'campaigns.*'
     )
     .first();

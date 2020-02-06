@@ -31,7 +31,7 @@ const assignIdTag = table_name => {
 router.get('/', async (req, res) => {
   try {
     // Extract query parameters
-    const { page, type, archive } = req.query;
+    let { page, type, archive } = req.query;
 
     // Get the user's Auth0 ID (sub)
     const { sub } = req.user;

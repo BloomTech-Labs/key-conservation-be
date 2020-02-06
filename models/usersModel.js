@@ -119,7 +119,7 @@ async function findUserStatus(sub) {
     .where({ sub })
     .first();
 
-  if (user) {
+  if (user && !user.is_deactivated) {
     const subCheck = true;
     return subCheck;
   }
@@ -156,7 +156,6 @@ async function update(user, id) {
     'instagram',
     'phone_number',
     'is_deactivated',
-    'deactivated_at'
   ];
   const consColumns = [
     'org_name',
