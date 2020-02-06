@@ -14,10 +14,10 @@ function find() {
       'cons.org_link_url',
       'cons.org_link_text',
       'cons.org_cta',
-      'cons.mission',
+      'cons.about_us',
       'cons.issues',
       'cons.support_us',
-      'sup.sup_name'
+      'sup.sup_name',
     );
 }
 
@@ -46,7 +46,7 @@ async function findById(id) {
         'cons.org_link_url',
         'cons.org_link_text',
         'cons.org_cta',
-        'cons.mission',
+        'cons.about_us',
         'cons.issues',
         'cons.support_us',
         'cons.city',
@@ -92,7 +92,7 @@ async function findBySub(sub) {
         'cons.org_link_url',
         'cons.org_link_text',
         'cons.org_cta',
-        'cons.mission',
+        'cons.about_us',
         'cons.issues',
         'cons.support_us',
         'cons.longitude',
@@ -154,7 +154,7 @@ async function update(user, id) {
     'twitter',
     'facebook',
     'instagram',
-    'phone_number'
+    'phone_number',
   ];
   const consColumns = [
     'org_name',
@@ -162,7 +162,7 @@ async function update(user, id) {
     'org_link_text',
     'cons.org_cta',
     'org_cta',
-    'mission',
+    'about_us',
     'issues',
     'support_us',
     'longitude',
@@ -179,7 +179,7 @@ async function update(user, id) {
 
   const keys = Object.keys(user);
 
-  keys.forEach(key => {
+  keys.forEach((key) => {
     if (userColumns.includes(key)) {
       triggerUsers = true;
       userUpdate = { ...userUpdate, [key]: user[key] };
@@ -220,5 +220,5 @@ module.exports = {
   findBySub,
   findUserStatus,
   insert,
-  update
+  update,
 };
