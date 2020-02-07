@@ -8,24 +8,7 @@ const Users = require('../../models/usersModel');
 
 const checkFields = require('../../util/checkFields');
 
-// This is something I had to do due to the
-// unnecessary variation of primary key names
-const assignIdTag = table_name => {
-  switch (table_name) {
-    case 'comments': {
-      return `comment_id`;
-    }
-    case 'campaigns': {
-      return `camp_id`;
-    }
-    case 'campaignUpdates': {
-      return `update_id`;
-    }
-    default: {
-      return `id`;
-    }
-  }
-};
+const { getSimilarReportCount, assignIdTag } = require('./helpers');
 
 // Retrieve all reports
 router.get('/', async (req, res) => {
@@ -98,14 +81,7 @@ router.get('/', async (req, res) => {
           // Get data on the reported item
           const user = await Users.findById(report.reported_user);
 
-          // How many times has this item been reported?
-          const duplicates = await Reports.findWhere({
-            reported_user: report.reported_user,
-            post_id: report.post_id,
-            table_name: report.table_name
-          });
-
-          const unique_reports = duplicates.length;
+          const unique_reports = await getSimilarReportCount(report);
 
           return {
             id: report.id,
@@ -145,22 +121,22 @@ router.get('/:id', async (req, res) => {
 
     const response = await Reports.findById(req.params.id);
 
-    const otherReports = await Reports.findWhere({
+    let otherReports = await Reports.findWhere({
       reported_user: response.reported_user
     });
 
-    response.other_reports = otherReports.filter(
+    otherReports.other_reports = otherReports.filter(
       report => report.id !== parseInt(req.params.id)
     );
 
-    // How many times has this item been reported?
-    const duplicates = await Reports.findWhere({
-      reported_user: response.reported_user,
-      post_id: response.post_id,
-      table_name: response.table_name
-    });
+    response.other_reports = await Promise.all(otherReports.map(async report => {
+      return {
+        ...report,
+        unique_reports: await getSimilarReportCount(report)
+      }
+    }))
 
-    const unique_reports = duplicates.length;
+    const unique_reports = await getSimilarReportCount(response);
 
     response.unique_reports = unique_reports;
 
@@ -173,6 +149,7 @@ router.get('/:id', async (req, res) => {
 
     return res.status(200).json(response);
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       error: err.message,
       message: 'An internal server error occurred'
