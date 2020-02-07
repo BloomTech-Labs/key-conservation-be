@@ -125,7 +125,7 @@ router.get('/:id', async (req, res) => {
       reported_user: response.reported_user
     });
 
-    otherReports.other_reports = otherReports.filter(
+    otherReports = otherReports.filter(
       report => report.id !== parseInt(req.params.id)
     );
 
