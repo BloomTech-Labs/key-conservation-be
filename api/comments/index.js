@@ -3,6 +3,7 @@ const log = require('../../logger');
 
 const router = express.Router();
 
+const Reports = require('../../models/reportModel');
 const Comments = require('../../models/commentsModel');
 const Campaigns = require('../../models/campaignModel');
 const Users = require('../../models/usersModel');
@@ -136,6 +137,10 @@ router.delete('/com/:id', async (req, res) => {
     }
 
     const data = await Comments.remove(id);
+
+    // remove all reports relating to this comment
+    await Reports.removeWhere({post_id: id, table_name: 'comments'})
+
     if (data) {
       res.status(200).json({ data, msg: 'Comment was deleted' });
     } else {

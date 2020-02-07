@@ -7,7 +7,8 @@ module.exports = {
   insert,
   update,
   updateWhere,
-  remove
+  remove,
+  removeWhere
 };
 
 function find() {
@@ -52,4 +53,10 @@ function remove(id) {
     .then(() => {
       return id;
     });
+}
+
+function removeWhere(cond) {
+  return db('user_reports')
+    .where(cond)
+    .del();
 }
