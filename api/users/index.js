@@ -169,6 +169,8 @@ router.post('/deactivate/:id', restricted, async (req, res) => {
       strikes: targetUser.strikes + 1
     };
 
+    console.log(updates);
+
     await Users.update(updates, req.params.id);
 
     // Archive all reports relating to this user

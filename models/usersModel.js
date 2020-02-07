@@ -162,6 +162,7 @@ async function update(user, id) {
     'instagram',
     'phone_number',
     'is_deactivated',
+    'strikes'
   ];
   const consColumns = [
     'org_name',

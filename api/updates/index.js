@@ -3,6 +3,7 @@ const log = require('../../logger');
 
 const router = express.Router();
 
+const Campaigns = require('../../models/campaignModel');
 const CampUpdate = require('../../models/updateModel');
 const Users = require('../../models/usersModel');
 
@@ -161,10 +162,24 @@ router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const campUpdate = await CampUpdate.findById(id);
-    const usr = await Users.findBySub(req.user.sub);
+    
 
-    if (campUpdate.users_id !== usr.id && !usr.admin) {
-      return res
+    if (campUpdate.users_id !== usr.id) {
+      const usr = await Users.findBySub(req.user.sub);
+
+      if(usr.admin) {
+        // Strike this user
+        const camp = await Campaigns.findById(campUpdate.camp_id);
+
+        const targetUsr = await Users.findById(camp.users_id);
+
+        const updates = {
+          strikes: targetUsr.strikes + 1
+        }
+
+        await Users.update(updates, targetUsr.id);
+
+      } else return res
         .status(401)
         .json({ msg: 'Unauthorized: You may not delete this post' });
     }
