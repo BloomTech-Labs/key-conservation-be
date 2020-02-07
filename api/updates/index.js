@@ -161,10 +161,10 @@ router.put('/:id', mw.upload.single('photo'), async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
+    const usr = await Users.findBySub(req.user.sub);
     const campUpdate = await CampUpdate.findById(id);
 
     if (campUpdate.users_id !== usr.id) {
-      const usr = await Users.findBySub(req.user.sub);
 
       if (usr.admin) {
         // Strike this user

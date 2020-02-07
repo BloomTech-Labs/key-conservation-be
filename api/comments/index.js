@@ -112,11 +112,11 @@ router.delete('/com/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
+    const user = await Users.findBySub(req.user.sub);
+
     const comment = await Comments.findById(id);
 
     if (user.id !== comment.users_id) {
-      const user = await Users.findBySub(req.user.sub);
-
       if (user.admin) {
         // If it's an admin deleting this, give this user a strike
         const targetUsr = await Users.findById(comment.users_id);

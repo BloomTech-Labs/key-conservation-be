@@ -159,10 +159,10 @@ router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
+    const user = await Users.findBySub(req.user.sub);
     const camp = await Camp.findById(id);
 
     if (camp.users_id !== user.id) {
-      const user = await Users.findBySub(req.user.sub);
 
       if (user.admin) {
         // Strike this user
