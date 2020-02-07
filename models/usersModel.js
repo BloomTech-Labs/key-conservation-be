@@ -123,8 +123,7 @@ async function findUserStatus(sub) {
 
   if (user) {
     subCheck = true;
-  }
-  subCheck = false;
+  } else subCheck = false;
 
   const response = {
     subCheck,

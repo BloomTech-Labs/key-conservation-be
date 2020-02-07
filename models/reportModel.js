@@ -6,6 +6,7 @@ module.exports = {
   findWhere,
   insert,
   update,
+  updateWhere,
   remove
 };
 
@@ -36,6 +37,12 @@ function update(id, changes) {
     .then(() => {
       return findById(id);
     });
+}
+
+function updateWhere(cond, changes) {
+  return db('user_reports')
+    .where(cond)
+    .update(changes);
 }
 
 function remove(id) {

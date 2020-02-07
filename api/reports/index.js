@@ -69,7 +69,7 @@ router.get('/', async (req, res) => {
     })
 
     // Calculate section of response to be returned
-    const RESULTS_PER_PAGE = 25;
+    const RESULTS_PER_PAGE = 20;
     let startIndex = 0;
     let endIndex = RESULTS_PER_PAGE;
 
@@ -83,6 +83,8 @@ router.get('/', async (req, res) => {
     if (endIndex > response.length) endIndex = response.length;
 
     const reports = response.slice(startIndex, endIndex);
+
+    console.log('constructing response')
 
     // Slice our response to desired section
     response = {
@@ -121,10 +123,9 @@ router.get('/', async (req, res) => {
 
     return res.status(200).json(response);
   } catch (err) {
-    // console.log(err.message);
     return res.status(500).json({
-      error: err.message,
-      message: 'An internal server error occurred'
+      error: err,
+      message: err.message || 'An internal server error occurred'
     });
   }
 });
@@ -154,9 +155,9 @@ router.get('/:id', async (req, res) => {
 
     // How many times has this item been reported?
     const duplicates = await Reports.findWhere({
-      reported_user: report.reported_user,
-      post_id: report.post_id,
-      table_name: report.table_name
+      reported_user: response.reported_user,
+      post_id: response.post_id,
+      table_name: response.table_name
     });
 
     const unique_reports = duplicates.length;
@@ -172,7 +173,6 @@ router.get('/:id', async (req, res) => {
 
     return res.status(200).json(response);
   } catch (err) {
-    console.log(err.message);
     return res.status(500).json({
       error: err.message,
       message: 'An internal server error occurred'

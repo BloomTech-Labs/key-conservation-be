@@ -4,6 +4,7 @@ const log = require('../../logger');
 const router = express.Router();
 
 const Users = require('../../models/usersModel');
+const Reports = require('../../models/reportModel');
 
 const mw = require('../../middleware/s3Upload');
 const restricted = require('../../middleware/authJwt.js');
@@ -169,6 +170,9 @@ router.post('/deactivate/:id', restricted, async (req, res) => {
     };
 
     await Users.update(updates, req.params.id);
+
+    // Archive all reports relating to this user
+    await Reports.updateWhere({reported_user: req.params.id}, { is_archived: true });
 
     // Respond with 200 OK
     return res.sendStatus(200);
