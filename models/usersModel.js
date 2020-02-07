@@ -119,12 +119,18 @@ async function findUserStatus(sub) {
     .where({ sub })
     .first();
 
+  let subCheck;
+
   if (user) {
-    const subCheck = true;
-    return subCheck;
+    subCheck = true;
+  } else subCheck = false;
+
+  const response = {
+    subCheck,
+    deactivated: user.is_deactivated
   }
-  const subCheck = false;
-  return subCheck;
+
+  return response;
 }
 
 async function insert(user) {
@@ -155,6 +161,7 @@ async function update(user, id) {
     'facebook',
     'instagram',
     'phone_number',
+    'is_deactivated',
   ];
   const consColumns = [
     'org_name',

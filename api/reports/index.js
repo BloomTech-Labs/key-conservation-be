@@ -31,7 +31,7 @@ const assignIdTag = table_name => {
 router.get('/', async (req, res) => {
   try {
     // Extract query parameters
-    let { page } = req.query;
+    let { page, type, archive } = req.query;
 
     // Get the user's Auth0 ID (sub)
     const { sub } = req.user;
@@ -46,8 +46,30 @@ router.get('/', async (req, res) => {
     // Retrieve reports
     let response = await Reports.find();
 
+    switch (type) {
+      case 'users':
+        response = response.filter(report => report.table_name === 'users');
+        break;
+      case 'campaigns':
+        response = response.filter(
+          report =>
+            report.table_name === 'campaigns' ||
+            report.table_name === 'campaignUpdates'
+        );
+        break;
+      case 'comments':
+        response = response.filter(report => report.table_name === 'comments');
+        break;
+    }
+
+    response = response.filter(report => {
+      if(archive === 'true') {
+        return report.is_archived;
+      } else return !report.is_archived;
+    })
+
     // Calculate section of response to be returned
-    const RESULTS_PER_PAGE = 25;
+    const RESULTS_PER_PAGE = 20;
     let startIndex = 0;
     let endIndex = RESULTS_PER_PAGE;
 
@@ -61,6 +83,8 @@ router.get('/', async (req, res) => {
     if (endIndex > response.length) endIndex = response.length;
 
     const reports = response.slice(startIndex, endIndex);
+
+    console.log('constructing response')
 
     // Slice our response to desired section
     response = {
@@ -99,10 +123,9 @@ router.get('/', async (req, res) => {
 
     return res.status(200).json(response);
   } catch (err) {
-    // console.log(err.message);
     return res.status(500).json({
-      error: err.message,
-      message: 'An internal server error occurred'
+      error: err,
+      message: err.message || 'An internal server error occurred'
     });
   }
 });
@@ -122,13 +145,34 @@ router.get('/:id', async (req, res) => {
 
     const response = await Reports.findById(req.params.id);
 
-    const otherReports = await Reports.findWhere({reported_user: response.reported_user});
+    const otherReports = await Reports.findWhere({
+      reported_user: response.reported_user
+    });
 
-    response.other_reports = otherReports.filter(report => report.id !== parseInt(req.params.id));
+    response.other_reports = otherReports.filter(
+      report => report.id !== parseInt(req.params.id)
+    );
+
+    // How many times has this item been reported?
+    const duplicates = await Reports.findWhere({
+      reported_user: response.reported_user,
+      post_id: response.post_id,
+      table_name: response.table_name
+    });
+
+    const unique_reports = duplicates.length;
+
+    response.unique_reports = unique_reports;
+
+    const reported_by = await Users.find(response.reported_by);
+
+    response.reported_by = {
+      id: reported_by.id,
+      username: reported_by.username
+    }
 
     return res.status(200).json(response);
   } catch (err) {
-    console.log(err.message);
     return res.status(500).json({
       error: err.message,
       message: 'An internal server error occurred'
@@ -139,7 +183,7 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     // Make sure body contains all necessary fields
-    const required = ['postId', 'postType'];
+    const required = ['postId', 'postType', 'desc'];
     const error = checkFields(required, req.body);
     if (error) throw new Error(error);
 
@@ -168,12 +212,14 @@ router.post('/', async (req, res) => {
     // Who's being reported?
     let reportedUserId;
 
-    switch(req.body.postType) {
+    switch (req.body.postType) {
       case types[1]: {
         // Campaigns
 
         // Get the campaign
-        const [camp] = await db('campaigns').where({camp_id: req.body.postId});
+        const [camp] = await db('campaigns').where({
+          camp_id: req.body.postId
+        });
         // Get 'users_id' from campaign
         reportedUserId = camp.users_id;
         break;
@@ -182,9 +228,13 @@ router.post('/', async (req, res) => {
         // Campaign Updates
 
         // Get campaign update
-        const [camp_update] = await db('campaignUpdates').where({update_id: req.body.postId});
+        const [camp_update] = await db('campaignUpdates').where({
+          update_id: req.body.postId
+        });
         // Get campaign from campaign update
-        const [campaign] = await db('campaigns').where({camp_id: camp_update.camp_id});
+        const [campaign] = await db('campaigns').where({
+          camp_id: camp_update.camp_id
+        });
         // Get 'users_id' from campaign
         reportedUserId = campaign.users_id;
         break;
@@ -192,7 +242,9 @@ router.post('/', async (req, res) => {
       case types[3]: {
         // Comments
         // Get comment
-        const [comment] = await db('comments').where({comment_id: req.body.postId});
+        const [comment] = await db('comments').where({
+          comment_id: req.body.postId
+        });
         // Get 'users_id' from comment
         reportedUserId = comment.users_id;
         break;
@@ -211,7 +263,7 @@ router.post('/', async (req, res) => {
       reported_user: reportedUserId
     });
 
-    if(duplicates.length > 0) {
+    if (duplicates.length > 0) {
       return res.sendStatus(200);
     }
 
@@ -236,6 +288,20 @@ router.post('/', async (req, res) => {
     });
   }
 });
+
+router.post('/archive/:id', async (req, res) => {
+  try {
+    const updates = {
+      is_archived: true
+    }
+
+    await Reports.update(req.params.id, updates);
+
+    return res.sendStatus(200);
+  } catch (err) {
+    return res.status(500).json({message: err.message || 'An error occurred while archiving this report'});
+  }
+})
 
 router.delete('/:id', async (req, res) => {
   try {

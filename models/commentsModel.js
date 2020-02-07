@@ -16,13 +16,23 @@ function findCampaignComments(id) {
   return db('comments')
     .where({ camp_id: id })
     .join('users', 'users.id', 'comments.users_id')
-    .select('comments.*', 'users.profile_image', 'users.username');
+    .select(
+      'comments.*',
+      'users.profile_image',
+      'users.username',
+      'users.is_deactivated'
+    )
+    .then(res => {
+      if (res.is_deactivated) return null;
+      return res;
+    });
 }
 
 function insert(comment) {
   return db('comments')
     .insert(comment)
-    .then(() => findCampaignComments(comment.camp_id),
+    .then(
+      () => findCampaignComments(comment.camp_id)
       // return db('campaigns')
       //   .where({ camp_id: comment.camp_id })
       //   .join('users', 'users.id', 'campaigns.users_id')
@@ -75,5 +85,5 @@ module.exports = {
   findCampaignComments,
   insert,
   update,
-  remove,
+  remove
 };
