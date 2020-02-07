@@ -162,26 +162,27 @@ router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const campUpdate = await CampUpdate.findById(id);
-    
 
     if (campUpdate.users_id !== usr.id) {
       const usr = await Users.findBySub(req.user.sub);
 
-      if(usr.admin) {
+      if (usr.admin) {
         // Strike this user
         const camp = await Campaigns.findById(campUpdate.camp_id);
 
         const targetUsr = await Users.findById(camp.users_id);
 
-        const updates = {
-          strikes: targetUsr.strikes + 1
+        if (!targetUsr.is_deactivated) {
+          const updates = {
+            strikes: targetUsr.strikes + 1
+          };
+
+          await Users.update(updates, targetUsr.id);
         }
-
-        await Users.update(updates, targetUsr.id);
-
-      } else return res
-        .status(401)
-        .json({ msg: 'Unauthorized: You may not delete this post' });
+      } else
+        return res
+          .status(401)
+          .json({ msg: 'Unauthorized: You may not delete this post' });
     }
 
     const campUpdates = await CampUpdate.remove(id);

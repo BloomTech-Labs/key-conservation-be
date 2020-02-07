@@ -163,10 +163,12 @@ router.post('/deactivate/:id', restricted, async (req, res) => {
 
     const targetUser = await Users.findById(req.params.id);
 
+    const strikes = targetUser.is_deactivated ? targetUser.strikes : targetUser.strikes + 1;
+
     // Update target user data to reflect deactivation
     const updates = {
       is_deactivated: true,
-      strikes: targetUser.strikes + 1
+      strikes
     };
 
     console.log(updates);

@@ -72,11 +72,9 @@ router.get('/camp/:id', (req, res) => {
     })
     .then(user => {
       if (user && !user.admin) {
-        return res
-          .status(401)
-          .json({
-            msg: "This user's campaigns may only be viewed by an administrator"
-          });
+        return res.status(401).json({
+          msg: "This user's campaigns may only be viewed by an administrator"
+        });
       } else return Camp.findCampByUserId(id);
     })
     .then(camp => {
@@ -136,8 +134,10 @@ router.put('/:id', mw.upload.single('photo'), async (req, res) => {
     const camp = await Camp.findById(id);
     const user = await Users.findBySub(req.user.sub);
 
-    if(camp.users_id !== user.id && !user.admin) {
-      return res.status(401).json({msg: "Unauthorized: You may not modify this campaign"})
+    if (camp.users_id !== user.id && !user.admin) {
+      return res
+        .status(401)
+        .json({ msg: 'Unauthorized: You may not modify this campaign' });
     }
 
     const editCamp = await Camp.update(newCamps, id);
@@ -161,20 +161,24 @@ router.delete('/:id', async (req, res) => {
   try {
     const camp = await Camp.findById(id);
 
-    if(camp.users_id !== user.id) {
+    if (camp.users_id !== user.id) {
       const user = await Users.findBySub(req.user.sub);
 
-      if(user.admin) {
+      if (user.admin) {
         // Strike this user
         const targetUsr = await Users.findById(camp.users_id);
 
-        const updates = {
-          strikes: targetUsr.strikes + 1
+        if (!targetUsr.is_deactivated) {
+          const updates = {
+            strikes: targetUsr.strikes + 1
+          };
+
+          await Users.update(updates, targetUsr.id);
         }
-
-        await Users.update(updates, targetUsr.id);
-
-      } else return res.status(401).json({msg: 'Unauthorized: You may not delete this campaign'});
+      } else
+        return res
+          .status(401)
+          .json({ msg: 'Unauthorized: You may not delete this campaign' });
     }
 
     const camps = await Camp.remove(id);

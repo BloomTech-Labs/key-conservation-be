@@ -35,12 +35,10 @@ router.get('/:id', async (req, res) => {
       const reqUsr = await Users.findBySub(req.user.sub);
 
       if (!reqUsr.admin) {
-        return res
-          .status(401)
-          .json({
-            msg:
-              'Comments for this campaign may only be viewed by an administrator'
-          });
+        return res.status(401).json({
+          msg:
+            'Comments for this campaign may only be viewed by an administrator'
+        });
       }
     }
 
@@ -78,11 +76,9 @@ router.get('/com/:id', async (req, res) => {
       return res.status(200).json(comment);
     } else return res.status(404).json({ message: 'Comment not found!' });
   } catch (err) {
-    return res
-      .status(500)
-      .json({
-        message: err.message || 'An error occurred retreiving this comment'
-      });
+    return res.status(500).json({
+      message: err.message || 'An error occurred retreiving this comment'
+    });
   }
 });
 
@@ -116,25 +112,27 @@ router.delete('/com/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-
     const comment = await Comments.findById(id);
 
     if (user.id !== comment.users_id) {
       const user = await Users.findBySub(req.user.sub);
 
-      if(user.admin) {
+      if (user.admin) {
         // If it's an admin deleting this, give this user a strike
         const targetUsr = await Users.findById(comment.users_id);
 
-        const updates = {
-          strikes: targetUsr.strikes + 1
+        // Don't affect the strike counter if user is deactivated
+        if (!targetUsr.is_deactivated) {
+          const updates = {
+            strikes: targetUsr.strikes + 1
+          };
+
+          await Users.update(updates, targetUsr.id);
         }
-
-        await Users.update(updates, targetUsr.id)
-
-      } else return res
-        .status(401)
-        .json({ msg: 'Unauthorized: You may not delete this comment' });
+      } else
+        return res
+          .status(401)
+          .json({ msg: 'Unauthorized: You may not delete this comment' });
     }
 
     const data = await Comments.remove(id);
