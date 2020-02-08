@@ -1,37 +1,23 @@
 const db = require('../database/dbConfig');
 
-module.exports = {
-  find,
-  findById,
-  findCamp,
-  findUpdatesByCamp,
-  findUpdatesByUser,
-  insert,
-  update,
-  remove
-};
-
 function find() {
   return db('campaignUpdates')
     .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
     .join('users', 'users.id', 'campaignUpdates.users_id')
     .select(
+      'users.id as users_id',
       'users.username',
       'users.profile_image',
       'users.location',
+      'users.is_deactivated',
       'campaigns.camp_name',
-      'campaignUpdates.*'
+      'campaignUpdates.*',
     )
-    .then(updates => {
-      return db('likes').then(likes => {
-        updates.map(up => {
-          return (up.likes = likes.filter(
-            like => like.update_id === up.update_id
-          ));
-        });
-        return updates;
-      });
-    });
+    .then(updates => updates.filter(update => !update.is_deactivated))
+    .then((updates) => db('likes').then((likes) => updates.map((up) => ({
+      ...up,
+      likes: likes.filter((like) => like.update_id === up.update_id),
+    }))));
 }
 
 function findById(update_id) {
@@ -40,11 +26,13 @@ function findById(update_id) {
     .join('users', 'users.id', 'campaignUpdates.users_id')
     .where('campaignUpdates.update_id', update_id)
     .select(
+      'users.id as users_id',
       'users.username',
       'users.profile_image',
       'users.location',
+      'users.is_deactivated',
       'campaigns.camp_name',
-      'campaignUpdates.*'
+      'campaignUpdates.*',
     )
     .first();
 }
@@ -65,18 +53,14 @@ function findUpdatesByCamp(camp_id) {
       'users.profile_image',
       'users.location',
       'campaigns.camp_name',
-      'campaignUpdates.*'
+      'campaignUpdates.*',
     )
-    .then(updates => {
-      return db('likes').then(likes => {
-        updates.map(u => {
-          return (u.likes = likes.filter(
-            like => like.update_id === u.update_id
-          ));
-        });
-        return updates;
-      });
-    });
+    .then((updates) => db('likes').then((likes) => {
+      updates.map((u) => (u.likes = likes.filter(
+        (like) => like.update_id === u.update_id,
+      )));
+      return updates;
+    }));
 }
 
 function findUpdatesByUser(users_id) {
@@ -89,18 +73,14 @@ function findUpdatesByUser(users_id) {
       'users.profile_image',
       'users.location',
       'campaigns.camp_name',
-      'campaignUpdates.*'
+      'campaignUpdates.*',
     )
-    .then(updates => {
-      return db('likes').then(likes => {
-        updates.map(u => {
-          return (u.likes = likes.filter(
-            like => like.update_id === u.update_id
-          ));
-        });
-        return updates;
-      });
-    });
+    .then((updates) => db('likes').then((likes) => {
+      updates.map((u) => (u.likes = likes.filter(
+        (like) => like.update_id === u.update_id,
+      )));
+      return updates;
+    }));
 }
 
 async function insert(campUpdate) {
@@ -129,7 +109,17 @@ async function remove(update_id) {
     .del();
   if (deleted) {
     return update_id;
-  } else {
-    return 0;
   }
+  return 0;
 }
+
+module.exports = {
+  find,
+  findById,
+  findCamp,
+  findUpdatesByCamp,
+  findUpdatesByUser,
+  insert,
+  update,
+  remove,
+};
