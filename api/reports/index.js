@@ -140,7 +140,7 @@ router.get('/:id', async (req, res) => {
 
     response.unique_reports = unique_reports;
 
-    const reported_by = await Users.find(response.reported_by);
+    const reported_by = await Users.findById(response.reported_by);
 
     response.reported_by = {
       id: reported_by.id,
