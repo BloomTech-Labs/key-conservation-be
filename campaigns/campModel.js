@@ -3,6 +3,7 @@ const db = require('../database/dbConfig');
 const CampUpdate = require('../campaignUpdates/updateModel.js');
 const CampComments = require('../comments/commentsModel.js');
 const CampLikes = require('../social/socialModel.js');
+const skills = require('../skillImpacts/skillImpactsModel');
 
 module.exports = {
   find,
@@ -69,6 +70,7 @@ async function findById(camp_id) {
   campaign.updates = await CampUpdate.findUpdatesByCamp(camp_id);
   campaign.comments = await CampComments.findCampaignComments(camp_id);
   campaign.likes = await CampLikes.findCampaignLikes(camp_id);
+  campaign.skills = await skills.findSkills(camp_id);
   return campaign;
 }
 
