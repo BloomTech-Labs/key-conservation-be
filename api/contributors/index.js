@@ -6,7 +6,7 @@ const Skills = require('../../models/skills');
 
 const router = express.Router();
 
-router.get('/', /*restricted,*/ async (req, res) => {
+router.get('/', restricted, async (req, res) => {
   const { distance, lat, long } = req.query;
   const skills = req.query.skills ?
     req.query.skills
@@ -39,6 +39,8 @@ router.get('/', /*restricted,*/ async (req, res) => {
     return res.status(400).json({ err: 'must specify current location in lat and long fields to use distance' });
   }
 
+  // Select users and their skills where accepting_help_requests is true,
+  // and skills is a superset of the skills in the query params.
   const query = db.raw(`
   SELECT *, array_to_json(skills) as skills FROM (
     SELECT users.*, array_agg(skills.skill) AS skills
@@ -46,7 +48,8 @@ router.get('/', /*restricted,*/ async (req, res) => {
     INNER JOIN skills ON skills.user_id = users.id
     GROUP BY users.id
   ) AS joined
-  WHERE skills @> :skills
+  WHERE accepting_help_requests IS TRUE
+  AND skills @> :skills
   `, { skills });
 
   const users = (await query).rows;
