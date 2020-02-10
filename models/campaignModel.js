@@ -52,12 +52,7 @@ function find() {
 function findCampaign(camp_id) {
   return db('campaigns')
     .where({ camp_id })
-    .first()
-    .then(res => {
-      const camp = res;
-      camp.comments = res.comments.filter(com => !com.is_deactivated)
-      return camp;
-    });
+    .first();
 }
 
 async function findById(camp_id) {

@@ -23,8 +23,7 @@ function findCampaignComments(id) {
       'users.is_deactivated'
     )
     .then(res => {
-      if (res.is_deactivated) return null;
-      return res;
+      return res.filter(c => !c.is_deactivated)
     });
 }
 
