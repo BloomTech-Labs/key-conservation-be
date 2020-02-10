@@ -23,7 +23,7 @@ function findCampaignComments(id) {
       'users.is_deactivated'
     )
     .then(res => {
-      return res.filter(c => !c.is_deactivated).sort((a, b) => a.created_at - b.created_at);
+      return res.filter(c => !c.is_deactivated).sort((a, b) => b.created_at - a.created_at);
     });
 }
 
