@@ -46,6 +46,7 @@ let skills = [
     "Web Design",
     "Web Development",
     "Writing"];
+
 exports.up = function(knex) {
     return knex.schema.createTable('skilled_impact_requests', table => {
         table.increments('id').notNullable().unique();
@@ -54,7 +55,7 @@ exports.up = function(knex) {
             .inTable("campaigns")
             .onDelete("CASCADE")
             .onUpdate("CASCADE");
-        table.enu("skills",skills).notNullable();
+        table.enu("skills",skills,{ useNative: true, enumName: 'enum_skills' }).notNullable();
         table.string("point_of_contact").notNullable();
         table.text("welcome_message").notNullable();
         table.text("our_contribution").notNullable();
