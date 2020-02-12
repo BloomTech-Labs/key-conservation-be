@@ -17,7 +17,7 @@ function find() {
       'cons.about_us',
       'cons.issues',
       'cons.support_us',
-      'sup.sup_name',
+      'sup.sup_name'
     );
 }
 
@@ -183,7 +183,7 @@ async function update(user, id) {
 
   const keys = Object.keys(user);
 
-  keys.forEach((key) => {
+  keys.forEach(key => {
     if (userColumns.includes(key)) {
       triggerUsers = true;
       userUpdate = { ...userUpdate, [key]: user[key] };
@@ -224,5 +224,5 @@ module.exports = {
   findBySub,
   findUserStatus,
   insert,
-  update,
+  update
 };

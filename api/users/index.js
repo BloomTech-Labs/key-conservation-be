@@ -5,6 +5,7 @@ const router = express.Router();
 
 const Users = require('../../models/usersModel');
 const Reports = require('../../models/reportModel');
+const Connections = require('../../models/connectionsModel');
 
 const mw = require('../../middleware/s3Upload');
 const restricted = require('../../middleware/authJwt.js');
@@ -242,6 +243,53 @@ router.post('/reactivate/:id', restricted, async (req, res) => {
   }
 });
 
+router.post('/connect/:id', restricted, async (req, res) => {
+  if (!req.params.id) {
+    res
+      .status(400)
+      .json({ msg: 'You must pass in the connector_id in the request url' });
+  }
+
+  if (!req.body) {
+    res.status(400).json({
+      msg: 'You must pass in the connected_id in the body of the request'
+    });
+  }
+
+  const connectionData = {
+    connector_id: req.params.id,
+    connected_id: req.body
+  };
+
+  try {
+    const newConnection = await Connections.addConnection(connectionData);
+
+    if (newConnection) {
+      res.status(201).json({
+        newConnection,
+        msg: 'New connection was added to the database'
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ err, msg: 'Unable to add connection to database' });
+  }
+});
+
+router.delete('/connect/:id', restricted, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const connection = await Connections.deleteConnection(id);
+
+    if (connection) {
+      res.status(200).json({ connection });
+    } else {
+      res.status(404).json({ msg: 'Unable to find connection with that id' });
+    }
+  } catch (err) {
+    res.status(500).json({ err, msg: 'Unable to delete user from database' });
+  }
+});
 // router.delete('/:id', restricted, async (req, res) => {
 //   const { id } = req.params;
 //   try {
