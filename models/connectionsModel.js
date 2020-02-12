@@ -21,7 +21,7 @@ function getConnectionById(id) {
 }
 
 async function addConnection(connectionIds) {
-  const [id] = await db('connections').insert(connectionIds, 'id');
+  const [id] = await db('connections').insert(connectionIds, 'connection_id');
   return getConnectionById(id);
 }
 
