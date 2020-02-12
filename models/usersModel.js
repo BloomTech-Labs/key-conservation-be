@@ -221,31 +221,6 @@ async function update(user, id) {
   }
 }
 
-function getConnections() {
-  return db('connections');
-}
-
-function getConnectionsByUserId(id) {
-  return db('connections').where({ connector_id: id });
-}
-
-function deleteConnection(id) {
-  return db('connections')
-    .where({ connection_id: id })
-    .del();
-}
-
-function getConnectionById(id) {
-  return db('connections')
-    .where({ id })
-    .first();
-}
-
-async function addConnection(connectionIds) {
-  const [id] = await db('connections').insert(connectionIds, 'id');
-  return getConnectionsById(id);
-}
-
 module.exports = {
   find,
   findUser,
@@ -253,10 +228,5 @@ module.exports = {
   findBySub,
   findUserStatus,
   insert,
-  update,
-  getConnections,
-  getConnectionsByUserId,
-  deleteConnection,
-  addConnection,
-  getConnectionById
+  update
 };
