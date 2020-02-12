@@ -2,7 +2,7 @@ const express = require('express');
 
 const db = require('../../database/dbConfig');
 const restricted = require('../../middleware/authJwt');
-const Skills = require('../../models/skills');
+const Skills = require('../../models/skillsEnum');
 
 const router = express.Router();
 
@@ -14,13 +14,8 @@ router.get('/', restricted, async (req, res) => {
       .map(skill => skill.toUpperCase())
     : [];
 
-  if (skills) {
-    const unknownSkills = [];
-    for (const skill of skills) {
-      if (!Skills[skill]) {
-        unknownSkills.push(skill);
-      }
-    }
+  if (skills.length > 0) {
+    const unknownSkills = skills.filter(skill => !(skill in Skills));
 
     if (unknownSkills.length > 0) {
       return res.status(400).json({ err: `unknown skills: ${unknownSkills.join(',')}`});
@@ -39,8 +34,8 @@ router.get('/', restricted, async (req, res) => {
     return res.status(400).json({ err: 'must specify current location in lat and long fields to use distance' });
   }
 
-  // Select users and their skills where accepting_help_requests is true,
-  // and skills is a superset of the skills in the query params.
+  // Inner query: join users table with skills table and aggregate to find all skills for each user.
+  // Outer query: find all users where accepting_help_requests is true, and where the user's skills is a superset of the requested skills in the query params.
   const query = db.raw(`
   SELECT *, array_to_json(skills) as skills FROM (
     SELECT users.*, array_agg(skills.skill) AS skills
@@ -49,8 +44,8 @@ router.get('/', restricted, async (req, res) => {
     GROUP BY users.id
   ) AS joined
   WHERE accepting_help_requests IS TRUE
-  AND skills @> :skills
-  `, { skills });
+  AND skills @> :requestedSkills
+  `, { requestedSkills: skills });
 
   const users = (await query).rows;
 
