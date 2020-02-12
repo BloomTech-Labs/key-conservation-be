@@ -5,7 +5,7 @@ const jwksRsa = require('jwks-rsa');
 // # Auth0 Middleware # //
 const authConfig = {
   domain: 'key-conservation.auth0.com',
-  audience: 'https://key-conservation',
+  audience: '',
 };
 
 // Define middleware that validates incoming bearer tokens
@@ -22,7 +22,6 @@ const checkJwt = jwt({
   issuer: `https://${authConfig.domain}/`,
   algorithm: ['RS256'],
 });
-console.log(checkJwt);
 
 module.exports = checkJwt;
 // # End Auth0 Middleware # //

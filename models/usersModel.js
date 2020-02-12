@@ -119,16 +119,12 @@ async function findUserStatus(sub) {
     .where({ sub })
     .first();
 
-  let subCheck;
+  let response = {};
 
   if (user) {
-    subCheck = true;
-  } else subCheck = false;
-
-  const response = {
-    subCheck,
-    deactivated: user.is_deactivated
-  }
+    response.is_deactivated = user.is_deactivated;
+    response.subCheck = true;
+  } else response.subCheck = false;
 
   return response;
 }
