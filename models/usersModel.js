@@ -236,6 +236,11 @@ function deleteConnection(id) {
     .del();
 }
 
+async function addConnection(connectionIds) {
+  const [id] = await db('connections').insert(connectionIds, 'id');
+  return getConnectionsById(id);
+}
+
 module.exports = {
   find,
   findUser,
@@ -246,5 +251,6 @@ module.exports = {
   update,
   getConnections,
   getConnectionsByUserId,
-  deleteConnection
+  deleteConnection,
+  addConnection
 };
