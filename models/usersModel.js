@@ -17,7 +17,7 @@ function find() {
       'cons.about_us',
       'cons.issues',
       'cons.support_us',
-      'sup.sup_name',
+      'sup.sup_name'
     );
 }
 
@@ -128,7 +128,7 @@ async function findUserStatus(sub) {
   const response = {
     subCheck,
     deactivated: user.is_deactivated
-  }
+  };
 
   return response;
 }
@@ -187,7 +187,7 @@ async function update(user, id) {
 
   const keys = Object.keys(user);
 
-  keys.forEach((key) => {
+  keys.forEach(key => {
     if (userColumns.includes(key)) {
       triggerUsers = true;
       userUpdate = { ...userUpdate, [key]: user[key] };
@@ -221,6 +221,10 @@ async function update(user, id) {
   }
 }
 
+function getConnections() {
+  return db('connections');
+}
+
 module.exports = {
   find,
   findUser,
@@ -229,4 +233,5 @@ module.exports = {
   findUserStatus,
   insert,
   update,
+  getConnections
 };
