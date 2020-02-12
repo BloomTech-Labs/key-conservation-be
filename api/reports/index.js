@@ -46,10 +46,10 @@ router.get('/', async (req, res) => {
     }
 
     response = response.filter(report => {
-      if(archive === 'true') {
+      if (archive === 'true') {
         return report.is_archived;
       } else return !report.is_archived;
-    })
+    });
 
     // Calculate section of response to be returned
     const RESULTS_PER_PAGE = 20;
@@ -67,7 +67,7 @@ router.get('/', async (req, res) => {
 
     const reports = response.slice(startIndex, endIndex);
 
-    console.log('constructing response')
+    console.log('constructing response');
 
     // Slice our response to desired section
     response = {
@@ -79,6 +79,7 @@ router.get('/', async (req, res) => {
       reports: await Promise.all(
         reports.map(async report => {
           // Get data on the reported item
+          console.log(report);
           const user = await Users.findById(report.reported_user);
 
           const unique_reports = await getSimilarReportCount(report);
@@ -121,6 +122,11 @@ router.get('/:id', async (req, res) => {
 
     const response = await Reports.findById(req.params.id);
 
+    if (!response)
+      return res
+        .status(404)
+        .json({ message: 'A report with that ID does not exist' });
+
     let otherReports = await Reports.findWhere({
       reported_user: response.reported_user
     });
@@ -129,23 +135,31 @@ router.get('/:id', async (req, res) => {
       report => report.id !== parseInt(req.params.id)
     );
 
-    response.other_reports = await Promise.all(otherReports.map(async report => {
-      return {
-        ...report,
-        unique_reports: await getSimilarReportCount(report)
-      }
-    }))
+    response.other_reports = await Promise.all(
+      otherReports.map(async report => {
+        const reported_by = await Users.findById(report.reported_by);
+
+        return {
+          ...report,
+          unique_reports: await getSimilarReportCount(report),
+          reported_by: {
+            id: reported_by.id,
+            username: reported_by.username
+          }
+        };
+      })
+    );
 
     const unique_reports = await getSimilarReportCount(response);
 
     response.unique_reports = unique_reports;
 
-    const reported_by = await Users.find(response.reported_by);
+    const reported_by = await Users.findById(response.reported_by);
 
     response.reported_by = {
       id: reported_by.id,
       username: reported_by.username
-    }
+    };
 
     return res.status(200).json(response);
   } catch (err) {
@@ -270,15 +284,19 @@ router.post('/archive/:id', async (req, res) => {
   try {
     const updates = {
       is_archived: true
-    }
+    };
 
     await Reports.update(req.params.id, updates);
 
     return res.sendStatus(200);
   } catch (err) {
-    return res.status(500).json({message: err.message || 'An error occurred while archiving this report'});
+    return res
+      .status(500)
+      .json({
+        message: err.message || 'An error occurred while archiving this report'
+      });
   }
-})
+});
 
 router.delete('/:id', async (req, res) => {
   try {
