@@ -5,8 +5,7 @@ exports.up = function(knex) {
         table.string("goal_title").notNullable();
         table.text("description").notNullable();
         table.integer("skilled_impact_request_id").notNullable()
-            .references("id")
-            .inTable("skilled_impact_requests")
+            .references("skilled_impact_requests.id")
             .onDelete("CASCADE")
             .onUpdate("CASCADE");
 

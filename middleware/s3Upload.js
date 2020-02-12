@@ -18,7 +18,6 @@ const upload = multer({
   storage: multerS3({
     s3, // The s3 instance from above
     // The name of your S3 bucket
-    // bucket: 'keycontest',
     bucket:process.env.S3_BUCKET_NAME,
     acl: 'public-read',
     key: (req, file, next) => {
