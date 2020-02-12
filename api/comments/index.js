@@ -9,9 +9,24 @@ const Campaigns = require('../../models/campaignModel');
 const Users = require('../../models/usersModel');
 
 router.post('/:id', async (req, res) => {
+
+  const { comment_body } = req.body;
+  const { id } = req.params;
+
+  if(typeof comment_body !== 'string' || !comment_body.trim()) {
+    return res.status(400).json({msg: "The comment_body field is required"});
+  }
+
+  const user = await Users.findBySub(req.user.sub);
+  
+  const camp = await Campaigns.findCampaign(id);
+
+  if(!camp) return res.status(404).json({msg: "A campaign with that ID could not be found!"});
+
   const newComment = {
-    ...req.body,
-    camp_id: req.params.id
+    comment_body: comment_body.trim(),
+    users_id: user.id,
+    camp_id: id
   };
   try {
     const data = await Comments.insert(newComment);

@@ -19,13 +19,13 @@ router.get('/', restricted, async (req, res) => {
 
       if (!reqUsr.admin) users = users.filter(usr => !usr.is_deactivated);
 
-      res.status(200).json({ users, msg: 'The users were found' });
+      res.status(200).json({ users, message: 'The users were found' });
     } else {
-      res.status(400).json({ msg: 'Users were not found in the database' });
+      res.status(400).json({ message: 'Users were not found in the database' });
     }
   } catch (err) {
     log.error(err);
-    res.status(500).json({ err, msg: 'Unable to make request to server' });
+    res.status(500).json({ err, message: 'Unable to make request to server' });
   }
 });
 
@@ -36,21 +36,30 @@ router.get('/:id', restricted, async (req, res) => {
     const user = await Users.findById(id);
 
     if (!user) {
-      return res.status(404).json({ msg: 'User not found in the database' });
+      return res
+        .status(404)
+        .json({ message: 'User not found in the database' });
     }
 
     if (user.is_deactivated) {
       const reqUsr = await Users.findBySub(req.user.sub);
+
       if (!reqUsr.admin) {
-        return res
-          .status(401)
-          .json({ msg: 'This account has been deactivated' });
+        if (reqUsr.id === user.id)
+          return res.status(401).json({
+            message: `Your account has been deactivated. If you believe this is a mistake, please contact support via our website`,
+            logout: true
+          });
+        else
+          return res
+            .status(401)
+            .json({ message: 'This account has been deactivated' });
       }
     }
 
-    return res.status(200).json({ user, msg: 'The user was found' });
+    return res.status(200).json({ user, message: 'The user was found' });
   } catch (err) {
-    return res.status(500).json({ msg: err.message, err });
+    return res.status(500).json({ message: err.message, err });
   }
 });
 
@@ -61,18 +70,27 @@ router.get('/sub/:sub', restricted, async (req, res) => {
     const reqUsr = await Users.findBySub(req.user.sub);
 
     if (user) {
-      if (user.is_deactivated && !reqUsr.admin)
-        return res
-          .status(401)
-          .json({ msg: 'This account has been deactivated' });
-      return res.status(200).json({ user, msg: 'The user was found' });
+      if (user.is_deactivated && !reqUsr.admin) {
+        if (reqUsr.id === user.id)
+          return res.status(401).json({
+            message: `Your account has been deactivated. If you believe this is a mistake, please contact support via our website`,
+            logout: true
+          });
+        else
+          return res
+            .status(401)
+            .json({ message: 'This account has been deactivated' });
+      }
+      return res.status(200).json({ user, message: 'The user was found' });
     } else {
-      return res.status(404).json({ msg: 'User not found in the database' });
+      return res
+        .status(404)
+        .json({ message: 'User not found in the database' });
     }
   } catch (err) {
     return res
       .status(500)
-      .json({ err, msg: 'Unable to make request to server' });
+      .json({ err, message: 'Unable to make request to server' });
   }
 });
 
@@ -88,7 +106,7 @@ router.get('/subcheck/:sub', async (request, response) => {
       // console.log(check);
       if (check.deactivated) {
         return response.status(401).json({
-          msg: `Your account has been deactivated. If you believe this is a mistake, please contact support via our website`,
+          message: `Your account has been deactivated. If you believe this is a mistake, please contact support via our website`,
           logout: true
         });
       } else
@@ -112,10 +130,10 @@ router.post('/', restricted, async (req, res) => {
     const newUser = await Users.insert(user);
 
     if (newUser) {
-      res.status(201).json({ newUser, msg: 'User added to database' });
+      res.status(201).json({ newUser, message: 'User added to database' });
     }
   } catch (err) {
-    res.status(500).json({ err, msg: 'Unable to add user' });
+    res.status(500).json({ err, message: 'Unable to add user' });
   }
 });
 
@@ -135,18 +153,22 @@ router.put('/:id', restricted, mw.upload.single('photo'), async (req, res) => {
     const reqUsr = await Users.findBySub(req.user.sub);
 
     if (reqUsr.id !== id && !reqUsr.admin) {
-      return res.status(401).json({ msg: 'You may not modify this profile!' });
+      return res
+        .status(401)
+        .json({ message: 'You may not modify this profile!' });
     }
 
     const editUser = await Users.update(newUser, id);
 
     if (editUser) {
-      res.status(200).json({ msg: 'Successfully updated user', editUser });
+      res.status(200).json({ message: 'Successfully updated user', editUser });
     } else {
-      res.status(404).json({ msg: 'The user would not be updated' });
+      res.status(404).json({ message: 'The user would not be updated' });
     }
   } catch (err) {
-    res.status(500).json({ err, msg: 'Unable to update user on the database' });
+    res
+      .status(500)
+      .json({ err, message: 'Unable to update user on the database' });
   }
 });
 
@@ -268,5 +290,21 @@ router.delete('/connect/:id', restricted, async (req, res) => {
     res.status(500).json({ err, msg: 'Unable to delete user from database' });
   }
 });
+// router.delete('/:id', restricted, async (req, res) => {
+//   const { id } = req.params;
+//   try {
+//     const user = await Users.remove(id);
+
+//     if (user) {
+//       res.status(200).json(user);
+//     } else {
+//       res.status(404).json({ message: 'Unable to find user ID' });
+//     }
+//   } catch (err) {
+//     res
+//       .status(500)
+//       .json({ err, message: 'Unable to delete user from database' });
+//   }
+// });
 
 module.exports = router;
