@@ -257,8 +257,8 @@ router.post('/connect/:id', async (req, res) => {
   }
 
   const connectionData = {
-    connector_id: req.params.id,
-    connected_id: req.body
+    connector_id: parseInt(req.params.id),
+    connected_id: parseInt(req.body)
   };
 
   try {
