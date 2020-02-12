@@ -225,6 +225,11 @@ function getConnections() {
   return db('connections');
 }
 
+async function getConnectionsByUserId(id) {
+  const userConnections = await db('connections').where('connector_id', id);
+  return userConnections;
+}
+
 module.exports = {
   find,
   findUser,
@@ -233,5 +238,6 @@ module.exports = {
   findUserStatus,
   insert,
   update,
-  getConnections
+  getConnections,
+  getConnectionsByUserId
 };
