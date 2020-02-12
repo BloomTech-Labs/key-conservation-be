@@ -243,7 +243,7 @@ router.post('/reactivate/:id', restricted, async (req, res) => {
   }
 });
 
-router.post('/connect/:id', restricted, async (req, res) => {
+router.post('/connect/:id', async (req, res) => {
   if (!req.params.id) {
     res
       .status(400)
@@ -275,7 +275,7 @@ router.post('/connect/:id', restricted, async (req, res) => {
   }
 });
 
-router.delete('/connect/:id', restricted, async (req, res) => {
+router.delete('/connect/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
