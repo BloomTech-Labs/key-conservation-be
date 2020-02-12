@@ -226,8 +226,14 @@ function getConnections() {
 }
 
 async function getConnectionsByUserId(id) {
-  const userConnections = await db('connections').where('connector_id', id);
+  const userConnections = await db('connections').where({ connector_id: id });
   return userConnections;
+}
+
+function deleteConnection(id) {
+  return db('connections')
+    .where({ connection_id: id })
+    .del();
 }
 
 module.exports = {
@@ -239,5 +245,6 @@ module.exports = {
   insert,
   update,
   getConnections,
-  getConnectionsByUserId
+  getConnectionsByUserId,
+  deleteConnection
 };
