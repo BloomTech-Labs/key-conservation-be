@@ -10,24 +10,10 @@ exports.up = function(knex, Promise) {
       .onUpdate('CASCADE')
       .onDelete('CASCADE');
     tbl
-      .string('connector_role', 50)
-      .notNullable()
-      .references('roles')
-      .inTable('users')
-      .onUpdate('CASCADE')
-      .onDelete('CASCADE');
-    tbl
       .integer('connected_id')
       .unsigned()
       .notNullable()
       .references('id')
-      .inTable('users')
-      .onUpdate('CASCADE')
-      .onDelete('CASCADE');
-    tbl
-      .string('connected_role', 50)
-      .notNullable()
-      .references('roles')
       .inTable('users')
       .onUpdate('CASCADE')
       .onDelete('CASCADE');
