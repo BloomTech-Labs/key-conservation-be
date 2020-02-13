@@ -30,12 +30,12 @@ function addConnection(connectorId, connectedId, status) {
 
 const getPendingConnectionsByConnectorId = async (id) {
   return db('connections')
-    .where({connector_id: id})
+    .where({connector_id: id, status: 'pending'})
 }
 
 const getPendingConnectionsByConnectedId = async (id) {
   return db('connections')
-    .where({connected_id: id})
+    .where({connected_id: id, status: 'pending'})
 }
 
 function respondToConnectionRequest(connectionId, status) {
