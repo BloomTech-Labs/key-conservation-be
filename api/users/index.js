@@ -251,9 +251,10 @@ router.post('/connect/:id', async (req, res) => {
       .json({ msg: 'You must pass in the connector_id in the request url' });
   }
 
-  if (!req.body) {
+  if (!req.body.connected_id || !req.body.status) {
     res.status(400).json({
-      msg: 'You must pass in the connected_id in the body of the request'
+      msg:
+        'You must pass in the connected_id and the stats in the body of the request'
     });
   }
 
