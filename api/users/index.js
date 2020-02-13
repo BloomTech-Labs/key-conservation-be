@@ -9,6 +9,7 @@ const Connections = require('../../models/connectionsModel');
 
 const mw = require('../../middleware/s3Upload');
 const restricted = require('../../middleware/authJwt.js');
+const checkConnection = require('../../middleware/connections');
 
 router.get('/', restricted, async (req, res) => {
   try {
@@ -243,8 +244,7 @@ router.post('/reactivate/:id', restricted, async (req, res) => {
   }
 });
 
-router.post('/connect/:id', async (req, res) => {
-  console.log('hello');
+router.post('/connect/:id', checkConnection, async (req, res) => {
   if (!req.params.id) {
     res
       .status(400)
