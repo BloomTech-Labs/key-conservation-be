@@ -95,7 +95,7 @@ router.get('/sub/:sub', restricted, async (req, res) => {
   }
 });
 
-// // This route is specifically for the loading page - DO NOT USE ANYWHERE ELSE
+// This route is specifically for the loading page - DO NOT USE ANYWHERE ELSE
 // Checks to see if a user has a sub and/or row in the DB to determine further navigation.
 // DO NOT CHANGE MODEL TO RETURN ADDITIONAL DATA - This route is unprotected.
 router.get('/subcheck/:sub', async (request, response) => {
@@ -307,6 +307,74 @@ router.get('/connect/:userId', async (req, res) => {
     res.status(500).json({ msg: 'Error connecting to database' });
   }
 });
+
+router.put('/connect/:connectionId', async (req, res) => {
+  if (!req.params.id) {
+    res
+      .status(401)
+      .json({ msg: 'Please include the connectionId in the request URL' });
+  }
+  if (!req.body) {
+    res.status(401).json({
+      msg:
+        'Please include the status (accepted or rejected) in the request body'
+    });
+  }
+
+  const response = {
+    connection_id: req.params.connectionId,
+    status: req.body.status
+  };
+
+  const updated = await Connections.respondToConnectionRequest(response);
+
+  try {
+    if (updated) {
+      res.status(201).json(updated);
+    } else {
+      res.status(404).json({ msg: 'No connection found with that id' });
+    }
+  } catch (err) {
+    res.status(500).json({ msg: 'Database error' });
+  }
+});
+
+router.get('/connect/connector/:connectorId', async (req, res) => {
+  const id = req.params.connectorId;
+
+  const pendingConnections = await Connections.getPendingConnectionsByConnectorId(
+    id
+  );
+
+  try {
+    if (pendingConnections) {
+      res.status(200).json(pendingConnections);
+    } else {
+      res.status(404).json({ msg: 'No pending requests for this user' });
+    }
+  } catch (err) {
+    res.status(500).json({ msg: 'Error connecting to database' });
+  }
+});
+
+router.get('/connect/connected/:connectedId', async (req, res) => {
+  const id = req.params.connectedId;
+
+  const pendingConnections = await Connections.getPendingConnectionsByConnectedId(
+    id
+  );
+
+  try {
+    if (pendingConnections) {
+      res.status(200).json(pendingConnections);
+    } else {
+      res.status(404).json({ msg: 'No pending requests for this user' });
+    }
+  } catch (err) {
+    res.status(500).json({ msg: 'Error connecting to database' });
+  }
+});
+
 // router.delete('/:id', restricted, async (req, res) => {
 //   const { id } = req.params;
 //   try {

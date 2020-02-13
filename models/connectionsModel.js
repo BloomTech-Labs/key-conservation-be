@@ -24,7 +24,7 @@ function getConnectionById(id) {
 // use this for adding a connection or sending a connection request
 function addConnection(connectorId, connectedId, status) {
   return db('connections')
-    .insert([{connector_id: connectorId}, {connected_id:connectedId}, {accepted: status}])
+    .insert([{connector_id: connectorId}, {connected_id:connectedId}, {status: status}])
     .returning('connection_id');
 }
 
@@ -37,8 +37,6 @@ const getPendingConnectionsByConnectedId = async (id) {
   return db('connections')
     .where({connected_id: id})
 }
-
-
 
 function respondToConnectionRequest(connectionId, status) {
   return db('connections')
