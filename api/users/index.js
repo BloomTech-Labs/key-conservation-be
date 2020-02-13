@@ -294,8 +294,8 @@ router.delete('/connect/:id', async (req, res) => {
 });
 
 router.get('/connect/:userId', async (req, res) => {
-  const userId = req.params.id;
-  const userConnections = await Connections.getConnectionsByUserId(userId);
+  const id = req.params.userId;
+  const userConnections = await Connections.getConnectionsByUserId(id);
 
   try {
     if (userConnections) {
