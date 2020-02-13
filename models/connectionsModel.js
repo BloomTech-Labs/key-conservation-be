@@ -27,7 +27,7 @@ function addConnection(connectorId, connectedId, status) {
     .insert([
       { connector_id: connectorId },
       { connected_id: connectedId },
-      { status: status }
+      { status }
     ])
     .returning('connection_id');
 }
