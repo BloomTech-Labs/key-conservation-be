@@ -24,11 +24,7 @@ function getConnectionById(id) {
 // use this for adding a connection or sending a connection request
 function addConnection(connectorId, connectedId, status) {
   return db('connections')
-    .insert([
-      { connector_id: connectorId },
-      { connected_id: connectedId },
-      { status }
-    ])
+    .insert([{ connector_id: connectorId, connected_id: connectedId, status }])
     .returning('connection_id');
 }
 
