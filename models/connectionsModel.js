@@ -20,10 +20,19 @@ function getConnectionById(id) {
     .first();
 }
 
-async function addConnection(connectionIds) {
-  const [id] = await db('connections').insert(connectionIds, 'connection_id');
-  return getConnectionById(id);
+function addConnection(connectionIds) {
+  console.log('connectionIds', connectionIds);
+  return db('connections')
+    .insert(connectionIds)
+    .returning('connection_id');
 }
+// async function addConnection(connectionIds) {
+//   console.log('connectionIds', connectionIds);
+//   const id = await db('connections').insert(connectionIds);
+//   console.log('id', id);
+//   const newConnection = await getConnectionById(id);
+//   return newConnection;
+// }
 
 module.exports = {
   getConnections,
