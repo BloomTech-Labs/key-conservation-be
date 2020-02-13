@@ -244,6 +244,7 @@ router.post('/reactivate/:id', restricted, async (req, res) => {
 });
 
 router.post('/connect/:id', async (req, res) => {
+  console.log('hello');
   if (!req.params.id) {
     res
       .status(400)
@@ -257,11 +258,12 @@ router.post('/connect/:id', async (req, res) => {
   }
 
   const connectionData = {
-    connector_id: parseInt(req.params.id),
-    connected_id: parseInt(req.body.connected_id)
+    connector_id: req.params.id,
+    connected_id: req.body.connected_id
   };
   try {
     const newConnection = await Connections.addConnection(connectionData);
+    console.log('connectionData', connectionData);
 
     if (newConnection) {
       res.status(201).json({
