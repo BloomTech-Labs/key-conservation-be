@@ -244,7 +244,7 @@ router.post('/reactivate/:id', restricted, async (req, res) => {
   }
 });
 
-router.post('/connect/:id', checkConnection, async (req, res) => {
+router.post('/connect/:id', async (req, res) => {
   if (!req.params.id) {
     res
       .status(400)
