@@ -260,7 +260,8 @@ router.post('/connect/:id', async (req, res) => {
 
   const connectionData = {
     connector_id: req.params.id,
-    connected_id: req.body.connected_id
+    connected_id: req.body.connected_id,
+    status: req.body.status
   };
   try {
     const newConnection = await Connections.addConnection(connectionData);
