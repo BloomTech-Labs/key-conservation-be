@@ -9,13 +9,18 @@ const checkConnection = async (req, res, next) => {
     connection => connection.connected_id === req.body.connected_id
   );
 
-  if (found) {
-    res.status(403).json({ msg: 'Users are already connected' });
+  console.log('found', found);
+
+  if (allConnections) {
+    return res.status(403).json({ msg: 'Users are already connected' });
   } else {
     next();
   }
 };
 
-module.exports = {
-  checkConnection
-};
+// const logger = (req, res, next) => {
+//   console.log('is this firing');
+//   next();
+// };
+
+module.exports = checkConnection;
