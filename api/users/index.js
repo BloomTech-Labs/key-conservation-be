@@ -272,6 +272,7 @@ router.post('/connect/:id', async (req, res) => {
       });
     }
   } catch (err) {
+    console.log(err);
     res.status(500).json({ err, msg: 'Unable to add connection to database' });
   }
 });
@@ -289,6 +290,21 @@ router.delete('/connect/:id', async (req, res) => {
     }
   } catch (err) {
     res.status(500).json({ err, msg: 'Unable to delete user from database' });
+  }
+});
+
+router.get('/connect/:userId', async (req, res) => {
+  const userId = req.params.id;
+  const userConnections = await Connections.getConnectionsByUserId(userId);
+
+  try {
+    if (userConnections) {
+      res.status(200).json(userConnections);
+    } else {
+      res.status(404).json({ msg: 'No connections for that user' });
+    }
+  } catch (err) {
+    res.status(500).json({ msg: 'Error connecting to database' });
   }
 });
 // router.delete('/:id', restricted, async (req, res) => {
