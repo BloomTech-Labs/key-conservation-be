@@ -309,7 +309,7 @@ router.get('/connect/:userId', async (req, res) => {
 });
 
 router.put('/connect/:connectionId', async (req, res) => {
-  if (!req.params.id) {
+  if (!req.params.connectionId) {
     res
       .status(401)
       .json({ msg: 'Please include the connectionId in the request URL' });
