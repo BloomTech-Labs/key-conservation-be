@@ -17,7 +17,7 @@ function deleteConnection(id) {
 
 function getConnectionById(id) {
   return db('connections')
-    .where({ id })
+    .where({ connection_id: id })
     .first();
 }
 
