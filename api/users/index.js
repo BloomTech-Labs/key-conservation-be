@@ -281,10 +281,12 @@ router.delete('/connect/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const connection = await Connections.deleteConnection(id);
+    const deleted = await Connections.deleteConnection(id);
 
-    if (connection) {
-      res.status(200).json({ connection });
+    if (deleted === 1) {
+      res
+        .status(200)
+        .json({ msg: `Connection with id ${id} has been deleted` });
     } else {
       res.status(404).json({ msg: 'Unable to find connection with that id' });
     }

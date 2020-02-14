@@ -32,13 +32,13 @@ function addConnection(data) {
     });
 }
 
-const getPendingConnectionsByConnectorId = async id => {
+function getPendingConnectionsByConnectorId(id) {
   return db('connections').where({ connector_id: id, status: 'pending' });
-};
+}
 
-const getPendingConnectionsByConnectedId = async id => {
+function getPendingConnectionsByConnectedId(id) {
   return db('connections').where({ connected_id: id, status: 'pending' });
-};
+}
 
 function respondToConnectionRequest(connectionId, status) {
   return db('connections')
