@@ -245,7 +245,7 @@ router.post('/reactivate/:id', restricted, async (req, res) => {
 });
 
 router.post('/connect/:id', async (req, res) => {
-  console.log('req.body', req.body);
+  console.log('params', req.params.id, req.body.status);
   if (!req.params.id) {
     res
       .status(400)
@@ -261,7 +261,8 @@ router.post('/connect/:id', async (req, res) => {
 
   const connectionData = {
     connector_id: parseInt(req.params.id),
-    connected_id: req.body.connected_id,
+
+    connected_id: parseInt(req.body.connected_id),
     status: req.body.status
   };
   try {
@@ -279,6 +280,24 @@ router.post('/connect/:id', async (req, res) => {
     res.status(500).json({ err, msg: 'Unable to add connection to database' });
   }
 });
+
+// router.post('/connect/:id', async (req, res) => {
+//   const connectionData = {
+//     connector_id: req.params.id,
+//     connected_id: req.body
+//   };
+//   try {
+//     const newConnection = await Connections.addConnection(connectionData);
+//     if (newConnection) {
+//       res.status(201).json({
+//         newConnection,
+//         msg: 'New connection was added to the database'
+//       });
+//     }
+//   } catch (err) {
+//     res.status(500).json({ err, msg: 'Unable to add connection to database' });
+//   }
+// });
 
 router.delete('/connect/:id', async (req, res) => {
   const { id } = req.params;
