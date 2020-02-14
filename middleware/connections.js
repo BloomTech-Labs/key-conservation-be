@@ -11,16 +11,11 @@ const checkConnection = async (req, res, next) => {
 
   console.log('found', found);
 
-  if (allConnections) {
+  if (found) {
     return res.status(403).json({ msg: 'Users are already connected' });
-  } else {
-    next();
   }
-};
 
-// const logger = (req, res, next) => {
-//   console.log('is this firing');
-//   next();
-// };
+  next();
+};
 
 module.exports = checkConnection;
