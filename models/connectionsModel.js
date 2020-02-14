@@ -22,17 +22,19 @@ function getConnectionById(id) {
 }
 
 // use this for adding a connection or sending a connection request
-function addConnection(data) {
-  return db('connections')
-    .insert(data)
-    .returning('connection_id');
-}
-
-// function addConnection(connectionIds) {
+// function addConnection(data) {
 //   return db('connections')
-//     .insert(connectionIds)
+//     .insert(data)
 //     .returning('connection_id');
+//     .then(ids => {
+
+//     })
 // }
+
+async function addConnection(data) {
+  const [id] = await db('connections').insert(data, 'connection_id');
+  return getConnectionById(id);
+}
 
 const getPendingConnectionsByConnectorId = async id => {
   return db('connections').where({ connector_id: id, status: 'pending' });
