@@ -261,7 +261,6 @@ router.post('/connect/:id', async (req, res) => {
 
   const connectionData = {
     connector_id: parseInt(req.params.id),
-
     connected_id: parseInt(req.body.connected_id),
     status: req.body.status
   };
