@@ -22,13 +22,9 @@ function getConnectionById(id) {
 }
 
 // use this for adding a connection or sending a connection request
-function addConnection(connectorId, connectedId, connectionStatus) {
+function addConnection(data) {
   return db('connections')
-    .insert({
-      connector_id: connectorId,
-      connected_id: connectedId,
-      status: connectionStatus
-    })
+    .insert(data)
     .returning('connection_id');
 }
 
