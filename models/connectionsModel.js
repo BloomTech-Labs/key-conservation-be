@@ -23,6 +23,7 @@ function getConnectionById(id) {
 
 // use this for adding a connection or sending a connection request
 function addConnection(connectorId, connectedId, status) {
+  console.log('HELLOS');
   return db('connections')
     .insert([
       { connector_id: connectorId },
@@ -31,6 +32,12 @@ function addConnection(connectorId, connectedId, status) {
     ])
     .returning('connection_id');
 }
+
+// function addConnection(connectionIds) {
+//   return db('connections')
+//     .insert(connectionIds)
+//     .returning('connection_id');
+// }
 
 const getPendingConnectionsByConnectorId = async id => {
   return db('connections').where({ connector_id: id, status: 'pending' });
