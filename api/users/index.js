@@ -10,6 +10,7 @@ const Connections = require('../../models/connectionsModel');
 const mw = require('../../middleware/s3Upload');
 const restricted = require('../../middleware/authJwt.js');
 const checkConnection = require('../../middleware/connections');
+const checkUniqueIds = require('../../middleware/connections');
 
 router.get('/', restricted, async (req, res) => {
   try {
@@ -244,38 +245,45 @@ router.post('/reactivate/:id', restricted, async (req, res) => {
   }
 });
 
-router.post('/connect/:id', checkConnection, async (req, res) => {
-  if (!req.params.id) {
-    res
-      .status(400)
-      .json({ msg: 'You must pass in the connector_id in the request url' });
-  }
+router.post(
+  '/connect/:id',
+  checkConnection,
+  checkUniqueIds,
+  async (req, res) => {
+    if (!req.params.id) {
+      res
+        .status(400)
+        .json({ msg: 'You must pass in the connector_id in the request url' });
+    }
 
-  if (!req.body.connected_id || !req.body.status) {
-    res.status(400).json({
-      msg:
-        'You must pass in the connected_id and the stats in the body of the request'
-    });
-  }
-
-  const connectionData = {
-    connector_id: parseInt(req.params.id),
-    connected_id: parseInt(req.body.connected_id),
-    status: req.body.status
-  };
-  try {
-    const newConnection = await Connections.addConnection(connectionData);
-
-    if (newConnection) {
-      res.status(201).json({
-        newConnection,
-        msg: 'New connection was added to the database'
+    if (!req.body.connected_id || !req.body.status) {
+      res.status(400).json({
+        msg:
+          'You must pass in the connected_id and the stats in the body of the request'
       });
     }
-  } catch (err) {
-    res.status(500).json({ err, msg: 'Unable to add connection to database' });
+
+    const connectionData = {
+      connector_id: parseInt(req.params.id),
+      connected_id: parseInt(req.body.connected_id),
+      status: req.body.status
+    };
+    try {
+      const newConnection = await Connections.addConnection(connectionData);
+
+      if (newConnection) {
+        res.status(201).json({
+          newConnection,
+          msg: 'New connection was added to the database'
+        });
+      }
+    } catch (err) {
+      res
+        .status(500)
+        .json({ err, msg: 'Unable to add connection to database' });
+    }
   }
-});
+);
 
 router.delete('/connect/:id', async (req, res) => {
   const { id } = req.params;
@@ -341,42 +349,6 @@ router.put('/connect/:connectionId', async (req, res) => {
     }
   } catch (err) {
     res.status(500).json({ msg: 'Database error' });
-  }
-});
-
-router.get('/connect/connector/:connectorId', async (req, res) => {
-  const id = req.params.connectorId;
-
-  const pendingConnections = await Connections.getPendingConnectionsByConnectorId(
-    id
-  );
-
-  try {
-    if (pendingConnections) {
-      res.status(200).json(pendingConnections);
-    } else {
-      res.status(404).json({ msg: 'No pending requests for this user' });
-    }
-  } catch (err) {
-    res.status(500).json({ msg: 'Error connecting to database' });
-  }
-});
-
-router.get('/connect/connected/:connectedId', async (req, res) => {
-  const id = req.params.connectedId;
-
-  const pendingConnections = await Connections.getPendingConnectionsByConnectedId(
-    id
-  );
-
-  try {
-    if (pendingConnections) {
-      res.status(200).json(pendingConnections);
-    } else {
-      res.status(404).json({ msg: 'No pending requests for this user' });
-    }
-  } catch (err) {
-    res.status(500).json({ msg: 'Error connecting to database' });
   }
 });
 
