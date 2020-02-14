@@ -24,6 +24,7 @@ function getConnectionById(id) {
 // use this for adding a connection or sending a connection request
 function addConnection(connectorId, connectedId, connectionStatus) {
   console.log('HELLOS');
+  console.log('params', connectorId, connectedId, status);
   return db('connections')
     .insert([
       {
