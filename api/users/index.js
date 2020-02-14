@@ -327,8 +327,13 @@ router.put('/connect/:connectionId', async (req, res) => {
   );
 
   try {
-    if (updated) {
-      res.status(201).json(updated);
+    if (updated === 1) {
+      const newConnectionStatus = await Connections.getConnectionById(
+        req.params.connection_id
+      );
+      res.status(201).json({
+        msg: `The status of connection with id ${req.params.connection_id} was changed to ${newConnectionStatus.status}`
+      });
     } else {
       res.status(404).json({ msg: 'No connection found with that id' });
     }
