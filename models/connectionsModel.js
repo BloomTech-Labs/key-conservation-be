@@ -32,11 +32,6 @@ function addConnection(data) {
     });
 }
 
-// async function addConnection(data) {
-//   const [id] = await db('connections').insert(data).returning
-//   return getConnectionById(id);
-// }
-
 const getPendingConnectionsByConnectorId = async id => {
   return db('connections').where({ connector_id: id, status: 'pending' });
 };
