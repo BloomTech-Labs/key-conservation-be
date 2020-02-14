@@ -5,7 +5,9 @@ function getConnections() {
 }
 
 function getConnectionsByUserId(id) {
-  return db('connections').where({ connector_id: id });
+  return db('connections')
+    .where({ connector_id: id })
+    .orWhere({ connected_id: id });
 }
 
 // use this to "unfriend" OR to cancel a connection request
