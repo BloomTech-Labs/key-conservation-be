@@ -34,14 +34,6 @@ function addConnection(data) {
     });
 }
 
-function getPendingConnectionsByConnectorId(id) {
-  return db('connections').where({ connector_id: id, status: 'pending' });
-}
-
-function getPendingConnectionsByConnectedId(id) {
-  return db('connections').where({ connected_id: id, status: 'pending' });
-}
-
 function respondToConnectionRequest(connectionId, status) {
   return db('connections')
     .where({ connection_id: connectionId })
@@ -54,7 +46,5 @@ module.exports = {
   deleteConnection,
   getConnectionById,
   addConnection,
-  getPendingConnectionsByConnectorId,
-  getPendingConnectionsByConnectedId,
   respondToConnectionRequest
 };
