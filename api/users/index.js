@@ -321,12 +321,10 @@ router.put('/connect/:connectionId', async (req, res) => {
     });
   }
 
-  const response = {
-    connection_id: req.params.connectionId,
-    status: req.body.status
-  };
-
-  const updated = await Connections.respondToConnectionRequest(response);
+  const updated = await Connections.respondToConnectionRequest(
+    req.params.connectionId,
+    req.body.status
+  );
 
   try {
     if (updated) {
