@@ -1,10 +1,10 @@
-exports.seed = function(knex, Promise) {
+exports.seed = function (knex, Promise) {
   // Deletes ALL existing entries
   return knex('conservationists')
     .del()
-    .then(function() {
+    .then(() =>
       // Inserts seed entries
-      return knex('conservationists').insert([
+      knex('conservationists').insert([
         {
           users_id: 1,
           org_name: 'Beaver Town',
@@ -12,7 +12,7 @@ exports.seed = function(knex, Promise) {
           org_link_text: 'google.com',
           about_us: 'Lorem IpsOn',
           issues: 'wood',
-          support_us: null
+          support_us: null,
         },
         {
           users_id: 2,
@@ -21,7 +21,7 @@ exports.seed = function(knex, Promise) {
           org_link_text: 'google.com',
           about_us: 'Lorem IpsOn',
           issues: 'sleep',
-          support_us: null
+          support_us: null,
         },
         {
           users_id: 3,
@@ -30,8 +30,7 @@ exports.seed = function(knex, Promise) {
           org_link_text: 'google.com',
           about_us: 'Lorem IpsOn',
           issues: 'too tall',
-          support_us: null
-        }
-      ]);
-    });
+          support_us: null,
+        },
+      ]));
 };
