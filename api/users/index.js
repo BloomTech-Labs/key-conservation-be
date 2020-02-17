@@ -9,6 +9,8 @@ const Connections = require('../../models/connectionsModel');
 
 const mw = require('../../middleware/s3Upload');
 const restricted = require('../../middleware/authJwt.js');
+const checkConnection = require('../../middleware/connections');
+const checkUniqueIds = require('../../middleware/connections');
 
 router.get('/', restricted, async (req, res) => {
   try {
@@ -94,7 +96,7 @@ router.get('/sub/:sub', restricted, async (req, res) => {
   }
 });
 
-// // This route is specifically for the loading page - DO NOT USE ANYWHERE ELSE
+// This route is specifically for the loading page - DO NOT USE ANYWHERE ELSE
 // Checks to see if a user has a sub and/or row in the DB to determine further navigation.
 // DO NOT CHANGE MODEL TO RETURN ADDITIONAL DATA - This route is unprotected.
 router.get('/subcheck/:sub', async (request, response) => {
@@ -243,46 +245,56 @@ router.post('/reactivate/:id', restricted, async (req, res) => {
   }
 });
 
-router.post('/connect/:id', restricted, async (req, res) => {
-  if (!req.params.id) {
-    res
-      .status(400)
-      .json({ msg: 'You must pass in the connector_id in the request url' });
-  }
+router.post(
+  '/connect/:id',
+  checkConnection,
+  checkUniqueIds,
+  async (req, res) => {
+    if (!req.params.id) {
+      res
+        .status(400)
+        .json({ msg: 'You must pass in the connector_id in the request url' });
+    }
 
-  if (!req.body) {
-    res.status(400).json({
-      msg: 'You must pass in the connected_id in the body of the request'
-    });
-  }
-
-  const connectionData = {
-    connector_id: req.params.id,
-    connected_id: req.body
-  };
-
-  try {
-    const newConnection = await Connections.addConnection(connectionData);
-
-    if (newConnection) {
-      res.status(201).json({
-        newConnection,
-        msg: 'New connection was added to the database'
+    if (!req.body.connected_id || !req.body.status) {
+      res.status(400).json({
+        msg:
+          'You must pass in the connected_id and the stats in the body of the request'
       });
     }
-  } catch (err) {
-    res.status(500).json({ err, msg: 'Unable to add connection to database' });
-  }
-});
 
-router.delete('/connect/:id', restricted, async (req, res) => {
+    const connectionData = {
+      connector_id: parseInt(req.params.id),
+      connected_id: parseInt(req.body.connected_id),
+      status: req.body.status
+    };
+    try {
+      const newConnection = await Connections.addConnection(connectionData);
+
+      if (newConnection) {
+        res.status(201).json({
+          newConnection,
+          msg: 'New connection was added to the database'
+        });
+      }
+    } catch (err) {
+      res
+        .status(500)
+        .json({ err, msg: 'Unable to add connection to database' });
+    }
+  }
+);
+
+router.delete('/connect/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const connection = await Connections.deleteConnection(id);
+    const deleted = await Connections.deleteConnection(id);
 
-    if (connection) {
-      res.status(200).json({ connection });
+    if (deleted === 1) {
+      res
+        .status(200)
+        .json({ msg: `Connection with id ${id} has been deleted` });
     } else {
       res.status(404).json({ msg: 'Unable to find connection with that id' });
     }
@@ -290,6 +302,56 @@ router.delete('/connect/:id', restricted, async (req, res) => {
     res.status(500).json({ err, msg: 'Unable to delete user from database' });
   }
 });
+
+router.get('/connect/:userId', async (req, res) => {
+  const id = req.params.userId;
+  const userConnections = await Connections.getConnectionsByUserId(id);
+
+  try {
+    if (userConnections) {
+      res.status(200).json(userConnections);
+    } else {
+      res.status(404).json({ msg: 'No connections for that user' });
+    }
+  } catch (err) {
+    res.status(500).json({ msg: 'Error connecting to database' });
+  }
+});
+
+router.put('/connect/:connectionId', async (req, res) => {
+  if (!req.params.connectionId) {
+    res
+      .status(401)
+      .json({ msg: 'Please include the connectionId in the request URL' });
+  }
+  if (!req.body) {
+    res.status(401).json({
+      msg:
+        'Please include the status (accepted or rejected) in the request body'
+    });
+  }
+
+  const updated = await Connections.respondToConnectionRequest(
+    req.params.connectionId,
+    req.body.status
+  );
+
+  try {
+    if (updated === 1) {
+      const newConnectionStatus = await Connections.getConnectionById(
+        req.params.connectionId
+      );
+      res.status(201).json({
+        msg: `The status of connection with id ${req.params.connectionId} was changed to ${newConnectionStatus.status}`
+      });
+    } else {
+      res.status(404).json({ msg: 'No connection found with that id' });
+    }
+  } catch (err) {
+    res.status(500).json({ msg: 'Database error' });
+  }
+});
+
 // router.delete('/:id', restricted, async (req, res) => {
 //   const { id } = req.params;
 //   try {

@@ -5,9 +5,12 @@ function getConnections() {
 }
 
 function getConnectionsByUserId(id) {
-  return db('connections').where({ connector_id: id });
+  return db('connections')
+    .where({ connector_id: id })
+    .orWhere({ connected_id: id });
 }
 
+// use this to "unfriend" OR to cancel a connection request
 function deleteConnection(id) {
   return db('connections')
     .where({ connection_id: id })
@@ -16,19 +19,32 @@ function deleteConnection(id) {
 
 function getConnectionById(id) {
   return db('connections')
-    .where({ id })
+    .where({ connection_id: id })
     .first();
 }
 
-async function addConnection(connectionIds) {
-  const [id] = await db('connections').insert(connectionIds, 'id');
-  return getConnectionById(id);
+// use this for adding a connection or sending a connection request
+function addConnection(data) {
+  return db('connections')
+    .insert(data)
+    .returning('connection_id')
+    .then(res => {
+      const [id] = res;
+      return getConnectionById(id);
+    });
+}
+
+function respondToConnectionRequest(connectionId, status) {
+  return db('connections')
+    .where({ connection_id: connectionId })
+    .update({ status: status });
 }
 
 module.exports = {
   getConnections,
   getConnectionsByUserId,
   deleteConnection,
+  getConnectionById,
   addConnection,
-  getConnectionById
+  respondToConnectionRequest
 };
