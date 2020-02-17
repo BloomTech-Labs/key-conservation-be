@@ -9,8 +9,10 @@ const Connections = require('../../models/connectionsModel');
 
 const mw = require('../../middleware/s3Upload');
 const restricted = require('../../middleware/authJwt.js');
-const checkConnection = require('../../middleware/connections');
-const checkUniqueIds = require('../../middleware/connections');
+const {
+  checkConnection,
+  checkUniqueIds
+} = require('../../middleware/connections');
 
 router.get('/', restricted, async (req, res) => {
   try {
