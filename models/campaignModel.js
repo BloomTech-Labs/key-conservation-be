@@ -4,7 +4,7 @@ const db = require('../database/dbConfig');
 const CampUpdate = require('./updateModel.js');
 const CampComments = require('./commentsModel.js');
 const CampLikes = require('./socialModel.js');
-const skills = require('./skillImpactsModel');
+const skills = require('./skilledImpactRequestsModel');
 
 
 function find() {

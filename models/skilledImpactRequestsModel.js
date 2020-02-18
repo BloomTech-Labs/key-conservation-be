@@ -8,7 +8,6 @@ async function findSkills(campaign_id) {
         .select(
             '*'
         )
-        .first();
     return skills;
 }
 
