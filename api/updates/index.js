@@ -104,7 +104,7 @@ router.post('/', mw.upload.single('photo'), async (req, res) => {
   if (req.file) {
     location = req.file.location;
     postCampUpdate = {
-      ...req.body,
+      ...postCampUpdate,
       update_img: location
     };
   }
