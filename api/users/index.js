@@ -156,7 +156,7 @@ router.put('/:id', restricted, mw.upload.single('photo'), async (req, res) => {
   try {
     const reqUsr = await Users.findBySub(req.user.sub);
 
-    if (reqUsr.id !== id && !reqUsr.admin) {
+    if (Number(reqUsr.id) !== Number(id) && !reqUsr.admin) {
       return res
         .status(401)
         .json({ message: 'You may not modify this profile!' });
