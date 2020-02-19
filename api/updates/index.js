@@ -93,7 +93,13 @@ router.get('/camp/:id', (req, res) => {
 });
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
-  let postCampUpdate = req.body;
+
+  const camp = await Campaigns.findById(req.body.camp_id);
+
+  let postCampUpdate = {
+    ...req.body,
+    camp_name: camp.camp_name
+  };
   let location;
   if (req.file) {
     location = req.file.location;
