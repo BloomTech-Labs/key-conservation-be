@@ -141,7 +141,7 @@ router.put('/:id', mw.upload.single('photo'), async (req, res) => {
 
   try {
     const campUpdate = await CampUpdate.findById(id);
-    const usr = await Users.findBySub(req.user.id);
+    const usr = await Users.findBySub(req.user.sub);
 
     if (usr.id !== campUpdate.users_id && !usr.admin)
       return res
