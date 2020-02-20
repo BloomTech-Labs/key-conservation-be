@@ -1,4 +1,5 @@
 const db = require('../database/dbConfig.js');
+const Users = require('./UsersModel.js');
 
 function getConnections() {
   return db('connections');
@@ -17,10 +18,20 @@ function deleteConnection(id) {
     .del();
 }
 
-function getConnectionById(id) {
-  return db('connections')
+// async function getConnectionById(id) {
+//   const conn = await db('connections')
+//     .where({ connection_id: id })
+//     .first();
+//   const user = await Users.getNameAndAvatarById(conn.connector_id);
+//   const connection = { ...conn, ...user };
+//   return connection;
+// }
+
+async function getConnectionById(id) {
+  const conn = await db('connections')
     .where({ connection_id: id })
     .first();
+  return conn;
 }
 
 // use this for adding a connection or sending a connection request
@@ -37,7 +48,7 @@ function addConnection(data) {
 function respondToConnectionRequest(connectionId, status) {
   return db('connections')
     .where({ connection_id: connectionId })
-    .update({ status: status });
+    .update({ status });
 }
 
 module.exports = {
