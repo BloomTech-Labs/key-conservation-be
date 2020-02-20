@@ -160,13 +160,17 @@ async function insert(user) {
         logitude: user.longitude,
         latitude: user.latitude
       };
-      await db('conservationists').insert(conservationistsTableInsert);
+      await db('conservationists')
+        .insert(conservationistsTableInsert)
+        .returning('cons_id');
     } else if (user.roles === 'supporter') {
       const supportersTableInsert = {
         users_id: id,
         sup_name: user.sup_name
       };
-      await db('supporters').insert(supportersTableInsert);
+      await db('supporters')
+        .insert(supportersTableInsert)
+        .returning('sup_id');
     }
     const newuser = await findById(id);
     return newuser;
