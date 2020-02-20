@@ -130,18 +130,45 @@ async function findUserStatus(sub) {
 }
 
 async function insert(user) {
-  const { roles } = user;
+  const usersTableInsert = {
+    roles: user.roles,
+    username: user.username,
+    email: user.email,
+    location: user.location,
+    mini_bio: user.mini_bio,
+    species_and_habitats: user.species_and_habitats,
+    twitter: user.twitter,
+    facebook: user.facebook,
+    instagram: user.instagram,
+    phone_number: user.phone_number
+  };
   const [id] = await db('users')
-    .insert(user)
+    .insert(usersTableInsert)
     .returning('id');
   if (id) {
-    if (roles === 'conservationist') {
-      await db('conservationists').insert({ users_id: id });
-    } else if (roles === 'supporter') {
-      await db('supporters').insert({ users_id: id });
+    if (user.roles === 'conservationist') {
+      const conservationistsTableInsert = {
+        users_id: id,
+        org_name: user.org_name,
+        org_link_url: user.org_link_url,
+        org_cta: user.org_cta,
+        about_us: user.about_us,
+        city: user.city,
+        country: user.country,
+        point_of_contact_name: user.point_of_contact_name,
+        logitude: user.longitude,
+        latitude: user.latitude
+      };
+      await db('conservationists').insert(conservationistsTableInsert);
+    } else if (user.roles === 'supporter') {
+      const supportersTableInsert = {
+        users_id: id,
+        sup_name: user.sup_name
+      };
+      await db('supporters').insert(supportersTableInsert);
     }
-    const user = await findById(id);
-    return user;
+    const newuser = await findById(id);
+    return newuser;
   }
 }
 

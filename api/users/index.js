@@ -110,7 +110,8 @@ router.get('/subcheck/:sub', async (request, response) => {
       // console.log(check);
       if (check.deactivated) {
         return response.status(401).json({
-          message: `Your account has been deactivated. If you believe this is a mistake, please contact support via our website`,
+          message:
+            'Your account has been deactivated. If you believe this is a mistake, please contact support via our website',
           logout: true
         });
       } else
@@ -127,7 +128,7 @@ router.get('/subcheck/:sub', async (request, response) => {
     });
 });
 
-router.post('/', restricted, async (req, res) => {
+router.post('/', async (req, res) => {
   const user = req.body;
 
   try {
