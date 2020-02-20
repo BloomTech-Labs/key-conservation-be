@@ -18,19 +18,12 @@ function deleteConnection(id) {
     .del();
 }
 
-// async function getConnectionById(id) {
-//   const conn = await db('connections')
-//     .where({ connection_id: id })
-//     .first();
-//   const user = await Users.getNameAndAvatarById(conn.connector_id);
-//   const connection = { ...conn, ...user };
-//   return connection;
-// }
-
 async function getConnectionById(id) {
   const conn = await db('connections')
     .where({ connection_id: id })
     .first();
+  // const user = await Users.getNameAndAvatarById(conn.connector_id);
+  // const connection = { ...conn, ...user };
   return conn;
 }
 
