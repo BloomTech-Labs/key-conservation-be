@@ -249,6 +249,7 @@ async function update(user, id) {
   }
 }
 
+// This is used for the getConnectionById function in connectionsModel
 const getNameAndAvatarById = async id => {
   const user = findById(id);
   if (user.roles === 'conservationist') {
