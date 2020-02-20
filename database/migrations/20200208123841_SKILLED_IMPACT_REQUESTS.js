@@ -54,7 +54,7 @@ exports.up = function(knex) {
             .references("campaigns.camp_id")
             .onDelete("CASCADE")
             .onUpdate("CASCADE");
-        table.enu("skill",skills,{ useNative: true, enumName: 'enum_skills' }).notNullable();
+        table.enum("skill",skills,{ useNative: true, enumName: 'skill_enum' }).notNullable();
         table.text("point_of_contact").notNullable();
         table.text("welcome_message").notNullable();
         table.text("our_contribution").notNullable();

@@ -1,14 +1,19 @@
 const db = require('../database/dbConfig');
 
-
 async function findSkills(campaign_id) {
-    const skills = await db('skilled_impact_requests')
+
+    return db('skilled_impact_requests')
         .where({campaign_id})
-        .join('project_goals', 'project_goals.skilled_impact_request_id', 'skilled_impact_requests.id')
         .select(
             '*'
-        )
-    return skills;
+        ).then((skilledImpactRequests)=>db('project_goals').then((projectGoals)=>{
+            skilledImpactRequests.map((sIR)=>(sIR.project_goals = projectGoals.filter(
+                (projectGoal) => projectGoal.skilled_impact_request_id === sIR.id,
+            )));
+
+            return skilledImpactRequests;
+        }));
+
 }
 
 module.exports = {
