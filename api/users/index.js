@@ -128,7 +128,7 @@ router.get('/subcheck/:sub', async (request, response) => {
     });
 });
 
-router.post('/', async (req, res) => {
+router.post('/', restricted, async (req, res) => {
   const user = req.body;
 
   try {
