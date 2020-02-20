@@ -131,6 +131,7 @@ async function findUserStatus(sub) {
 
 async function insert(user) {
   const usersTableInsert = {
+    sub: user.sub,
     roles: user.roles,
     username: user.username,
     email: user.email,
