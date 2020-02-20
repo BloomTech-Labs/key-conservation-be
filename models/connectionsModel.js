@@ -1,5 +1,5 @@
 const db = require('../database/dbConfig.js');
-const Users = require('./UsersModel.js');
+const Users = require('./usersModel.js');
 
 function getConnections() {
   return db('connections');
