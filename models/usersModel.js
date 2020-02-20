@@ -249,6 +249,24 @@ async function update(user, id) {
   }
 }
 
+const getNameAndAvatarById = async id => {
+  const user = findById(id);
+  if (user.roles === 'conservationist') {
+    const consNameAndAvatar = {
+      name: user.org_name,
+      avatar: user.profile_image
+    };
+    return consNameAndAvatar;
+  }
+  if (user.roles === 'supporter') {
+    const supNameAndAvatar = {
+      name: user.sup_name,
+      avatar: user.profile_image
+    };
+    return supNameAndAvatar;
+  }
+};
+
 module.exports = {
   find,
   findUser,
@@ -256,5 +274,6 @@ module.exports = {
   findBySub,
   findUserStatus,
   insert,
-  update
+  update,
+  getNameAndAvatarById
 };
