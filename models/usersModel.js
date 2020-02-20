@@ -275,6 +275,6 @@ module.exports = {
   findBySub,
   findUserStatus,
   insert,
-  update,
-  getNameAndAvatarById
+  update
+  // getNameAndAvatarById
 };
