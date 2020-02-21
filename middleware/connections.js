@@ -20,7 +20,7 @@ const checkConnection = async (req, res, next) => {
 // prevents addConnection request to be made where connector and connected have same user id
 const checkUniqueIds = async (req, res, next) => {
   const { connectorId } = req.params;
-  const { connectedId } = req.body.connectedId;
+  const { connectedId } = req.body;
 
   if (connectorId === connectedId) {
     res.status(403).json({ msg: 'A user cannot connect to themselves' });

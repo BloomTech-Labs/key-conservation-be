@@ -250,8 +250,8 @@ router.post('/reactivate/:id', restricted, async (req, res) => {
 
 router.post(
   '/connect/:id',
-  checkConnection,
-  checkUniqueIds,
+  // checkConnection,
+  // checkUniqueIds,
   async (req, res) => {
     if (!req.params.id) {
       res
@@ -307,11 +307,11 @@ router.delete('/connect/:id', async (req, res) => {
 });
 
 router.get('/connect/:userId', async (req, res) => {
-  const id = req.params.userId;
-  const userConnections = await Connections.getConnectionsByUserId(id);
-
+  const userConnections = await Connections.getConnectionsByUserId(
+    req.params.userId
+  );
   try {
-    if (userConnections) {
+    if (userConnections.length > 0) {
       res.status(200).json(userConnections);
     } else {
       res.status(404).json({ msg: 'No connections for that user' });
