@@ -267,8 +267,8 @@ router.post(
     }
 
     const connectionData = {
-      connector_id: parseInt(req.params.id),
-      connected_id: parseInt(req.body.connected_id),
+      connector_id: req.params.id,
+      connected_id: req.body.connected_id,
       status: req.body.status
     };
     try {
@@ -307,11 +307,11 @@ router.delete('/connect/:id', async (req, res) => {
 });
 
 router.get('/connect/:userId', async (req, res) => {
-  const id = req.params.userId;
-  const userConnections = await Connections.getConnectionsByUserId(id);
-
+  const userConnections = await Connections.getConnectionsByUserId(
+    req.params.userId
+  );
   try {
-    if (userConnections) {
+    if (userConnections.length > 0) {
       res.status(200).json(userConnections);
     } else {
       res.status(404).json({ msg: 'No connections for that user' });

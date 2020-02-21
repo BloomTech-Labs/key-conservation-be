@@ -4,7 +4,8 @@ const Connections = require('../models/connectionsModel');
 const checkConnection = async (req, res, next) => {
   const { id } = req.params;
   const allConnections = await Connections.getConnectionsByUserId(id);
-  let found = allConnections.find(
+  console.log('allConnections', allConnections);
+  const found = allConnections.find(
     connection => connection.connected_id === req.body.connected_id
   );
 
@@ -20,12 +21,11 @@ const checkConnection = async (req, res, next) => {
 // prevents addConnection request to be made where connector and connected have same user id
 const checkUniqueIds = async (req, res, next) => {
   const { connectorId } = req.params;
-  const { connectedId } = req.body.connectedId;
+  const { connectedId } = req.body;
 
   if (connectorId === connectedId) {
     res.status(403).json({ msg: 'A user cannot connect to themselves' });
-  }
-  next();
+  } else next();
 };
 
 module.exports = {
