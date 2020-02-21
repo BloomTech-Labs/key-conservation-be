@@ -1,18 +1,16 @@
 // checks if a user is already connected to another to prevent multiple connections between the same users
 const Connections = require('../models/connectionsModel');
 
+// checks to see if users are already connected
 const checkConnection = async (req, res, next) => {
   const { id } = req.params;
   const allConnections = await Connections.getConnectionsByUserId(id);
-  console.log('allConnections', allConnections);
   const found = allConnections.find(
     connection => connection.connected_id === req.body.connected_id
   );
 
-  console.log('found', found);
-
   if (found) {
-    return res.status(403).json({ msg: 'Users are already connected' });
+    return res.status(403).send({ message: 'Users are already connected' });
   }
 
   next();
@@ -20,11 +18,8 @@ const checkConnection = async (req, res, next) => {
 
 // prevents addConnection request to be made where connector and connected have same user id
 const checkUniqueIds = async (req, res, next) => {
-  const { connectorId } = req.params;
-  const { connectedId } = req.body;
-
-  if (connectorId === connectedId) {
-    res.status(403).json({ msg: 'A user cannot connect to themselves' });
+  if (parseInt(req.params.id) === req.body.connected_id) {
+    res.status(403).send({ message: 'A user cannot connect to themselves' });
   } else next();
 };
 
