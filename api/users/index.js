@@ -250,8 +250,8 @@ router.post('/reactivate/:id', restricted, async (req, res) => {
 
 router.post(
   '/connect/:id',
-  // checkConnection,
-  // checkUniqueIds,
+  checkConnection,
+  checkUniqueIds,
   async (req, res) => {
     if (!req.params.id) {
       res
@@ -267,8 +267,8 @@ router.post(
     }
 
     const connectionData = {
-      connector_id: parseInt(req.params.id),
-      connected_id: parseInt(req.body.connected_id),
+      connector_id: req.params.id,
+      connected_id: req.body.connected_id,
       status: req.body.status
     };
     try {
