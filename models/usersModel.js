@@ -141,7 +141,8 @@ async function insert(user) {
     twitter: user.twitter,
     facebook: user.facebook,
     instagram: user.instagram,
-    phone_number: user.phone_number
+    phone_number: user.phone_number,
+    profile_image: user.profile_image
   };
   const [id] = await db('users')
     .insert(usersTableInsert)
