@@ -276,8 +276,6 @@ router.post(
       const connectionData = {
         connector_id: usr.id,
         connected_id: req.params.id,
-        connector_role: usr.roles,
-        connected_role: targetUsr.roles,
         status
       };
 
