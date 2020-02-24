@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const db = require('../database/dbConfig.js');
 const Camp = require('./campaignModel.js');
 const CampUpdate = require('./updateModel.js');
@@ -129,7 +130,22 @@ async function findUserStatus(sub) {
   return response;
 }
 
-async function insert(user) {
+// adds user to conservationists table in add user function
+async function addCons(cons) {
+  const newConservationist = await db('conservationists').insert(
+    cons,
+    'cons_id'
+  );
+  return newConservationist;
+}
+
+// adds user to supporters table in add user function
+async function addSup(sup) {
+  const newSupporter = await db('supporters').insert(sup, 'sup_id');
+  return newSupporter;
+}
+
+async function add(user) {
   const usersTableInsert = {
     sub: user.sub,
     roles: user.roles,
@@ -144,12 +160,10 @@ async function insert(user) {
     phone_number: user.phone_number,
     profile_image: user.profile_image
   };
-  const [id] = await db('users')
-    .insert(usersTableInsert)
-    .returning('id');
+  const [id] = await db('users').insert(usersTableInsert, 'id');
   if (id) {
     if (user.roles === 'conservationist') {
-      const conservationistsTableInsert = {
+      const conservationistsData = {
         users_id: id,
         org_name: user.org_name,
         org_link_url: user.org_link_url,
@@ -158,24 +172,21 @@ async function insert(user) {
         city: user.city,
         country: user.country,
         point_of_contact_name: user.point_of_contact_name,
-        logitude: user.longitude,
+        longitude: user.longitude,
         latitude: user.latitude
       };
-      await db('conservationists')
-        .insert(conservationistsTableInsert)
-        .returning('cons_id');
-    } else if (user.roles === 'supporter') {
-      const supportersTableInsert = {
+      addCons(conservationistsData);
+    }
+    if (user.roles === 'supporter') {
+      const supportersData = {
         users_id: id,
         sup_name: user.sup_name
       };
-      await db('supporters')
-        .insert(supportersTableInsert)
-        .returning('sup_id');
+      addSup(supportersData);
     }
-    const newuser = await findById(id);
-    return newuser;
   }
+  const newuser = await findById(id);
+  return newuser;
 }
 
 async function update(user, id) {
@@ -271,11 +282,13 @@ const getNameAndAvatarById = async id => {
 
 module.exports = {
   find,
+  addCons,
+  addSup,
   findUser,
   findById,
   findBySub,
   findUserStatus,
-  insert,
+  add,
   update,
   getNameAndAvatarById
 };
