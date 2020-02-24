@@ -262,11 +262,9 @@ router.post(
       const status = targetUsr.roles === 'supporter' ? 'Pending' : 'Connected';
 
       if (!req.params.id) {
-        res
-          .status(400)
-          .json({
-            msg: 'You must pass in the connected_id in the request url'
-          });
+        res.status(400).json({
+          msg: 'You must pass in the connected_id in the request url'
+        });
       }
 
       const connectionData = {
@@ -305,7 +303,9 @@ router.delete('/connect/:id', async (req, res) => {
       res.status(404).json({ msg: 'Unable to find connection with that id' });
     }
   } catch (err) {
-    res.status(500).json({ err, msg: 'Unable to delete user from database' });
+    res
+      .status(500)
+      .json({ err, msg: 'Unable to remove connection from database' });
   }
 });
 
@@ -314,11 +314,7 @@ router.get('/connect/:userId', async (req, res) => {
     req.params.userId
   );
   try {
-    if (userConnections.length > 0) {
-      res.status(200).json(userConnections);
-    } else {
-      res.status(404).json({ msg: 'No connections for that user' });
-    }
+    res.status(200).json(userConnections);
   } catch (err) {
     res.status(500).json({ msg: 'Error connecting to database' });
   }
