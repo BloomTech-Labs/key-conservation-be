@@ -257,6 +257,12 @@ router.post(
     try {
       const usr = await Users.findBySub(req.user.sub);
 
+      if (Number(usr.id) === Number(req.params.id)) {
+        return res
+          .status(400)
+          .json({ message: 'You may not connect to yourself' });
+      }
+
       const targetUsr = await Users.findById(req.params.id);
 
       const status = targetUsr.roles === 'supporter' ? 'Pending' : 'Connected';
@@ -270,8 +276,19 @@ router.post(
       const connectionData = {
         connector_id: usr.id,
         connected_id: req.params.id,
+        connector_role: usr.roles,
+        connected_role: targetUsr.roles,
         status
       };
+
+      const duplicate = await Connections.alreadyExists(connectionData);
+
+      if (duplicate) {
+        return res
+          .status(400)
+          .json({ message: 'The users specified are already connected' });
+      }
+
       const newConnection = await Connections.addConnection(connectionData);
 
       if (newConnection) {
@@ -310,12 +327,14 @@ router.delete('/connect/:id', async (req, res) => {
 });
 
 router.get('/connect/:userId', async (req, res) => {
-  const userConnections = await Connections.getConnectionsByUserId(
-    req.params.userId
-  );
   try {
+    const userConnections = await Connections.getConnectionsByUserId(
+      req.params.userId
+    );
+
     res.status(200).json(userConnections);
   } catch (err) {
+    console.log(err);
     res.status(500).json({ msg: 'Error connecting to database' });
   }
 });

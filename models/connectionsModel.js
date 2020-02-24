@@ -11,14 +11,34 @@ async function getConnectionsByUserId(id) {
   const conns = await db('connections')
     .where({ connector_id: id })
     .orWhere({ connected_id: id });
-  const newArray = [];
+
+  let ids = [];
 
   for (const conn of conns) {
-    const user = await Users.getNameAndAvatarById(conn.connected_id);
-    const connection = { ...conn, ...user };
-    newArray.push(connection);
+    if(!(conn.connector_id in ids)) {
+      ids.push(conn.connector_id);
+    }
+    if(!(conn.connected_id in ids)) {
+      ids.push(conn.connected_id);
+    }
   }
-  return newArray;
+
+  const namesAndAvatars = await Users.getNameAndAvatarByIds(ids);
+  
+  return conns.map(conn => {
+    const connected_data = namesAndAvatars.find(d => d.id === conn.connected_id);
+    const connector_data = namesAndAvatars.find(d => d.id === conn.connector_id);
+
+    return {
+      ...conn,
+      connected_name: connected_data.name,
+      connected_avatar: connected_data.avatar,
+      connected_role: connected_data.role,
+      connector_name: connector_data.name,
+      connector_avatar: connector_data.avatar,
+      connector_role: connector_data.role
+    }
+  })
 }
 
 // use this to "unfriend" OR to cancel a connection request
@@ -51,11 +71,29 @@ function respondToConnectionRequest(connectionId, status) {
     .update({ status });
 }
 
+function alreadyExists(connection) {
+  return db('connections')
+    .where({
+      connected_id: connection.connected_id,
+      connector_id: connection.connector_id
+    })
+    .orWhere({
+      connected_id: connection.connector_id,
+      connector_id: connection.connected_id
+    })
+    .then(res => {
+      if (res.length) {
+        return true;
+      } else return false;
+    });
+}
+
 module.exports = {
   getConnections,
   getConnectionsByUserId,
   deleteConnection,
   getConnectionById,
   addConnection,
-  respondToConnectionRequest
+  respondToConnectionRequest,
+  alreadyExists
 };
