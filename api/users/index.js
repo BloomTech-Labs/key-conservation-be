@@ -179,7 +179,6 @@ router.put('/:id', restricted, mw.upload.single('photo'), async (req, res) => {
         .status(401)
         .json({ message: 'You may not modify this profile!' });
     }
-
     const editUser = await Users.update(newUser, id);
 
     if (editUser) {

@@ -3,11 +3,14 @@ const db = require('../database/dbConfig.js');
 const Camp = require('./campaignModel.js');
 const CampUpdate = require('./updateModel.js');
 const Bookmarks = require('./socialModel');
+const Skills = require('./skillsEnum');
+const pick = require('../util/pick');
 
 function find() {
   return db('users')
     .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
     .leftJoin('supporters as sup', 'sup.users_id', 'users.id')
+    .leftJoin('skills', 'skills.user_id', 'users.id')
     .select(
       'users.*',
       'cons.cons_id',
@@ -18,8 +21,10 @@ function find() {
       'cons.about_us',
       'cons.issues',
       'cons.support_us',
-      'sup.sup_name'
-    );
+      'sup.sup_name',
+      db.raw('array_to_json(array_agg(skills.skill)) as skills')
+    )
+    .groupBy('users.id', 'cons.cons_id');
 }
 
 function findUser(id) {
@@ -45,6 +50,7 @@ async function findById(id) {
     const bookmarks = await Bookmarks.findUserBookmarks(id);
     user = await db('users')
       .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
+      .leftJoin('skills', 'skills.user_id', 'users.id')
       .where('users.id', id)
       .select(
         'users.*',
@@ -61,8 +67,10 @@ async function findById(id) {
         'cons.point_of_contact_name',
         'cons.point_of_contact_email',
         'cons.latitude',
-        'cons.longitude'
+        'cons.longitude',
+        db.raw('array_to_json(array_agg(skills.skill)) as skills')
       )
+      .groupBy('users.id', 'cons.cons_id')
       .first();
     user.bookmarks = bookmarks;
     user.campaigns = campaigns.concat(campaign_updates);
@@ -91,6 +99,7 @@ async function findBySub(sub) {
     const bookmarks = await Bookmarks.findUserBookmarks(id);
     user = await db('users')
       .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
+      .leftJoin('skills', 'skills.user_id', 'users.id')
       .where('users.id', id)
       .select(
         'users.*',
@@ -103,8 +112,10 @@ async function findBySub(sub) {
         'cons.issues',
         'cons.support_us',
         'cons.longitude',
-        'cons.latitude'
+        'cons.latitude',
+        db.raw('array_to_json(array_agg(skills.skill)) as skills')
       )
+      .groupBy('users.id', 'cons.cons_id')
       .first();
     user.bookmarks = bookmarks;
   } else if (user.roles === 'supporter') {
@@ -232,7 +243,8 @@ async function update(user, id) {
     'is_deactivated',
     'strikes'
   ];
-  const consColumns = [
+
+  const conservationistColumns = [
     'org_name',
     'org_link_url',
     'org_link_text',
@@ -244,49 +256,53 @@ async function update(user, id) {
     'longitude',
     'latitude'
   ];
-  const supColumns = ['sup_name'];
 
-  let userUpdate = {};
-  let consUpdate = {};
-  let supUpdate = {};
-  let triggerUsers = false;
-  let triggerCons = false;
-  let triggerSup = false;
+  const supporterColumns = ['sup_name'];
 
-  const keys = Object.keys(user);
-
-  keys.forEach(key => {
-    if (userColumns.includes(key)) {
-      triggerUsers = true;
-      userUpdate = { ...userUpdate, [key]: user[key] };
-    } else if (consColumns.includes(key)) {
-      triggerCons = true;
-      consUpdate = { ...consUpdate, [key]: user[key] };
-    } else if (supColumns.includes(key)) {
-      triggerSup = true;
-      supUpdate = { ...supUpdate, [key]: user[key] };
-    }
-  });
+  const triggerUsers = Object.keys(user).some(key => userColumns.includes(key));
+  const userUpdate = pick(user, userColumns);
+  const triggerConservationists = Object.keys(user).some(key => conservationistColumns.includes(key));
+  const conservationistUpdate = pick(user, conservationistColumns);
+  const triggerSupporters = Object.keys(user).some(key => supporterColumns.includes(key));
+  const supporterUpdate = pick(user, supporterColumns);
 
   if (triggerUsers) {
     await db('users')
       .where('id', id)
       .update(userUpdate);
   }
-  if (triggerCons) {
+  if (triggerConservationists) {
     await db('conservationists')
       .where('users_id', id)
-      .update(consUpdate);
+      .update(conservationistUpdate);
   }
-  if (triggerSup) {
+  if (triggerSupporters) {
     await db('supporters')
       .where('users_id', id)
-      .update(supUpdate, '*');
+      .update(supporterUpdate, '*');
   }
-  if (triggerUsers || triggerCons || triggerSup) {
-    const newUser = await findById(id);
-    return newUser;
+
+  if (user.skills && Array.isArray(user.skills)) {
+    const skills = user.skills
+      .map(skill => skill.toUpperCase())
+      .filter(skill => skill in Skills);
+
+    if (skills.length > 0) {
+      // Need to manually build a query with a conflict statement here as Knex doesn't support Postgres conflicts
+      const insertQuery = db('skills').insert(
+        skills.map(skill => ({ user_id: id, skill }))
+      ).toQuery();
+
+      await db.raw(`${insertQuery} ON CONFLICT DO NOTHING`);
+    }
+
+    await db('skills')
+      .whereNotIn('skill', skills)
+      .andWhere('user_id', id)
+      .delete();
   }
+
+  return findById(id);
 }
 
 // This is used for the getConnectionById function in connectionsModel
