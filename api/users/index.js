@@ -250,28 +250,30 @@ router.post('/reactivate/:id', restricted, async (req, res) => {
 
 router.post(
   '/connect/:id',
+  restricted,
   checkConnection,
   checkUniqueIds,
   async (req, res) => {
-    if (!req.params.id) {
-      res
-        .status(400)
-        .json({ msg: 'You must pass in the connector_id in the request url' });
-    }
-
-    if (!req.body.connected_id || !req.body.status) {
-      res.status(400).json({
-        msg:
-          'You must pass in the connected_id and the stats in the body of the request'
-      });
-    }
-
-    const connectionData = {
-      connector_id: req.params.id,
-      connected_id: req.body.connected_id,
-      status: req.body.status
-    };
     try {
+      const usr = await Users.findBySub(req.user.sub);
+
+      const targetUsr = await Users.findById(req.params.id);
+
+      const status = targetUsr.roles === 'supporter' ? 'Pending' : 'Connected';
+
+      if (!req.params.id) {
+        res
+          .status(400)
+          .json({
+            msg: 'You must pass in the connected_id in the request url'
+          });
+      }
+
+      const connectionData = {
+        connector_id: usr.id,
+        connected_id: req.params.id,
+        status
+      };
       const newConnection = await Connections.addConnection(connectionData);
 
       if (newConnection) {
@@ -281,6 +283,7 @@ router.post(
         });
       }
     } catch (err) {
+      console.log(err);
       res
         .status(500)
         .json({ err, msg: 'Unable to add connection to database' });
