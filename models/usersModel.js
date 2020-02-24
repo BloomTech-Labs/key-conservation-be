@@ -251,22 +251,17 @@ async function update(user, id) {
 }
 
 // This is used for the getConnectionById function in connectionsModel
-const getNameAndAvatarById = async id => {
-  const user = await findById(id);
-  if (user.roles === 'conservationist') {
-    const consNameAndAvatar = {
-      name: user.org_name,
-      avatar: user.profile_image
+const getNameAndAvatarByIds = async ids => {
+  const users = await db('users').whereIn('id', ids);
+
+  return users.map(user => {
+    return  {
+      id: user.id,
+      name: user.username,
+      avatar: user.profile_image,
+      role: user.roles
     };
-    return consNameAndAvatar;
-  }
-  if (user.roles === 'supporter') {
-    const supNameAndAvatar = {
-      name: user.sup_name,
-      avatar: user.profile_image
-    };
-    return supNameAndAvatar;
-  }
+  });
 };
 
 module.exports = {
@@ -277,5 +272,5 @@ module.exports = {
   findUserStatus,
   insert,
   update,
-  getNameAndAvatarById
+  getNameAndAvatarByIds
 };
