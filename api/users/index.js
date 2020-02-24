@@ -128,11 +128,11 @@ router.get('/subcheck/:sub', async (request, response) => {
     });
 });
 
-router.post('/', restricted, async (req, res) => {
+router.post('/', async (req, res) => {
   const user = req.body;
 
   try {
-    const newUser = await Users.insert(user);
+    const newUser = await Users.add(user);
 
     if (newUser) {
       res.status(201).json({ newUser, message: 'User added to database' });
@@ -276,6 +276,8 @@ router.post(
       const connectionData = {
         connector_id: usr.id,
         connected_id: req.params.id,
+        connector_role: usr.roles,
+        connected_role: targetUsr.roles,
         status
       };
 
