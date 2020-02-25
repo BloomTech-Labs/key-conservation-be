@@ -265,6 +265,8 @@ async function update(user, id) {
 const getNameAndAvatarByIds = async ids => {
   const users = await db('users').whereIn('id', ids);
 
+  console.log('USERS', users);
+
   return users.map(user => {
     return  {
       id: user.id,
