@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node index.js",
     "server": "nodemon index.js",
-    "test": "jest --watch --verbose"
+    "test": "jest --watch --verbose",
+    "lint": "./node_modules/.bin/eslint ./ --ext .js",
+    "lint:fix": "./node_modules/.bin/eslint ./ --ext .js --fix"
   },
   "repository": {
     "type": "git",
