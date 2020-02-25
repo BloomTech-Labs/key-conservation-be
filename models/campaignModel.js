@@ -1,10 +1,12 @@
 const db = require('../database/dbConfig');
 
-
 const CampUpdate = require('./updateModel.js');
 const CampComments = require('./commentsModel.js');
 const CampLikes = require('./socialModel.js');
+<<<<<<< HEAD
 const skills = require('./skilledImpactRequestsModel');
+=======
+>>>>>>> b10c89b750823613e87c07c665149c900c379888
 
 function find() {
   return db('campaigns')

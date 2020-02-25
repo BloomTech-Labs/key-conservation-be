@@ -5,15 +5,14 @@ exports.up = function(knex) {
             .references("campaigns.camp_id")
             .onDelete("CASCADE")
             .onUpdate("CASCADE");
-        table.enum("skill",{ useNative: true, enumName: 'enum_skills' }).notNullable();
+        table.enum("skill", { useNative: true, enumName: 'enum_skills' }).notNullable();
         table.text("point_of_contact").notNullable();
         table.text("welcome_message").notNullable();
         table.text("our_contribution").notNullable();
-
     });
 };
 
 exports.down = function(knex) {
     return knex.schema.dropTableIfExists('skilled_impact_requests');
-
 };
+

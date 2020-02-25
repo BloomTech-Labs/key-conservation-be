@@ -51,6 +51,5 @@ async function findSkills(campaign_id) {
         });
 }
 
-module.exports = {
-    findSkills
-};
+module.exports = { findSkills };
+

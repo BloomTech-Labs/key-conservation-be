@@ -1,4 +1,3 @@
-
 exports.up = function(knex) {
     return knex.schema.createTable('project_goals', table => {
         table.increments('id').notNullable().unique();
@@ -8,7 +7,6 @@ exports.up = function(knex) {
             .references("skilled_impact_requests.id")
             .onDelete("CASCADE")
             .onUpdate("CASCADE");
-
     });
 };
 
@@ -16,3 +14,4 @@ exports.down = function(knex) {
     return knex.schema.dropTableIfExists('project_goals');
 
 };
+
