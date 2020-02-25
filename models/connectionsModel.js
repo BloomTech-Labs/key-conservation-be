@@ -15,10 +15,10 @@ async function getConnectionsByUserId(id) {
   let ids = [];
 
   for (const conn of conns) {
-    if(!(conn.connector_id in ids)) {
+    if(!ids.includes(conn.connector_id)) {
       ids.push(conn.connector_id);
     }
-    if(!(conn.connected_id in ids)) {
+    if(!ids.includes(conn.connected_id)) {
       ids.push(conn.connected_id);
     }
   }
@@ -28,6 +28,9 @@ async function getConnectionsByUserId(id) {
   return conns.map(conn => {
     const connected_data = namesAndAvatars.find(d => d.id === conn.connected_id);
     const connector_data = namesAndAvatars.find(d => d.id === conn.connector_id);
+
+    // console.log(connected_data);
+    // console.log(connector_data);
 
     return {
       ...conn,
