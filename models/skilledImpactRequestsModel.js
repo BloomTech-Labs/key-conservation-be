@@ -3,7 +3,7 @@ const db = require('../database/dbConfig');
 async function findSkills(campaign_id) {
     return db('project_goals')
         .where({campaign_id})
-        .join('skilled_impact_requests', 'skilled_impact_requests.id','project_goals.skilled_impact_request_id')
+        .fullOuterJoin('skilled_impact_requests', 'skilled_impact_requests.id','project_goals.skilled_impact_request_id')
         .select(
            '*'
         )
@@ -25,25 +25,37 @@ async function findSkills(campaign_id) {
             skilledRequestAndProjectGoal.push(skillAndProjectGoalJSON);
             for(let i = 1; i<returnedQuery.length; i++){
                 if(skillID == returnedQuery[i].id){
-                    projectGoalJSON = {
-                        goal_title: returnedQuery[i].goal_title,
-                        description: returnedQuery[i].description,
-                    };
-                    skilledRequestAndProjectGoal[skillRequestIndex].project_goals.push(projectGoalJSON);
+                    if(returnedQuery[i].goal_title!=null) {
+                        projectGoalJSON = {
+                            goal_title: returnedQuery[i].goal_title,
+                            description: returnedQuery[i].description,
+                        };
+                        skilledRequestAndProjectGoal[skillRequestIndex].project_goals.push(projectGoalJSON);
+                    }
                 }else{
                     skillID = returnedQuery[i].id;
                     skillRequestIndex++;
-                    projectGoalJSON = {
-                        goal_title: returnedQuery[i].goal_title,
-                        description: returnedQuery[i].description,
-                    };
-                    skillAndProjectGoalJSON={
-                        skill: returnedQuery[i].skill,
-                        point_of_contact: returnedQuery[i].point_of_contact,
-                        welcome_message: returnedQuery[i].welcome_message,
-                        our_contribution: returnedQuery[i].our_contribution,
-                        project_goals: [projectGoalJSON]
-                    };
+                    if(returnedQuery[i].goal_title!=null) {
+                        projectGoalJSON = {
+                            goal_title: returnedQuery[i].goal_title,
+                            description: returnedQuery[i].description,
+                        };
+                        skillAndProjectGoalJSON = {
+                            skill: returnedQuery[i].skill,
+                            point_of_contact: returnedQuery[i].point_of_contact,
+                            welcome_message: returnedQuery[i].welcome_message,
+                            our_contribution: returnedQuery[i].our_contribution,
+                            project_goals: [projectGoalJSON]
+                        };
+                    }else{
+                        skillAndProjectGoalJSON = {
+                            skill: returnedQuery[i].skill,
+                            point_of_contact: returnedQuery[i].point_of_contact,
+                            welcome_message: returnedQuery[i].welcome_message,
+                            our_contribution: returnedQuery[i].our_contribution,
+                            project_goals: []
+                        };
+                    }
                     skilledRequestAndProjectGoal.push(skillAndProjectGoalJSON);
                 }
             }
