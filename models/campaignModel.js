@@ -4,7 +4,6 @@ const db = require('../database/dbConfig');
 const CampUpdate = require('./updateModel.js');
 const CampComments = require('./commentsModel.js');
 const CampLikes = require('./socialModel.js');
-const skills = require('./skilledImpactRequestsModel');
 
 
 function find() {
@@ -73,7 +72,6 @@ async function findById(camp_id) {
   campaign.updates = await CampUpdate.findUpdatesByCamp(camp_id);
   campaign.comments = await CampComments.findCampaignComments(camp_id);
   campaign.likes = await CampLikes.findCampaignLikes(camp_id);
-  campaign.skill_impact_requests = await skills.findSkills(camp_id);
   return campaign;
 }
 
