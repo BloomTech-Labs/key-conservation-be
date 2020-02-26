@@ -8,58 +8,41 @@ async function findSkills(campaign_id) {
            '*'
         )
         .then((returnedQuery)=>{
-            let skilledRequestAndProjectGoal=[];
-            let projectGoalJSON = {
-                goal_title: returnedQuery[0].goal_title,
-                description: returnedQuery[0].description,
-            };
-            let skillAndProjectGoalJSON={
+            const skilledRequestAndProjectGoal = new Map();
+            let skillAndProject = {
                 skill: returnedQuery[0].skill,
                 point_of_contact: returnedQuery[0].point_of_contact,
                 welcome_message: returnedQuery[0].welcome_message,
                 our_contribution: returnedQuery[0].our_contribution,
-                project_goals: [projectGoalJSON]
+                project_goals:[{
+                goal_title: returnedQuery[0].goal_title,
+                description: returnedQuery[0].description,
+                }]
             };
-            let skillRequestIndex = 0;
-            let skillID = returnedQuery[0].id;
-            skilledRequestAndProjectGoal.push(skillAndProjectGoalJSON);
+            skilledRequestAndProjectGoal.set(returnedQuery[0].id, skillAndProject);
             for(let i = 1; i<returnedQuery.length; i++){
-                if(skillID == returnedQuery[i].id){
-                    if(returnedQuery[i].goal_title!=null) {
-                        projectGoalJSON = {
+                if(skilledRequestAndProjectGoal.has(returnedQuery[i].id)){
+                    let projectGoal = {
+                        goal_title: returnedQuery[i].goal_title,
+                        description: returnedQuery[i].description,
+                    };
+                    skilledRequestAndProjectGoal.get(returnedQuery[i].id).project_goals.push(projectGoal);
+                }
+                else{
+                    skillAndProject = {
+                        skill: returnedQuery[i].skill,
+                        point_of_contact: returnedQuery[i].point_of_contact,
+                        welcome_message: returnedQuery[i].welcome_message,
+                        our_contribution: returnedQuery[i].our_contribution,
+                        project_goals:[{
                             goal_title: returnedQuery[i].goal_title,
                             description: returnedQuery[i].description,
-                        };
-                        skilledRequestAndProjectGoal[skillRequestIndex].project_goals.push(projectGoalJSON);
-                    }
-                }else{
-                    skillID = returnedQuery[i].id;
-                    skillRequestIndex++;
-                    if(returnedQuery[i].goal_title!=null) {
-                        projectGoalJSON = {
-                            goal_title: returnedQuery[i].goal_title,
-                            description: returnedQuery[i].description,
-                        };
-                        skillAndProjectGoalJSON = {
-                            skill: returnedQuery[i].skill,
-                            point_of_contact: returnedQuery[i].point_of_contact,
-                            welcome_message: returnedQuery[i].welcome_message,
-                            our_contribution: returnedQuery[i].our_contribution,
-                            project_goals: [projectGoalJSON]
-                        };
-                    }else{
-                        skillAndProjectGoalJSON = {
-                            skill: returnedQuery[i].skill,
-                            point_of_contact: returnedQuery[i].point_of_contact,
-                            welcome_message: returnedQuery[i].welcome_message,
-                            our_contribution: returnedQuery[i].our_contribution,
-                            project_goals: []
-                        };
-                    }
-                    skilledRequestAndProjectGoal.push(skillAndProjectGoalJSON);
+                        }]
+                    };
+                    skilledRequestAndProjectGoal.set(returnedQuery[i].id, skillAndProject);
                 }
             }
-            return skilledRequestAndProjectGoal;
+            return Array.from(skilledRequestAndProjectGoal.values());
         });
 }
 

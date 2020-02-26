@@ -3,7 +3,7 @@ const db = require('../database/dbConfig');
 const CampUpdate = require('./updateModel.js');
 const CampComments = require('./commentsModel.js');
 const CampLikes = require('./socialModel.js');
-const skills = require('../skilledImpactRequestsModel.js');
+const skills = require('./skilledImpactRequestsModel.js');
 
 
 function find() {
