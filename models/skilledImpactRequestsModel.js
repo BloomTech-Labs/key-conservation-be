@@ -18,10 +18,6 @@ async function findSkills(campaign_id) {
                         our_contribution: returnedQuery[i].our_contribution,
                         project_goals:[]
                     };
-                    let projectGoal = {
-                        goal_title: returnedQuery[i].goal_title,
-                        description: returnedQuery[i].description,
-                    };
                     skilledRequestAndProjectGoal.set(returnedQuery[i].id, skillAndProject);
                 }
                 let projectGoal = {
