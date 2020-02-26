@@ -49,15 +49,16 @@ router.get('/:id', restricted, async (req, res) => {
       const reqUsr = await Users.findBySub(req.user.sub);
 
       if (!reqUsr.admin) {
-        if (reqUsr.id === user.id)
+        if (reqUsr.id === user.id) {
           return res.status(401).json({
-            message: `Your account has been deactivated. If you believe this is a mistake, please contact support via our website`,
+            message:
+              'Your account has been deactivated. If you believe this is a mistake, please contact support via our website',
             logout: true
           });
-        else
-          return res
-            .status(401)
-            .json({ message: 'This account has been deactivated' });
+        }
+        return res
+          .status(401)
+          .json({ message: 'This account has been deactivated' });
       }
     }
 
@@ -75,22 +76,20 @@ router.get('/sub/:sub', restricted, async (req, res) => {
 
     if (user) {
       if (user.is_deactivated && !reqUsr.admin) {
-        if (reqUsr.id === user.id)
+        if (reqUsr.id === user.id) {
           return res.status(401).json({
-            message: `Your account has been deactivated. If you believe this is a mistake, please contact support via our website`,
+            message:
+              'Your account has been deactivated. If you believe this is a mistake, please contact support via our website',
             logout: true
           });
-        else
-          return res
-            .status(401)
-            .json({ message: 'This account has been deactivated' });
+        }
+        return res
+          .status(401)
+          .json({ message: 'This account has been deactivated' });
       }
       return res.status(200).json({ user, message: 'The user was found' });
-    } else {
-      return res
-        .status(404)
-        .json({ message: 'User not found in the database' });
     }
+    return res.status(404).json({ message: 'User not found in the database' });
   } catch (err) {
     return res
       .status(500)
@@ -114,10 +113,10 @@ router.get('/subcheck/:sub', async (request, response) => {
             'Your account has been deactivated. If you believe this is a mistake, please contact support via our website',
           logout: true
         });
-      } else
-        return response
-          .status(200)
-          .json({ check, message: 'Verification check for users on the DB' });
+      }
+      return response
+        .status(200)
+        .json({ check, message: 'Verification check for users on the DB' });
     })
     .catch(error => {
       log.error(error);
