@@ -8,7 +8,7 @@ const router = express.Router();
 router.use('/users', require('./users'));
 
 // private routes
-router.use('/campaigns', require('./campaigns'));
+router.use('/campaigns', checkJwt, checkDeactivated, require('./campaigns'));
 router.use('/updates', checkJwt, checkDeactivated, require('./updates'));
 router.use('/comments', checkJwt, checkDeactivated, require('./comments'));
 router.use('/social', checkJwt, checkDeactivated, require('./social'));
