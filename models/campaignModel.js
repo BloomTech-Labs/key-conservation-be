@@ -100,7 +100,7 @@ function findUser(id) {
 
 async function findCampByUserId(users_id) {
   const campaigns = await db('campaigns')
-    .where({ users_id })
+    .where('campaigns.users_id', users_id)
     .join('users', 'users.id', 'campaigns.users_id')
     .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
     .select(
