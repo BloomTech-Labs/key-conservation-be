@@ -177,7 +177,7 @@ async function add(user) {
     if (user.roles === 'conservationist') {
       const conservationistsData = {
         users_id: id,
-        org_name: user.org_name,
+        org_name: user.name,
         org_link_url: user.org_link_url,
         org_cta: user.org_cta,
         about_us: user.about_us,
@@ -192,7 +192,7 @@ async function add(user) {
     if (user.roles === 'supporter') {
       const supportersData = {
         users_id: id,
-        sup_name: user.sup_name
+        sup_name: user.name
       };
       addSup(supportersData);
     }
