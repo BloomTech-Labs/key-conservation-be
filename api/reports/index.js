@@ -69,6 +69,10 @@ router.get('/', async (req, res) => {
 
     console.log('constructing response');
 
+    let ids = reports.map(report => report.reported_user);
+
+    const namesAndAvatars = await Users.getNameAndAvatarByIds(ids);
+
     // Slice our response to desired section
     response = {
       // How many pages of data are available?
@@ -79,8 +83,7 @@ router.get('/', async (req, res) => {
       reports: await Promise.all(
         reports.map(async report => {
           // Get data on the reported item
-          console.log(report);
-          const user = await Users.findById(report.reported_user);
+          const user = namesAndAvatars.find(d => d.id === report.reported_user)
 
           const unique_reports = await getSimilarReportCount(report);
 
@@ -91,8 +94,8 @@ router.get('/', async (req, res) => {
             reported_at: report.reported_at,
             table_name: report.table_name,
             unique_reports, // How many unique reports have been made about this?
-            image: user.profile_image, // Image of reported account/post goes here
-            name: user.username // Name of the reported account/post
+            image: user.avatar, // Image of reported account/post goes here
+            name: user.name // Name of the reported account/post
           };
         })
       )
@@ -135,16 +138,20 @@ router.get('/:id', async (req, res) => {
       report => report.id !== parseInt(req.params.id)
     );
 
+    let ids = otherReports.map(report => report.reported_by);
+
+    const users = await Users.getNameAndAvatarByIds(ids);
+
     response.other_reports = await Promise.all(
       otherReports.map(async report => {
-        const reported_by = await Users.findById(report.reported_by);
+        const reported_by = users.find(u => u.id === report.reported_by);
 
         return {
           ...report,
           unique_reports: await getSimilarReportCount(report),
           reported_by: {
             id: reported_by.id,
-            username: reported_by.username
+            name: reported_by.name
           }
         };
       })
@@ -158,7 +165,7 @@ router.get('/:id', async (req, res) => {
 
     response.reported_by = {
       id: reported_by.id,
-      username: reported_by.username
+      name: reported_by.sup_name || reported_by.org_name || 'User'
     };
 
     return res.status(200).json(response);

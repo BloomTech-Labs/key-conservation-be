@@ -16,14 +16,20 @@ function findCampaignComments(id) {
   return db('comments')
     .where({ camp_id: id })
     .join('users', 'users.id', 'comments.users_id')
+    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
+    .leftJoin('supporters as sup', 'sup.users_id', 'users.id')
     .select(
       'comments.*',
       'users.profile_image',
-      'users.username',
+      'cons.org_name',
+      'sup.sup_name',
       'users.is_deactivated'
     )
     .then(res => {
-      return res.filter(c => !c.is_deactivated).sort((a, b) => b.created_at - a.created_at);
+      return res
+        .map(com => ({ ...com, name: com.org_name || com.sup_name || 'User' }))
+        .filter(c => !c.is_deactivated)
+        .sort((a, b) => b.created_at - a.created_at);
     });
 }
 

@@ -4,9 +4,10 @@ function find() {
   return db('campaignUpdates')
     .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
     .join('users', 'users.id', 'campaignUpdates.users_id')
+    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
     .select(
       'users.id as users_id',
-      'users.username',
+      'cons.org_name as name',
       'users.profile_image',
       'users.location',
       'users.is_deactivated',
@@ -24,10 +25,11 @@ function findById(update_id) {
   return db('campaignUpdates')
     .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
     .join('users', 'users.id', 'campaignUpdates.users_id')
+    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
     .where('campaignUpdates.update_id', update_id)
     .select(
       'users.id as users_id',
-      'users.username',
+      'cons.org_name as name',
       'users.profile_image',
       'users.location',
       'users.is_deactivated',
@@ -47,9 +49,10 @@ function findUpdatesByCamp(camp_id) {
   return db('campaignUpdates')
     .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
     .join('users', 'users.id', 'campaignUpdates.users_id')
+    .leftJoin('conservationists', 'cons.users_id', 'users.id')
     .where('campaignUpdates.camp_id', camp_id)
     .select(
-      'users.username',
+      'cons.org_name as name',
       'users.profile_image',
       'users.location',
       'campaigns.camp_name',
@@ -67,9 +70,10 @@ function findUpdatesByUser(users_id) {
   return db('campaignUpdates')
     .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
     .join('users', 'users.id', 'campaignUpdates.users_id')
+    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
     .where('campaignUpdates.users_id', users_id)
     .select(
-      'users.username',
+      'cons.org_name as name',
       'users.profile_image',
       'users.location',
       'campaigns.camp_name',

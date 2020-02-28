@@ -32,7 +32,6 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 {
   "id": UUID,
   "sub": STRING,
-  "username": STRING,
   "email": STRING,
   "profile_image": STRING,
   "created_at": TIMESTAMP,
