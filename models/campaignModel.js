@@ -2,7 +2,6 @@ const db = require('../database/dbConfig');
 
 const CampUpdate = require('./updateModel.js');
 const CampComments = require('./commentsModel.js');
-const CampLikes = require('./socialModel.js');
 
 function find() {
   return db('campaigns')
@@ -13,15 +12,6 @@ function find() {
       'users.profile_image',
       'users.location',
       'campaigns.*'
-    )
-    .then(campaigns =>
-      db('likes').then(likes => {
-        campaigns.map(
-          cam =>
-            (cam.likes = likes.filter(like => like.camp_id === cam.camp_id))
-        );
-        return campaigns;
-      })
     )
     .then(campaigns =>
       db('comments')
@@ -82,7 +72,6 @@ async function findById(camp_id) {
     .first();
   campaign.updates = await CampUpdate.findUpdatesByCamp(camp_id);
   campaign.comments = await CampComments.findCampaignComments(camp_id);
-  campaign.likes = await CampLikes.findCampaignLikes(camp_id);
   return campaign;
 }
 
@@ -112,7 +101,6 @@ async function findCampByUserId(users_id) {
   const withUpdates = campaigns.map(async camp => {
     camp.updates = await CampUpdate.findUpdatesByCamp(camp.camp_id);
     camp.comments = await CampComments.findCampaignComments(camp.camp_id);
-    camp.likes = await CampLikes.findCampaignLikes(camp.camp_id);
     return camp;
   });
   const result = await Promise.all(withUpdates);
