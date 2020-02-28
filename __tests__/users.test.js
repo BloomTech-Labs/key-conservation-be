@@ -8,18 +8,6 @@ describe('user routes', () => {
   });
 });
 
-describe('it registers a user creating a new login', () => {
-  it('registers a new user', async () => {
-    const newUser = {
-      username: 'dobbie',
-      password: 'house elf',
-    };
-
-    await supertest(server).post('/api/register', newUser)
-      .expect(404);
-  });
-});
-
 describe('it registers a new user', () => {
   it("won't add a new user without a token", async () => {
     const newConservationist = {

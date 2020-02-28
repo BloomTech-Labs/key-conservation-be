@@ -26,10 +26,11 @@ function findCampaignComments(id) {
       'users.is_deactivated'
     )
     .then(res => {
-      return res
+      const comments = res
         .map(com => ({ ...com, name: com.org_name || com.sup_name || 'User' }))
         .filter(c => !c.is_deactivated)
         .sort((a, b) => b.created_at - a.created_at);
+      return comments;
     });
 }
 

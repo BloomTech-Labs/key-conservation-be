@@ -123,7 +123,7 @@ async function findBySub(sub) {
 // DO NOT MODIFY. This model is available to the outside.
 async function findUserStatus(sub) {
   const user = await db('users')
-    .leftJoin('conservationists', 'cons.users_id', 'users.id')
+    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
     .leftJoin('supporters as sup', 'sup.users_id', 'users.id')
     .select('users.*', 'sup.sup_name', 'cons.org_name')
     .where({ sub })

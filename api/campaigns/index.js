@@ -28,7 +28,7 @@ router.get('/:id', (req, res) => {
 
   Camp.findCampaign(id)
     .then(result => {
-      log.info(result);
+      // log.info(result);
       if (result) {
         return Camp.findById(id);
       } else {
@@ -38,6 +38,7 @@ router.get('/:id', (req, res) => {
     .then(async camp => {
       // If this campaign belongs to a deactivated account, then
       // only an admin should be able to see it
+
       if (camp.is_deactivated) {
         const user = await Users.findBySub(req.user.sub);
 
@@ -50,9 +51,10 @@ router.get('/:id', (req, res) => {
 
       return res.status(200).json({ camp, msg: 'The campaign was found' });
     })
-    .catch(err =>
+    .catch(err => {
+      console.log(err)
       res.status(500).json({ err, msg: 'Unable to make request to server' })
-    );
+    });
 });
 
 router.get('/camp/:id', (req, res) => {

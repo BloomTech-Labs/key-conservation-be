@@ -71,21 +71,15 @@ async function findById(camp_id) {
   const campaign = await db('campaigns')
     .where({ camp_id })
     .join('users', 'users.id', 'campaigns.users_id')
-    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
-    .leftJoin('supporters as sup', 'sup.users_id', 'users.id')
+    .leftJoin('conservationists as cons', 'cons.users_id', 'campaigns.users_id')
     .select(
-      'cons.org_name',
-      'sup.sup_name',
+      'cons.org_name as name',
       'users.profile_image',
       'users.location',
       'users.is_deactivated',
       'campaigns.*'
     )
-    .first()
-    .then(camp => ({
-      ...camp,
-      name: camp.org_name || camp.sup_name || 'User'
-    }));
+    .first();
   campaign.updates = await CampUpdate.findUpdatesByCamp(camp_id);
   campaign.comments = await CampComments.findCampaignComments(camp_id);
   campaign.likes = await CampLikes.findCampaignLikes(camp_id);

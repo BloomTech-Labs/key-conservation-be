@@ -49,7 +49,7 @@ function findUpdatesByCamp(camp_id) {
   return db('campaignUpdates')
     .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
     .join('users', 'users.id', 'campaignUpdates.users_id')
-    .leftJoin('conservationists', 'cons.users_id', 'users.id')
+    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
     .where('campaignUpdates.camp_id', camp_id)
     .select(
       'cons.org_name as name',
