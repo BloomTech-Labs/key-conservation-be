@@ -32,7 +32,6 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 {
   "id": UUID,
   "sub": STRING,
-  "username": STRING,
   "email": STRING,
   "profile_image": STRING,
   "created_at": TIMESTAMP,
@@ -98,7 +97,7 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 }
 ```
 
-#### CAMPAIGNUPDATES
+#### CAMPAIGN_UPDATES
 
 ---
 
@@ -125,21 +124,6 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 "created_at": TIMESTAMP,
 "camp_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
 "comment_body": TEXT
-}
-
-```
-
-#### LIKES
-
----
-
-```
-
-{
-"like_id": UUID,
-"users_id": FOREIGN KEY - "id" in USERS table,
-"camp_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
-"update_id": FOREIGN KEY - "update_id" in CAMPAIGNUPDATES table
 }
 
 ```

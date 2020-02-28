@@ -1,38 +1,36 @@
 const db = require('../database/dbConfig');
 
 function find() {
-  return db('campaignUpdates')
-    .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
-    .join('users', 'users.id', 'campaignUpdates.users_id')
+  return db('campaign_updates')
+    .join('campaigns', 'campaigns.camp_id', 'campaign_updates.camp_id')
+    .join('users', 'users.id', 'campaign_updates.users_id')
+    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
     .select(
       'users.id as users_id',
-      'users.username',
+      'cons.org_name as name',
       'users.profile_image',
       'users.location',
       'users.is_deactivated',
       'campaigns.camp_name',
-      'campaignUpdates.*',
+      'campaign_updates.*',
     )
-    .then(updates => updates.filter(update => !update.is_deactivated))
-    .then((updates) => db('likes').then((likes) => updates.map((up) => ({
-      ...up,
-      likes: likes.filter((like) => like.update_id === up.update_id),
-    }))));
+    .then(updates => updates.filter(update => !update.is_deactivated));
 }
 
 function findById(update_id) {
-  return db('campaignUpdates')
-    .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
-    .join('users', 'users.id', 'campaignUpdates.users_id')
-    .where('campaignUpdates.update_id', update_id)
+  return db('campaign_updates')
+    .join('campaigns', 'campaigns.camp_id', 'campaign_updates.camp_id')
+    .join('users', 'users.id', 'campaign_updates.users_id')
+    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
+    .where('campaign_updates.update_id', update_id)
     .select(
       'users.id as users_id',
-      'users.username',
+      'cons.org_name as name',
       'users.profile_image',
       'users.location',
       'users.is_deactivated',
       'campaigns.camp_name',
-      'campaignUpdates.*',
+      'campaign_updates.*',
     )
     .first();
 }
@@ -44,47 +42,37 @@ function findCamp(camp_id) {
 }
 
 function findUpdatesByCamp(camp_id) {
-  return db('campaignUpdates')
-    .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
-    .join('users', 'users.id', 'campaignUpdates.users_id')
-    .where('campaignUpdates.camp_id', camp_id)
+  return db('campaign_updates')
+    .join('campaigns', 'campaigns.camp_id', 'campaign_updates.camp_id')
+    .join('users', 'users.id', 'campaign_updates.users_id')
+    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
+    .where('campaign_updates.camp_id', camp_id)
     .select(
-      'users.username',
+      'cons.org_name as name',
       'users.profile_image',
       'users.location',
       'campaigns.camp_name',
-      'campaignUpdates.*',
-    )
-    .then((updates) => db('likes').then((likes) => {
-      updates.map((u) => (u.likes = likes.filter(
-        (like) => like.update_id === u.update_id,
-      )));
-      return updates;
-    }));
+      'campaign_updates.*',
+    );
 }
 
 function findUpdatesByUser(users_id) {
-  return db('campaignUpdates')
-    .join('campaigns', 'campaigns.camp_id', 'campaignUpdates.camp_id')
-    .join('users', 'users.id', 'campaignUpdates.users_id')
-    .where('campaignUpdates.users_id', users_id)
+  return db('campaign_updates')
+    .join('campaigns', 'campaigns.camp_id', 'campaign_updates.camp_id')
+    .join('users', 'users.id', 'campaign_updates.users_id')
+    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
+    .where('campaign_updates.users_id', users_id)
     .select(
-      'users.username',
+      'cons.org_name as name',
       'users.profile_image',
       'users.location',
       'campaigns.camp_name',
-      'campaignUpdates.*',
-    )
-    .then((updates) => db('likes').then((likes) => {
-      updates.map((u) => (u.likes = likes.filter(
-        (like) => like.update_id === u.update_id,
-      )));
-      return updates;
-    }));
+      'campaign_updates.*',
+    );
 }
 
 async function insert(campUpdate) {
-  const [update_id] = await db('campaignUpdates')
+  const [update_id] = await db('campaign_updates')
     .insert(campUpdate)
     .returning('update_id');
   if (update_id) {
@@ -94,7 +82,7 @@ async function insert(campUpdate) {
 }
 
 async function update(changes, update_id) {
-  const editedCampUpdate = await db('campaignUpdates')
+  const editedCampUpdate = await db('campaign_updates')
     .where({ update_id })
     .update(changes);
   if (editedCampUpdate) {
@@ -104,7 +92,7 @@ async function update(changes, update_id) {
 }
 
 async function remove(update_id) {
-  const deleted = await db('campaignUpdates')
+  const deleted = await db('campaign_updates')
     .where({ update_id })
     .del();
   if (deleted) {

@@ -3,9 +3,8 @@ exports.up = function(knex) {
         table.increments('id').notNullable().unique();
         table.integer("campaign_id").notNullable()
             .references("campaigns.camp_id")
-            .onDelete("CASCADE")
-            .onUpdate("CASCADE");
-        table.enum("skill", { useNative: true, enumName: 'enum_skills' }).notNullable();
+            .onDelete("CASCADE");
+        table.enum("skill", null, { useNative: true, enumName: 'enum_skills', existingType: true }).notNullable();
         table.text("point_of_contact").notNullable();
         table.text("welcome_message").notNullable();
         table.text("our_contribution").notNullable();

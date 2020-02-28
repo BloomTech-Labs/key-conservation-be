@@ -39,6 +39,8 @@ router.get('/:id', restricted, async (req, res) => {
   try {
     const user = await Users.findById(id);
 
+    console.log('succeeded')
+
     if (!user) {
       return res
         .status(404)
@@ -64,6 +66,7 @@ router.get('/:id', restricted, async (req, res) => {
 
     return res.status(200).json({ user, message: 'The user was found' });
   } catch (err) {
+    console.log(err)
     return res.status(500).json({ message: err.message, err });
   }
 });
@@ -130,6 +133,8 @@ router.get('/subcheck/:sub', async (request, response) => {
 router.post('/', mw.upload.single('photo'), async (req, res) => {
   let user = req.body;
   let location;
+  console.log('posting user')
+
   if (req.file) {
     location = req.file.location;
     user = {
@@ -138,13 +143,18 @@ router.post('/', mw.upload.single('photo'), async (req, res) => {
     };
   }
 
+  console.log('processed file if any')
+
   try {
+    console.log('trying to add... ')
     const newUser = await Users.add(user);
 
+    console.log('added');
     if (newUser) {
       res.status(201).json({ newUser, message: 'User added to database' });
     }
   } catch (err) {
+    console.log(err);
     res.status(500).json({ err, message: 'Unable to add user' });
   }
 });
@@ -156,7 +166,7 @@ router.put('/:id', restricted, mw.upload.single('photo'), async (req, res) => {
   if (req.file) {
     location = req.file.location;
     newUser = {
-      ...req.body,
+      ...newUser,
       profile_image: location
     };
   }
