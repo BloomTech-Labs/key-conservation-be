@@ -128,10 +128,13 @@ async function findUserStatus(sub) {
     .select('users.*', 'sup.sup_name', 'cons.org_name')
     .where({ sub })
     .first()
-    .then(usr => usr && ({
-      ...usr,
-      name: usr.sup_name || usr.org_name || 'User'
-    }));
+    .then(
+      usr =>
+        usr && {
+          ...usr,
+          name: usr.sup_name || usr.org_name || 'User'
+        }
+    );
 
   let response = {};
 
@@ -166,7 +169,6 @@ async function add(user) {
     email: user.email,
     location: user.location,
     mini_bio: user.mini_bio,
-    species_and_habitats: user.species_and_habitats,
     twitter: user.twitter,
     facebook: user.facebook,
     instagram: user.instagram,
@@ -176,38 +178,44 @@ async function add(user) {
 
   console.log('constructed user data', usersTableInsert);
 
-  const [id] = await db('users').insert(usersTableInsert, 'id');
+  try {
+    const [id] = await db('users').insert(usersTableInsert, 'id');
+    console.log('user id established as', id);
 
-  console.log('user id established as', id);
-
-  if (id) {
-    if (user.roles === 'conservationist') {
-      const conservationistsData = {
-        users_id: id,
-        org_name: user.name,
-        org_link_url: user.org_link_url,
-        org_cta: user.org_cta,
-        about_us: user.about_us,
-        city: user.city,
-        country: user.country,
-        point_of_contact_name: user.point_of_contact_name,
-        longitude: user.longitude,
-        latitude: user.latitude
-      };
-      console.log('constructued conservationist profile', conservationistsData);
-      addCons(conservationistsData);
+    if (id) {
+      if (user.roles === 'conservationist') {
+        const conservationistsData = {
+          users_id: id,
+          org_name: user.name,
+          org_link_url: user.org_link_url,
+          org_cta: user.org_cta,
+          about_us: user.about_us,
+          city: user.city,
+          country: user.country,
+          point_of_contact_name: user.point_of_contact_name,
+          longitude: user.longitude,
+          latitude: user.latitude
+        };
+        console.log(
+          'constructued conservationist profile',
+          conservationistsData
+        );
+        addCons(conservationistsData);
+      }
+      if (user.roles === 'supporter') {
+        const supportersData = {
+          users_id: id,
+          sup_name: user.name
+        };
+        console.log('constructed supporter profile', supportersData);
+        addSup(supportersData);
+      }
     }
-    if (user.roles === 'supporter') {
-      const supportersData = {
-        users_id: id,
-        sup_name: user.name
-      };
-      console.log('constructed supporter profile', supportersData)
-      addSup(supportersData);
-    }
+    const newuser = await findById(id);
+    return newuser;
+  } catch (err) {
+    throw new Error(err.message);
   }
-  const newuser = await findById(id);
-  return newuser;
 }
 
 async function update(user, id) {
@@ -259,7 +267,7 @@ async function update(user, id) {
       supUpdate = { ...supUpdate, [key]: user[key] };
     }
   });
-  
+
   if (triggerUsers) {
     await db('users')
       .where('id', id)
@@ -273,7 +281,7 @@ async function update(user, id) {
   if (triggerSup) {
     await db('supporters')
       .where('users_id', id)
-      .update(supUpdate, '*')
+      .update(supUpdate, '*');
   }
   if (triggerUsers || triggerCons || triggerSup) {
     const newUser = await findById(id);
@@ -283,7 +291,6 @@ async function update(user, id) {
 
 // This is used for the getConnectionById function in connectionsModel
 const getNameAndAvatarByIds = async ids => {
-
   try {
     const users = await db('users')
       .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
