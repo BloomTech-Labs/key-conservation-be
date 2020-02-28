@@ -9,7 +9,7 @@ exports.up = function(knex, Promise) {
 };
 
 exports.down = function(knex, Promise) {
-  return knex.schema.table('username', tbl => {
+  return knex.schema.table('users', tbl => {
     tbl
       .string('username', 30)
       .notNullable()

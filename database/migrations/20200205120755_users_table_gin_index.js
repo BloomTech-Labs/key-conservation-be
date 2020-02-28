@@ -2,8 +2,7 @@ const addUserIndex = `
 ALTER TABLE public.users
 	ADD COLUMN IF NOT EXISTS full_text_weighted tsvector;
 UPDATE public.users
-SET full_text_weighted = setweight(to_tsvector(username), 'A') 
-    ||  setweight(to_tsvector(email), 'B'); 
+SET full_text_weighted = setweight(to_tsvector(email), 'A'); 
 CREATE INDEX IF NOT EXISTS full_text_weighted_index
 	ON public.users
     USING GIN (full_text_weighted);
@@ -11,8 +10,7 @@ CREATE INDEX IF NOT EXISTS full_text_weighted_index
 CREATE OR REPLACE FUNCTION user_tsvector_trigger() RETURNS trigger AS $$
 begin
     new.full_text_weighted :=     
-    setweight(to_tsvector('english', coalesce(new.username, '')), 'A')
-    || setweight(to_tsvector('english', coalesce(new.email, '')), 'B');
+    setweight(to_tsvector('english', coalesce(new.email, '')), 'A');
     return new;
 end
 $$ LANGUAGE plpgsql;

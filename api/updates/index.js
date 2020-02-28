@@ -195,7 +195,7 @@ router.delete('/:id', async (req, res) => {
 
     // Remove all reports relating to this update
 
-    await Reports.removeWhere({post_id: id, table_name: 'campaignUpdates'})
+    await Reports.removeWhere({post_id: id, table_name: 'campaign_updates'})
 
     if (campUpdates) {
       res.status(200).json(campUpdates);

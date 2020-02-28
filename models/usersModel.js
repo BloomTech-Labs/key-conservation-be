@@ -41,7 +41,7 @@ async function findById(id) {
 
   if (user.roles === 'conservationist') {
     const campaigns = await Camp.findCampByUserId(id);
-    const campaignUpdates = await CampUpdate.findUpdatesByUser(id);
+    const campaign_updates = await CampUpdate.findUpdatesByUser(id);
     const bookmarks = await Bookmarks.findUserBookmarks(id);
     user = await db('users')
       .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
@@ -65,7 +65,7 @@ async function findById(id) {
       )
       .first();
     user.bookmarks = bookmarks;
-    user.campaigns = campaigns.concat(campaignUpdates);
+    user.campaigns = campaigns.concat(campaign_updates);
   } else if (user.roles === 'supporter') {
     const bookmarks = await Bookmarks.findUserBookmarks(id);
     user = await db('users')

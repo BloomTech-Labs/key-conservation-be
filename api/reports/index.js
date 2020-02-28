@@ -37,7 +37,7 @@ router.get('/', async (req, res) => {
         response = response.filter(
           report =>
             report.table_name === 'campaigns' ||
-            report.table_name === 'campaignUpdates'
+            report.table_name === 'campaign_updates'
         );
         break;
       case 'comments':
@@ -185,7 +185,7 @@ router.post('/', async (req, res) => {
     const error = checkFields(required, req.body);
     if (error) throw new Error(error);
 
-    const types = ['users', 'campaigns', 'campaignUpdates', 'comments'];
+    const types = ['users', 'campaigns', 'campaign_updates', 'comments'];
 
     // Make sure provided type is a valid table name
     if (!types.includes(req.body.postType))
@@ -226,7 +226,7 @@ router.post('/', async (req, res) => {
         // Campaign Updates
 
         // Get campaign update
-        const [camp_update] = await db('campaignUpdates').where({
+        const [camp_update] = await db('campaign_updates').where({
           update_id: req.body.postId
         });
         // Get campaign from campaign update
