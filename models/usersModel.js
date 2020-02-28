@@ -155,6 +155,7 @@ async function addCons(cons) {
 // adds user to supporters table in add user function
 async function addSup(sup) {
   const newSupporter = await db('supporters').insert(sup, 'sup_id');
+  console.log('added to supporter database');
   return newSupporter;
 }
 
@@ -172,7 +173,13 @@ async function add(user) {
     phone_number: user.phone_number,
     profile_image: user.profile_image
   };
+
+  console.log('constructed user data', usersTableInsert);
+
   const [id] = await db('users').insert(usersTableInsert, 'id');
+
+  console.log('user id established as', id);
+
   if (id) {
     if (user.roles === 'conservationist') {
       const conservationistsData = {
@@ -187,6 +194,7 @@ async function add(user) {
         longitude: user.longitude,
         latitude: user.latitude
       };
+      console.log('constructued conservationist profile', conservationistsData);
       addCons(conservationistsData);
     }
     if (user.roles === 'supporter') {
@@ -194,6 +202,7 @@ async function add(user) {
         users_id: id,
         sup_name: user.name
       };
+      console.log('constructed supporter profile', supportersData)
       addSup(supportersData);
     }
   }
