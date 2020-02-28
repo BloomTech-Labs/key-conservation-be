@@ -14,11 +14,7 @@ function find() {
       'campaigns.camp_name',
       'campaign_updates.*',
     )
-    .then(updates => updates.filter(update => !update.is_deactivated))
-    .then((updates) => db('likes').then((likes) => updates.map((up) => ({
-      ...up,
-      likes: likes.filter((like) => like.update_id === up.update_id),
-    }))));
+    .then(updates => updates.filter(update => !update.is_deactivated));
 }
 
 function findById(update_id) {
@@ -57,13 +53,7 @@ function findUpdatesByCamp(camp_id) {
       'users.location',
       'campaigns.camp_name',
       'campaign_updates.*',
-    )
-    .then((updates) => db('likes').then((likes) => {
-      updates.map((u) => (u.likes = likes.filter(
-        (like) => like.update_id === u.update_id,
-      )));
-      return updates;
-    }));
+    );
 }
 
 function findUpdatesByUser(users_id) {
@@ -78,13 +68,7 @@ function findUpdatesByUser(users_id) {
       'users.location',
       'campaigns.camp_name',
       'campaign_updates.*',
-    )
-    .then((updates) => db('likes').then((likes) => {
-      updates.map((u) => (u.likes = likes.filter(
-        (like) => like.update_id === u.update_id,
-      )));
-      return updates;
-    }));
+    );
 }
 
 async function insert(campUpdate) {

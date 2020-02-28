@@ -22,6 +22,7 @@ router.get('/', async (req, res) => {
         .json({ msg: 'Campaign updates were not found in the database' });
     }
   } catch (err) {
+    console.log(err);
     res.status(500).json({ err, msg: 'Unable to make request to server' });
   }
 });

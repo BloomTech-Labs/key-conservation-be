@@ -15,6 +15,7 @@ router.get('/', async (req, res) => {
 
     res.status(200).json({ camp, msg: 'The campaigns were found' });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ err, msg: 'Unable to make request to server' });
   }
 });

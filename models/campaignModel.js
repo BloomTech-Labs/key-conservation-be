@@ -48,7 +48,10 @@ function find() {
           } else return true;
         });
       })
-    );
+    )
+    .catch(err => {
+      throw new Error(err.message);
+    });
 }
 
 function findCampaign(camp_id) {
