@@ -152,7 +152,7 @@ router.put('/:id', restricted, mw.upload.single('photo'), async (req, res) => {
   if (req.file) {
     location = req.file.location;
     newUser = {
-      ...req.body,
+      ...newUser,
       profile_image: location
     };
   }

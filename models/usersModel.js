@@ -128,7 +128,7 @@ async function findUserStatus(sub) {
     .select('users.*', 'sup.sup_name', 'cons.org_name')
     .where({ sub })
     .first()
-    .then(usr => ({
+    .then(usr => usr && ({
       ...usr,
       name: usr.sup_name || usr.org_name || 'User'
     }));
@@ -250,7 +250,7 @@ async function update(user, id) {
       supUpdate = { ...supUpdate, [key]: user[key] };
     }
   });
-
+  
   if (triggerUsers) {
     await db('users')
       .where('id', id)
@@ -264,7 +264,7 @@ async function update(user, id) {
   if (triggerSup) {
     await db('supporters')
       .where('users_id', id)
-      .update(supUpdate);
+      .update(supUpdate, '*')
   }
   if (triggerUsers || triggerCons || triggerSup) {
     const newUser = await findById(id);
