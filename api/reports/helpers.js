@@ -11,7 +11,7 @@ module.exports = {
       case 'campaigns': {
         return `camp_id`;
       }
-      case 'campaignUpdates': {
+      case 'campaign_updates': {
         return `update_id`;
       }
       default: {

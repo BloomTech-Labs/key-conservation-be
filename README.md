@@ -34,8 +34,6 @@ To get the server running locally:
 
 https://documenter.getpostman.com/view/7671243/SVYtNdSZ?version=latest
 
-
-
 ## Data Model
 
 #### Airtable Key Access
@@ -50,7 +48,6 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 {
   "id": UUID,
   "sub": STRING,
-  "username": STRING,
   "email": STRING,
   "profile_image": STRING,
   "created_at": TIMESTAMP,
@@ -116,7 +113,7 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 }
 ```
 
-#### CAMPAIGNUPDATES
+#### CAMPAIGN_UPDATES
 
 ---
 
@@ -147,21 +144,6 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 
 ```
 
-#### LIKES
-
----
-
-```
-
-{
-"like_id": UUID,
-"users_id": FOREIGN KEY - "id" in USERS table,
-"camp_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
-"update_id": FOREIGN KEY - "update_id" in CAMPAIGNUPDATES table
-}
-
-```
-
 #### BOOKMARKS
 
 ---
@@ -180,18 +162,28 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 
 ---
 
-```
+{
+"id": UUID,
+"reported_by": FOREIGN KEY - "id" in USERS table,
+"reported_user": FOREIGN KEY - "id" in USERS table,
+"post_id": INTEGER,
+"table_name": STRING,
+"report_desc": STRING,
+"reported_at": TIMESTAMP,
+"is_archived": BOOLEAN
+}
+
+#### CONNECTIONS
+
+---
 
 {
-  "id": UUID,
-  "reported_by": FOREIGN KEY - "id" in USERS table,
-  "reported_user": FOREIGN KEY - "id" in USERS table,
-  "post_id": INTEGER,
-  "table_name": STRING,
-  "report_desc": STRING,
-  "reported_at": TIMESTAMP,
-  "is_archived": BOOLEAN
+"connection_id": UUID,
+"connector_id": FOREIGN KEY - "id" in USERS table,
+"connected_id": FOREIGN KEY - "id" in USERS table
 }
+
+```
 
 ## Contributing
 
@@ -231,6 +223,8 @@ These contribution guidelines have been adapted from [this good-Contributing.md-
 ## Documentation
 
 See [Key Conservation](https://github.com/labs14-key-conservation/Frontend-Mobile) for details on the frontend of our project.
+
+```
 
 ```
 
