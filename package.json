@@ -38,6 +38,12 @@
     "pg": "^7.10.0",
     "winston": "^3.2.1"
   },
+  "collectCoverageFrom": [
+    "**/*.{js,jsx}",
+    "!**/node_modules/**",
+    "!**/vendor/**",
+    "!**/__tests__/**"
+  ],
   "devDependencies": {
     "cross-env": "^5.2.0",
     "eslint": "^6.8.0",
