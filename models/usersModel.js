@@ -6,6 +6,39 @@ const Bookmarks = require('./socialModel');
 const Skills = require('./skillsEnum');
 const pick = require('../util/pick');
 
+// Columns of the user model that are stored in the users table
+const userColumns = [
+  'username',
+  'email',
+  'profile_image',
+  'location',
+  'mini_bio',
+  'species_and_habitats',
+  'twitter',
+  'facebook',
+  'instagram',
+  'phone_number',
+  'is_deactivated',
+  'strikes'
+];
+
+// Columns of the user model that are stored in the conservationists table
+const conservationistColumns = [
+  'org_name',
+  'org_link_url',
+  'org_link_text',
+  'cons.org_cta',
+  'org_cta',
+  'about_us',
+  'issues',
+  'support_us',
+  'longitude',
+  'latitude'
+];
+
+// Columns of the user model that are stored in the supporters table
+const supporterColumns = ['sup_name'];
+
 function find() {
   return db('users')
     .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
@@ -229,77 +262,68 @@ async function add(user) {
   }
 }
 
-async function update(user, id) {
-  const userColumns = [
-    'email',
-    'profile_image',
-    'location',
-    'mini_bio',
-    'species_and_habitats',
-    'twitter',
-    'facebook',
-    'instagram',
-    'phone_number',
-    'is_deactivated',
-    'strikes'
-  ];
-
-  const conservationistColumns = [
-    'org_name',
-    'org_link_url',
-    'org_link_text',
-    'cons.org_cta',
-    'org_cta',
-    'about_us',
-    'issues',
-    'support_us',
-    'longitude',
-    'latitude'
-  ];
-
-  const supporterColumns = ['sup_name'];
-
-  const triggerUsers = Object.keys(user).some(key => userColumns.includes(key));
+async function updateUsersTable(user, id) {
   const userUpdate = pick(user, userColumns);
-  const triggerConservationists = Object.keys(user).some(key => conservationistColumns.includes(key));
+  await db('users')
+    .where('id', id)
+    .update(userUpdate);
+}
+
+async function updateConservationistsTable(user, id) {
   const conservationistUpdate = pick(user, conservationistColumns);
-  const triggerSupporters = Object.keys(user).some(key => supporterColumns.includes(key));
+  await db('conservationists')
+    .where('users_id', id)
+    .update(conservationistUpdate);
+}
+
+async function updateSupportersTable(user, id) {
   const supporterUpdate = pick(user, supporterColumns);
+  await db('supporters')
+    .where('users_id', id)
+    .update(supporterUpdate);
+}
+
+async function updateSkillsTable(user, id) {
+  const skills = user.skills
+    .map(skill => skill.toUpperCase())
+    .filter(skill => skill in Skills);
+
+  if (skills.length > 0) {
+    // Need to manually build a query with a conflict statement here as Knex doesn't support Postgres conflicts
+    const insertQuery = db('skills').insert(
+      skills.map(skill => ({ user_id: id, skill }))
+    ).toQuery();
+
+    await db.raw(`${insertQuery} ON CONFLICT DO NOTHING`);
+  }
+
+  await db('skills')
+    .whereNotIn('skill', skills)
+    .andWhere('user_id', id)
+    .delete();
+}
+
+async function update(user, id) {
+  const isEmpty = (obj) => Object.getOwnPropertyNames(obj).length === 0;
+  const triggerUsers = isEmpty(pick(user, userColumns));
+  const triggerConservationists = isEmpty(pick(user, conservationistColumns));
+  const triggerSupporters = isEmpty(pick(user, supporterColumns));
+  const triggerSkills = user.skils && Array.isArray(user.skills);
 
   if (triggerUsers) {
-    await db('users')
-      .where('id', id)
-      .update(userUpdate);
+    await updateUsersTable(user, id);
   }
+
   if (triggerConservationists) {
-    await db('conservationists')
-      .where('users_id', id)
-      .update(conservationistUpdate);
+    await updateConservationistsTable(user, id);
   }
+
   if (triggerSupporters) {
-    await db('supporters')
-      .where('users_id', id)
-      .update(supporterUpdate, '*');
+    await updateSupportersTable(user, id);
   }
 
-  if (user.skills && Array.isArray(user.skills)) {
-    const skills = user.skills
-      .map(skill => skill.toUpperCase())
-      .filter(skill => skill in Skills);
-
-    if (skills.length > 0) {
-      // Need to manually build a query with a conflict statement here as Knex doesn't support Postgres conflicts
-      const insertQuery = db('skills').insert(
-        skills.map(skill => ({ user_id: id, skill }))
-      ).toQuery();
-
-      await db.raw(`${insertQuery} ON CONFLICT DO NOTHING`);
-    }
-
-    await db('skills')
-      .whereNotIn('skill', skills)
-      .andWhere('user_id', id)
-      .delete();
+  if (triggerSkills) {
+    await updateSkillsTable(user, id);
   }
 
   return findById(id);
