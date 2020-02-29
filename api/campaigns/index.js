@@ -6,6 +6,7 @@ const router = express.Router();
 const Reports = require('../../models/reportModel');
 const Users = require('../../models/usersModel');
 const Camp = require('../../models/campaignModel');
+const Submissions = require('../../models/submissionsModel');
 
 const mw = require('../../middleware/s3Upload');
 
@@ -88,6 +89,18 @@ router.get('/camp/:id', (req, res) => {
       return res.status(500).json({ msg: err.message });
     });
 });
+
+router.get('/:id/submissions', async (req, res) => {
+  
+  const { id } = req.params;
+  
+  Submissions.findByCampId(id)
+    .then(submissions => {
+      res.status(201).json({ submissions });
+    }).catch(err => {
+      res.status(500).json({ err });
+    })
+})
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
   const { location } = req.file;
