@@ -308,7 +308,7 @@ async function update(user, id) {
   const triggerUsers = isEmpty(pick(user, userColumns));
   const triggerConservationists = isEmpty(pick(user, conservationistColumns));
   const triggerSupporters = isEmpty(pick(user, supporterColumns));
-  const triggerSkills = user.skils && Array.isArray(user.skills);
+  const triggerSkills = user.skills && Array.isArray(user.skills);
 
   if (triggerUsers) {
     await updateUsersTable(user, id);
