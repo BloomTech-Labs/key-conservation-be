@@ -1,6 +1,6 @@
 const db = require('../database/dbConfig');
 
-async function findSkills(campaign_id) {
+async function findSkilledImpactRequests(campaign_id) {
     return db('project_goals')
         .where({campaign_id})
         .fullOuterJoin('skilled_impact_requests', 'skilled_impact_requests.id','project_goals.skilled_impact_request_id')
@@ -8,9 +8,9 @@ async function findSkills(campaign_id) {
            '*'
         )
         .then((returnedQuery)=>{
-            const skilledRequestAndProjectGoal = new Map();
+            const skilledRequests = new Map();
             for(let i = 0; i<returnedQuery.length; i++){
-                if(!skilledRequestAndProjectGoal.has(returnedQuery[i].id)){
+                if(!skilledRequests.has(returnedQuery[i].id)){
                     let skillAndProject = {
                         skill: returnedQuery[i].skill,
                         point_of_contact: returnedQuery[i].point_of_contact,
@@ -18,17 +18,17 @@ async function findSkills(campaign_id) {
                         our_contribution: returnedQuery[i].our_contribution,
                         project_goals:[]
                     };
-                    skilledRequestAndProjectGoal.set(returnedQuery[i].id, skillAndProject);
+                    skilledRequests.set(returnedQuery[i].id, skillAndProject);
                 }
                 let projectGoal = {
                     goal_title: returnedQuery[i].goal_title,
                     description: returnedQuery[i].description,
                 };
-                skilledRequestAndProjectGoal.get(returnedQuery[i].id).project_goals.push(projectGoal);
+                skilledRequests.get(returnedQuery[i].id).project_goals.push(projectGoal);
             }
-            return Array.from(skilledRequestAndProjectGoal.values());
+            return Array.from(skilledRequests.values());
         });
 }
 
-module.exports = { findSkills };
+module.exports = { findSkilledImpactRequests };
 
