@@ -6,7 +6,7 @@ const router = express.Router();
 const Reports = require('../../models/reportModel');
 const Users = require('../../models/usersModel');
 const Camp = require('../../models/campaignModel');
-const Submissions = require('../../models/submissionsModel');
+const ApplicationSubmissions = require('../../models/applicationSubmissionsModel');
 
 const mw = require('../../middleware/s3Upload');
 
@@ -94,11 +94,11 @@ router.get('/:id/submissions', async (req, res) => {
   
   const { id } = req.params;
   
-  Submissions.findByCampId(id)
-    .then(submissions => {
-      res.status(201).json({ submissions });
-    }).catch(err => {
-      res.status(500).json({ err });
+  ApplicationSubmissions.findByCampaignId(id)
+    .then(applicationSubmissions => {
+      res.status(200).json({ applicationSubmissions });
+    }).catch(error => {
+      res.status(500).json({ error });
     })
 })
 
