@@ -93,13 +93,18 @@ router.get('/camp/:id', (req, res) => {
 router.get('/:id/submissions', async (req, res) => {
   
   const { id } = req.params;
-  
+
   ApplicationSubmissions.findByCampaignId(id)
     .then(applicationSubmissions => {
-      res.status(200).json({ applicationSubmissions });
-    }).catch(error => {
-      res.status(500).json({ error });
+      if(applicationSubmissions.length > 0) {
+        res.status(200).json({ applicationSubmissions, error: null });
+      } else {
+        res.status(400).json({ message: "Submissions not found in the database" });
+      }
     })
+    .catch(error => {
+      res.status(500).json({ error });
+  })
 })
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
