@@ -8,47 +8,53 @@ const SkilledImpactrequests = require('./skilledImpactRequestsModel.js');
 
 function find() {
   return db('campaigns')
-      .join('users', 'users.id', 'campaigns.users_id')
-      .select(
-          'users.username',
+    .join('users', 'users.id', 'campaigns.users_id')
+    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
+    .select(
+      'cons.org_name as name',
+      'users.profile_image',
+      'users.location',
+      'campaigns.*'
+    )
+    .then(campaigns =>
+      db('comments')
+        .join('users', 'users.id', 'comments.users_id')
+        .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
+        .leftJoin('supporters as sup', 'sup.users_id', 'users.id')
+        .select(
+          'comments.*',
           'users.profile_image',
-          'users.location',
-          'campaigns.*'
-      )
-      .then(campaigns =>
-          db('likes').then(likes => {
-            campaigns.map(
-                cam =>
-                    (cam.likes = likes.filter(like => like.camp_id === cam.camp_id))
-            );
-            return campaigns;
-          })
-      )
-      .then(campaigns =>
-          db('comments')
-              .join('users', 'users.id', 'comments.users_id')
-              .select('comments.*', 'users.profile_image', 'users.username', 'users.is_deactivated')
-              .then(comments => {
-                campaigns.map(
-                    cam =>
-                        (cam.comments = comments.filter(
-                            com => {
-                              return com.camp_id === cam.camp_id && !com.is_deactivated;
-                            }))
-                );
-                return campaigns;
+          'cons.org_name',
+          'sup.sup_name',
+          'users.is_deactivated'
+        )
+        .then(comments => {
+          return campaigns.map(cam => ({
+            ...cam,
+            comments: comments
+              .filter(com => {
+                return com.camp_id === cam.camp_id && !com.is_deactivated;
               })
-      )
-      .then(campaigns =>
-          db('users').then(users => {
-            return campaigns.filter(camp => {
-              const [user] = users.filter(user => user.id === camp.users_id);
-              if (user.is_deactivated) {
-                return false;
-              } else return true;
-            });
-          })
-      );
+              .map(com => ({
+                ...com,
+                name: com.org_name || com.sup_name || 'User'
+              }))
+          }));
+        })
+    )
+    .then(campaigns =>
+      db('users').then(users => {
+        return campaigns.filter(camp => {
+          const [user] = users.filter(user => user.id === camp.users_id);
+          if (user.is_deactivated) {
+            return false;
+          } else return true;
+        });
+      })
+    )
+    .catch(err => {
+      throw new Error(err.message);
+    });
 }
 
 function findCampaign(camp_id) {
@@ -59,43 +65,50 @@ function findCampaign(camp_id) {
 
 async function findById(camp_id) {
   const campaign = await db('campaigns')
-      .where({ camp_id })
-      .join('users', 'users.id', 'campaigns.users_id')
-      .select(
-          'users.username',
-          'users.profile_image',
-          'users.location',
-          'users.is_deactivated',
-          'campaigns.*'
-      )
-      .first();
+    .where({ camp_id })
+    .join('users', 'users.id', 'campaigns.users_id')
+    .leftJoin('conservationists as cons', 'cons.users_id', 'campaigns.users_id')
+    .select(
+      'cons.org_name as name',
+      'users.profile_image',
+      'users.location',
+      'users.is_deactivated',
+      'campaigns.*'
+    )
+    .first();
   campaign.updates = await CampUpdate.findUpdatesByCamp(camp_id);
   campaign.comments = await CampComments.findCampaignComments(camp_id);
-  campaign.likes = await CampLikes.findCampaignLikes(camp_id);
   campaign.skilled_impact_requests = await SkilledImpactrequests.findSkilledImpactRequests(camp_id);
+
   return campaign;
 }
 
 function findUser(id) {
   return db('users')
-      .where({ id })
-      .first();
+    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
+    .leftJoin('supporters as sup', 'sup.users_id', 'users.id')
+    .where({ id })
+    .first()
+    .then(usr => ({
+      ...usr,
+      name: usr.org_name || usr.sup_name || undefined
+    }));
 }
 
 async function findCampByUserId(users_id) {
   const campaigns = await db('campaigns')
-      .where({ users_id })
-      .join('users', 'users.id', 'campaigns.users_id')
-      .select(
-          'users.username',
-          'users.profile_image',
-          'users.location',
-          'campaigns.*'
-      );
+    .where('campaigns.users_id', users_id)
+    .join('users', 'users.id', 'campaigns.users_id')
+    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
+    .select(
+      'cons.org_name as name',
+      'users.profile_image',
+      'users.location',
+      'campaigns.*'
+    );
   const withUpdates = campaigns.map(async camp => {
     camp.updates = await CampUpdate.findUpdatesByCamp(camp.camp_id);
     camp.comments = await CampComments.findCampaignComments(camp.camp_id);
-    camp.likes = await CampLikes.findCampaignLikes(camp.camp_id);
     return camp;
   });
   const result = await Promise.all(withUpdates);

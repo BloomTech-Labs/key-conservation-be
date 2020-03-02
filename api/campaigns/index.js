@@ -13,12 +13,9 @@ router.get('/', async (req, res) => {
   try {
     const camp = await Camp.find();
 
-    if (camp) {
-      res.status(200).json({ camp, msg: 'The campaigns were found' });
-    } else {
-      res.status(404).json({ msg: 'Campaigns were not found in the database' });
-    }
+    res.status(200).json({ camp, msg: 'The campaigns were found' });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ err, msg: 'Unable to make request to server' });
   }
 });
@@ -28,7 +25,7 @@ router.get('/:id', (req, res) => {
 
   Camp.findCampaign(id)
     .then(result => {
-      log.info(result);
+      // log.info(result);
       if (result) {
         return Camp.findById(id);
       } else {
@@ -38,6 +35,7 @@ router.get('/:id', (req, res) => {
     .then(async camp => {
       // If this campaign belongs to a deactivated account, then
       // only an admin should be able to see it
+
       if (camp.is_deactivated) {
         const user = await Users.findBySub(req.user.sub);
 
@@ -50,9 +48,10 @@ router.get('/:id', (req, res) => {
 
       return res.status(200).json({ camp, msg: 'The campaign was found' });
     })
-    .catch(err =>
-      res.status(500).json({ err, msg: 'Unable to make request to server' })
-    );
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ err, msg: 'Unable to make request to server' });
+    });
 });
 
 router.get('/camp/:id', (req, res) => {
@@ -163,7 +162,6 @@ router.delete('/:id', async (req, res) => {
     const camp = await Camp.findById(id);
 
     if (camp.users_id !== user.id) {
-
       if (user.admin) {
         // Strike this user
         const targetUsr = await Users.findById(camp.users_id);
@@ -184,7 +182,7 @@ router.delete('/:id', async (req, res) => {
     const camps = await Camp.remove(id);
 
     // Remove all reports relating to this post
-    await Reports.removeWhere({post_id: id, table_name: 'campaigns'})
+    await Reports.removeWhere({ post_id: id, table_name: 'campaigns' });
 
     if (camps) {
       res.status(200).json(camps);

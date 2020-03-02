@@ -5,7 +5,7 @@ const updateModel = require('../models/updateModel');
 
 describe('user routes', () => {
   beforeEach(async () => {
-    await db('campaignUpdates').truncate();
+    await db('campaign_updates').truncate();
   });
 });
 

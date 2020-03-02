@@ -6,6 +6,6 @@ exports.up = function(knex, Promise) {
 
 exports.down = function(knex, Promise) {
   return knex.schema.table('connections', tbl => {
-    tbl.dropColumn('status');
+    tbl.renameColumn('status', 'accepted');
   });
 };
