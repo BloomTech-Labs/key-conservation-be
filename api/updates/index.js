@@ -93,12 +93,18 @@ router.get('/camp/:id', (req, res) => {
 });
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
-  let postCampUpdate = req.body;
+
+  const camp = await Campaigns.findById(req.body.camp_id);
+
+  let postCampUpdate = {
+    ...req.body,
+    camp_name: camp.camp_name
+  };
   let location;
   if (req.file) {
     location = req.file.location;
     postCampUpdate = {
-      ...req.body,
+      ...postCampUpdate,
       update_img: location
     };
   }
@@ -135,7 +141,7 @@ router.put('/:id', mw.upload.single('photo'), async (req, res) => {
 
   try {
     const campUpdate = await CampUpdate.findById(id);
-    const usr = await Users.findBySub(req.user.id);
+    const usr = await Users.findBySub(req.user.sub);
 
     if (usr.id !== campUpdate.users_id && !usr.admin)
       return res

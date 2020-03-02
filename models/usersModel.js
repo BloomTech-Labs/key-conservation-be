@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const db = require('../database/dbConfig.js');
 const Camp = require('./campaignModel.js');
 const CampUpdate = require('./updateModel.js');
@@ -113,7 +114,7 @@ async function findBySub(sub) {
   return user;
 }
 
-// // DO NOT MODIFY. This model is available to the outside.
+// DO NOT MODIFY. This model is available to the outside.
 async function findUserStatus(sub) {
   const user = await db('users')
     .where({ sub })
@@ -129,20 +130,63 @@ async function findUserStatus(sub) {
   return response;
 }
 
-async function insert(user) {
-  const { roles } = user;
-  const [id] = await db('users')
-    .insert(user)
-    .returning('id');
+// adds user to conservationists table in add user function
+async function addCons(cons) {
+  const newConservationist = await db('conservationists').insert(
+    cons,
+    'cons_id'
+  );
+  return newConservationist;
+}
+
+// adds user to supporters table in add user function
+async function addSup(sup) {
+  const newSupporter = await db('supporters').insert(sup, 'sup_id');
+  return newSupporter;
+}
+
+async function add(user) {
+  const usersTableInsert = {
+    sub: user.sub,
+    roles: user.roles,
+    username: user.username,
+    email: user.email,
+    location: user.location,
+    mini_bio: user.mini_bio,
+    species_and_habitats: user.species_and_habitats,
+    twitter: user.twitter,
+    facebook: user.facebook,
+    instagram: user.instagram,
+    phone_number: user.phone_number,
+    profile_image: user.profile_image
+  };
+  const [id] = await db('users').insert(usersTableInsert, 'id');
   if (id) {
-    if (roles === 'conservationist') {
-      await db('conservationists').insert({ users_id: id });
-    } else if (roles === 'supporter') {
-      await db('supporters').insert({ users_id: id });
+    if (user.roles === 'conservationist') {
+      const conservationistsData = {
+        users_id: id,
+        org_name: user.org_name,
+        org_link_url: user.org_link_url,
+        org_cta: user.org_cta,
+        about_us: user.about_us,
+        city: user.city,
+        country: user.country,
+        point_of_contact_name: user.point_of_contact_name,
+        longitude: user.longitude,
+        latitude: user.latitude
+      };
+      addCons(conservationistsData);
     }
-    const user = await findById(id);
-    return user;
+    if (user.roles === 'supporter') {
+      const supportersData = {
+        users_id: id,
+        sup_name: user.sup_name
+      };
+      addSup(supportersData);
+    }
   }
+  const newuser = await findById(id);
+  return newuser;
 }
 
 async function update(user, id) {
@@ -217,12 +261,31 @@ async function update(user, id) {
   }
 }
 
+// This is used for the getConnectionById function in connectionsModel
+const getNameAndAvatarByIds = async ids => {
+  const users = await db('users').whereIn('id', ids);
+
+  console.log('USERS', users);
+
+  return users.map(user => {
+    return  {
+      id: user.id,
+      name: user.username,
+      avatar: user.profile_image,
+      role: user.roles
+    };
+  });
+};
+
 module.exports = {
   find,
+  addCons,
+  addSup,
   findUser,
   findById,
   findBySub,
   findUserStatus,
-  insert,
-  update
+  add,
+  update,
+  getNameAndAvatarByIds
 };

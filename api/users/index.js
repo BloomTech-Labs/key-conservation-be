@@ -9,6 +9,10 @@ const Connections = require('../../models/connectionsModel');
 
 const mw = require('../../middleware/s3Upload');
 const restricted = require('../../middleware/authJwt.js');
+const {
+  checkConnection,
+  checkUniqueIds
+} = require('../../middleware/connections');
 
 router.get('/', restricted, async (req, res) => {
   try {
@@ -94,7 +98,7 @@ router.get('/sub/:sub', restricted, async (req, res) => {
   }
 });
 
-// // This route is specifically for the loading page - DO NOT USE ANYWHERE ELSE
+// This route is specifically for the loading page - DO NOT USE ANYWHERE ELSE
 // Checks to see if a user has a sub and/or row in the DB to determine further navigation.
 // DO NOT CHANGE MODEL TO RETURN ADDITIONAL DATA - This route is unprotected.
 router.get('/subcheck/:sub', async (request, response) => {
@@ -106,7 +110,8 @@ router.get('/subcheck/:sub', async (request, response) => {
       // console.log(check);
       if (check.deactivated) {
         return response.status(401).json({
-          message: `Your account has been deactivated. If you believe this is a mistake, please contact support via our website`,
+          message:
+            'Your account has been deactivated. If you believe this is a mistake, please contact support via our website',
           logout: true
         });
       } else
@@ -123,11 +128,11 @@ router.get('/subcheck/:sub', async (request, response) => {
     });
 });
 
-router.post('/', restricted, async (req, res) => {
+router.post('/', async (req, res) => {
   const user = req.body;
 
   try {
-    const newUser = await Users.insert(user);
+    const newUser = await Users.add(user);
 
     if (newUser) {
       res.status(201).json({ newUser, message: 'User added to database' });
@@ -152,7 +157,7 @@ router.put('/:id', restricted, mw.upload.single('photo'), async (req, res) => {
   try {
     const reqUsr = await Users.findBySub(req.user.sub);
 
-    if (reqUsr.id !== id && !reqUsr.admin) {
+    if (Number(reqUsr.id) !== Number(id) && !reqUsr.admin) {
       return res
         .status(401)
         .json({ message: 'You may not modify this profile!' });
@@ -243,53 +248,129 @@ router.post('/reactivate/:id', restricted, async (req, res) => {
   }
 });
 
-router.post('/connect/:id', restricted, async (req, res) => {
-  if (!req.params.id) {
-    res
-      .status(400)
-      .json({ msg: 'You must pass in the connector_id in the request url' });
-  }
+router.post(
+  '/connect/:id',
+  restricted,
+  checkConnection,
+  checkUniqueIds,
+  async (req, res) => {
+    try {
+      const usr = await Users.findBySub(req.user.sub);
 
-  if (!req.body) {
-    res.status(400).json({
-      msg: 'You must pass in the connected_id in the body of the request'
-    });
-  }
+      if (Number(usr.id) === Number(req.params.id)) {
+        return res
+          .status(400)
+          .json({ message: 'You may not connect to yourself' });
+      }
 
-  const connectionData = {
-    connector_id: req.params.id,
-    connected_id: req.body
-  };
+      const targetUsr = await Users.findById(req.params.id);
 
-  try {
-    const newConnection = await Connections.addConnection(connectionData);
+      const status = targetUsr.roles === 'supporter' ? 'Pending' : 'Connected';
 
-    if (newConnection) {
-      res.status(201).json({
-        newConnection,
-        msg: 'New connection was added to the database'
-      });
+      if (!req.params.id) {
+        res.status(400).json({
+          msg: 'You must pass in the connected_id in the request url'
+        });
+      }
+
+      const connectionData = {
+        connector_id: usr.id,
+        connected_id: req.params.id,
+        status
+      };
+
+      const duplicate = await Connections.alreadyExists(connectionData);
+
+      if (duplicate) {
+        return res
+          .status(400)
+          .json({ message: 'The users specified are already connected' });
+      }
+
+      const newConnection = await Connections.addConnection(connectionData);
+
+      if (newConnection) {
+        res.status(201).json({
+          newConnection,
+          msg: 'New connection was added to the database'
+        });
+      }
+    } catch (err) {
+      console.log(err);
+      res
+        .status(500)
+        .json({ err, msg: 'Unable to add connection to database' });
     }
-  } catch (err) {
-    res.status(500).json({ err, msg: 'Unable to add connection to database' });
   }
-});
+);
 
-router.delete('/connect/:id', restricted, async (req, res) => {
+router.delete('/connect/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const connection = await Connections.deleteConnection(id);
+    const deleted = await Connections.deleteConnection(id);
 
-    if (connection) {
-      res.status(200).json({ connection });
+    if (deleted === 1) {
+      res
+        .status(200)
+        .json({ msg: `Connection with id ${id} has been deleted` });
     } else {
       res.status(404).json({ msg: 'Unable to find connection with that id' });
     }
   } catch (err) {
-    res.status(500).json({ err, msg: 'Unable to delete user from database' });
+    res
+      .status(500)
+      .json({ err, msg: 'Unable to remove connection from database' });
   }
 });
+
+router.get('/connect/:userId', async (req, res) => {
+  try {
+    const userConnections = await Connections.getConnectionsByUserId(
+      req.params.userId
+    );
+
+    res.status(200).json(userConnections);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ msg: 'Error connecting to database' });
+  }
+});
+
+router.put('/connect/:connectionId', async (req, res) => {
+  if (!req.params.connectionId) {
+    res
+      .status(401)
+      .json({ msg: 'Please include the connectionId in the request URL' });
+  }
+  if (!req.body) {
+    res.status(401).json({
+      msg:
+        'Please include the status (accepted or rejected) in the request body'
+    });
+  }
+
+  const updated = await Connections.respondToConnectionRequest(
+    req.params.connectionId,
+    req.body.status
+  );
+
+  try {
+    if (updated === 1) {
+      const newConnectionStatus = await Connections.getConnectionById(
+        req.params.connectionId
+      );
+      res.status(201).json({
+        msg: `The status of connection with id ${req.params.connectionId} was changed to ${newConnectionStatus.status}`
+      });
+    } else {
+      res.status(404).json({ msg: 'No connection found with that id' });
+    }
+  } catch (err) {
+    res.status(500).json({ msg: 'Database error' });
+  }
+});
+
 // router.delete('/:id', restricted, async (req, res) => {
 //   const { id } = req.params;
 //   try {
