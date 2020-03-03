@@ -6,6 +6,11 @@ async function findById(id) {
     .first();
 }
 
+async function findAllBySkilledImpactRequestId(skilled_impact_request_id) {
+  return db("application_submissions")
+    .where({ skilled_impact_request_id });
+}
+
 async function findByCampaignId(campaign_id) {
   return db("skilled_impact_requests")
     .where({ campaign_id })
@@ -25,7 +30,7 @@ async function insert(submission) {
     .insert(submission, ["*"]);
 }
 
-async function update(decision, id) {
+async function update(id, decision) {
   const [submission_id] = await db("application_submissions")
     .where({ id })
     .update({decision})
@@ -39,6 +44,7 @@ async function update(decision, id) {
 module.exports = {
   findById,
   findByCampaignId,
+  findAllBySkilledImpactRequestId,
   insert,
   update
 };
