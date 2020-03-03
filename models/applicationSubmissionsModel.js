@@ -31,14 +31,9 @@ async function insert(submission) {
 }
 
 async function update(id, decision) {
-  const [submission_id] = await db("application_submissions")
+  return db("application_submissions")
     .where({ id })
-    .update({decision})
-    .returning("id");
-  if (submission_id) {
-    const submission = await findById(submission_id);
-    return submission;
-  }
+    .update({decision}, ["*"]);
 }
 
 module.exports = {

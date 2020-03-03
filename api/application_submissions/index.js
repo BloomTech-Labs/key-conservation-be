@@ -47,11 +47,11 @@ router.put("/:id", async (req, res) => {
       const allSkilledImpactRequestSubmissions = 
             await ApplicationSubmission.findAllBySkilledImpactRequestId(skilled_impact_request_id);
       
-            for(let i = 0; i < allSkilledImpactRequestSubmissions.length; i++) {
+      for(let i = 0; i < allSkilledImpactRequestSubmissions.length; i++) {
         await ApplicationSubmission.update(allSkilledImpactRequestSubmissions[i].id, "DENIED");
       }
       // now, update current submission
-      const updatedSubmission = await ApplicationSubmission.update(id, decision);
+      const [updatedSubmission] = await ApplicationSubmission.update(id, decision);
       res.status(200).json({ updatedSubmission, message: "Submission updated in database" });
 
     } else {
