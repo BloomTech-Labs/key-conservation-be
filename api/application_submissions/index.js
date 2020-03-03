@@ -4,17 +4,18 @@ const router = express.Router();
 
 const ApplicationSubmission = require("../../models/applicationSubmissionsModel");
 
+
 router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const submission = await ApplicationSubmission.findById(id);
     if (submission) {
-      res.status(200).json({ submission });
+      res.status(200).json({ submission, error: null });
     } else {
       res.status(400).json({ message: "Submission not found in the database" });
     }
-  } catch (err) {
-    res.status(500).json({ err, msg: "Unable to make request to server" });
+  } catch (error) {
+    res.status(500).json({ error, message: "Unable to make request to server" });
   }
 });
 
@@ -26,10 +27,10 @@ router.post("/", async (req, res) => {
   try {
     const [newSubmission] = await ApplicationSubmission.insert(postSub);
     if (newSubmission) {
-      res.status(201).json({ newSubmission, msg: "Submission added to database" });
+      res.status(201).json({ newSubmission, message: "Submission added to database" });
     }
-  } catch (err) {
-    res.status(500).json({ err, msg: "Unable to add submission" });
+  } catch (error) {
+    res.status(500).json({ error, message: "Unable to add submission" });
   }
 });
 
@@ -38,14 +39,26 @@ router.put("/:id", async (req, res) => {
   const { decision } = req.body;
 
   try {
-    const updatedSubmission = await ApplicationSubmission.update(decision, id);
-    if (updatedSubmission) {
-      // still need to change all other submissions to denied under the same request,
-      // but need skilled impact model for that. for now, just update that submission
-      res.status(200).json({ updatedSubmission, msg: "Submission updated in database" });
+    // update all other submissions for that skilled impact request to denied
+    const applicationSubmission = await ApplicationSubmission.findById(id);
+
+    if(applicationSubmission) {
+      const skilled_impact_request_id = applicationSubmission["skilled_impact_request_id"];
+      const allSkilledImpactRequestSubmissions = 
+            await ApplicationSubmission.findAllBySkilledImpactRequestId(skilled_impact_request_id);
+      
+            for(let i = 0; i < allSkilledImpactRequestSubmissions.length; i++) {
+        await ApplicationSubmission.update(allSkilledImpactRequestSubmissions[i].id, "DENIED");
+      }
+      // now, update current submission
+      const updatedSubmission = await ApplicationSubmission.update(id, decision);
+      res.status(200).json({ updatedSubmission, message: "Submission updated in database" });
+
+    } else {
+      res.status(400).json({ message: "Submission not found in the database" });
     }
-  } catch (err) {
-    res.status(500).json({ err, msg: "Unable to update submission" });
+  } catch (error) {
+    res.status(500).json({ error, message: "Unable to update submission" });
   }
 });
 
