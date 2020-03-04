@@ -128,20 +128,18 @@ router.get('/subcheck/:sub', async (request, response) => {
 });
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
-  let user = req.body;
-  let location;
-  if (req.file) {
-    location = req.file.location;
-    user = {
-      ...req.body,
-      profile_image: location
-    };
-  }
+  const { location } = req.file;
+
+  const user = {
+    ...req.body,
+    profile_image: location
+  };
 
   try {
     const newUser = await Users.add(user);
 
     if (newUser) {
+      console.log('newUser', newUser);
       res.status(201).json({ newUser, message: 'User added to database' });
     }
   } catch (err) {
