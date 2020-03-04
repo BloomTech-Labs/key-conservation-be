@@ -24,8 +24,14 @@ function find() {
 
 function findUser(id) {
   return db('users')
+    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
+    .leftJoin('supporters as sup', 'sup.users_id', 'users.id')
     .where({ id })
-    .first();
+    .first()
+    .then(usr => ({
+      ...usr,
+      name: usr.org_name || usr.sup_name || 'User'
+    }));
 }
 
 async function findById(id) {
@@ -35,7 +41,7 @@ async function findById(id) {
 
   if (user.roles === 'conservationist') {
     const campaigns = await Camp.findCampByUserId(id);
-    const campaignUpdates = await CampUpdate.findUpdatesByUser(id);
+    const campaign_updates = await CampUpdate.findUpdatesByUser(id);
     const bookmarks = await Bookmarks.findUserBookmarks(id);
     user = await db('users')
       .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
@@ -43,7 +49,7 @@ async function findById(id) {
       .select(
         'users.*',
         'cons.cons_id',
-        'cons.org_name',
+        'cons.org_name as name',
         'cons.org_link_url',
         'cons.org_link_text',
         'cons.org_cta',
@@ -59,13 +65,13 @@ async function findById(id) {
       )
       .first();
     user.bookmarks = bookmarks;
-    user.campaigns = campaigns.concat(campaignUpdates);
+    user.campaigns = campaigns.concat(campaign_updates);
   } else if (user.roles === 'supporter') {
     const bookmarks = await Bookmarks.findUserBookmarks(id);
     user = await db('users')
       .leftJoin('supporters as sup', 'sup.users_id', 'users.id')
       .where('users.id', id)
-      .select('users.*', 'sup.sup_name')
+      .select('users.*', 'sup.sup_name as name')
       .first();
     user.bookmarks = bookmarks;
   }
@@ -89,7 +95,7 @@ async function findBySub(sub) {
       .select(
         'users.*',
         'cons.cons_id',
-        'cons.org_name',
+        'cons.org_name as name',
         'cons.org_link_url',
         'cons.org_link_text',
         'cons.org_cta',
@@ -106,7 +112,7 @@ async function findBySub(sub) {
     user = await db('users')
       .leftJoin('supporters as sup', 'sup.users_id', 'users.id')
       .where('users.id', id)
-      .select('users.*', 'sup.sup_name')
+      .select('users.*', 'sup.sup_name as name')
       .first();
     user.bookmarks = bookmarks;
   }
@@ -117,8 +123,18 @@ async function findBySub(sub) {
 // DO NOT MODIFY. This model is available to the outside.
 async function findUserStatus(sub) {
   const user = await db('users')
+    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
+    .leftJoin('supporters as sup', 'sup.users_id', 'users.id')
+    .select('users.*', 'sup.sup_name', 'cons.org_name')
     .where({ sub })
-    .first();
+    .first()
+    .then(
+      usr =>
+        usr && {
+          ...usr,
+          name: usr.sup_name || usr.org_name || 'User'
+        }
+    );
 
   let response = {};
 
@@ -142,6 +158,7 @@ async function addCons(cons) {
 // adds user to supporters table in add user function
 async function addSup(sup) {
   const newSupporter = await db('supporters').insert(sup, 'sup_id');
+  console.log('added to supporter database');
   return newSupporter;
 }
 
@@ -149,49 +166,60 @@ async function add(user) {
   const usersTableInsert = {
     sub: user.sub,
     roles: user.roles,
-    username: user.username,
     email: user.email,
     location: user.location,
     mini_bio: user.mini_bio,
-    species_and_habitats: user.species_and_habitats,
     twitter: user.twitter,
     facebook: user.facebook,
     instagram: user.instagram,
     phone_number: user.phone_number,
     profile_image: user.profile_image
   };
-  const [id] = await db('users').insert(usersTableInsert, 'id');
-  if (id) {
-    if (user.roles === 'conservationist') {
-      const conservationistsData = {
-        users_id: id,
-        org_name: user.org_name,
-        org_link_url: user.org_link_url,
-        org_cta: user.org_cta,
-        about_us: user.about_us,
-        city: user.city,
-        country: user.country,
-        point_of_contact_name: user.point_of_contact_name,
-        longitude: user.longitude,
-        latitude: user.latitude
-      };
-      addCons(conservationistsData);
+
+  console.log('constructed user data', usersTableInsert);
+
+  try {
+    const [id] = await db('users').insert(usersTableInsert, 'id');
+    console.log('user id established as', id);
+
+    if (id) {
+      if (user.roles === 'conservationist') {
+        const conservationistsData = {
+          users_id: id,
+          org_name: user.name,
+          org_link_url: user.org_link_url,
+          org_cta: user.org_cta,
+          about_us: user.about_us,
+          city: user.city,
+          country: user.country,
+          point_of_contact_name: user.point_of_contact_name,
+          longitude: user.longitude,
+          latitude: user.latitude
+        };
+        console.log(
+          'constructued conservationist profile',
+          conservationistsData
+        );
+        addCons(conservationistsData);
+      }
+      if (user.roles === 'supporter') {
+        const supportersData = {
+          users_id: id,
+          sup_name: user.name
+        };
+        console.log('constructed supporter profile', supportersData);
+        addSup(supportersData);
+      }
     }
-    if (user.roles === 'supporter') {
-      const supportersData = {
-        users_id: id,
-        sup_name: user.sup_name
-      };
-      addSup(supportersData);
-    }
+    const newuser = await findById(id);
+    return newuser;
+  } catch (err) {
+    throw new Error(err.message);
   }
-  const newuser = await findById(id);
-  return newuser;
 }
 
 async function update(user, id) {
   const userColumns = [
-    'username',
     'email',
     'profile_image',
     'location',
@@ -253,7 +281,7 @@ async function update(user, id) {
   if (triggerSup) {
     await db('supporters')
       .where('users_id', id)
-      .update(supUpdate);
+      .update(supUpdate, '*');
   }
   if (triggerUsers || triggerCons || triggerSup) {
     const newUser = await findById(id);
@@ -263,18 +291,30 @@ async function update(user, id) {
 
 // This is used for the getConnectionById function in connectionsModel
 const getNameAndAvatarByIds = async ids => {
-  const users = await db('users').whereIn('id', ids);
+  try {
+    const users = await db('users')
+      .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
+      .leftJoin('supporters as sup', 'sup.users_id', 'users.id')
+      .whereIn('users.id', ids)
+      .select(
+        'users.id',
+        'users.roles',
+        'users.profile_image',
+        'cons.org_name',
+        'sup.sup_name'
+      );
 
-  console.log('USERS', users);
-
-  return users.map(user => {
-    return  {
-      id: user.id,
-      name: user.username,
-      avatar: user.profile_image,
-      role: user.roles
-    };
-  });
+    return users.map(user => {
+      return {
+        id: user.id,
+        name: user.org_name || user.sup_name || 'User',
+        avatar: user.profile_image,
+        role: user.roles
+      };
+    });
+  } catch (err) {
+    throw new Error(err);
+  }
 };
 
 module.exports = {

@@ -7,7 +7,6 @@ exports.seed = function (knex, Promise) {
       knex('users').insert([
         {
           sub: '123456789',
-          username: 'Dam Fine',
           email: 'info@beavertown.org',
           location: 'Pittsburg, PA',
           species_and_habitats: 'beavers in da dam',
@@ -15,7 +14,6 @@ exports.seed = function (knex, Promise) {
         },
         {
           sub: '897234923',
-          username: 'Love Them Pandas',
           email: 'pandalover234@hotmail.com',
           location: 'Phoenix, AZ',
           species_and_habitats: 'pandas sleep on cloud 9',
@@ -23,7 +21,6 @@ exports.seed = function (knex, Promise) {
         },
         {
           sub: '907598347592345238457934',
-          username: 'Giraffe 2 Tall',
           email: 'giraffe2tall@gmail.com',
           location: 'Paris, France',
           species_and_habitats: 'the air up there',

@@ -29,8 +29,8 @@ async function getConnectionsByUserId(id) {
     const connected_data = namesAndAvatars.find(d => d.id === conn.connected_id);
     const connector_data = namesAndAvatars.find(d => d.id === conn.connector_id);
 
-    // console.log(connected_data);
-    // console.log(connector_data);
+    console.log(connected_data);
+    console.log(connector_data);
 
     return {
       ...conn,
