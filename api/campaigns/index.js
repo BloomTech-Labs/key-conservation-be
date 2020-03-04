@@ -6,6 +6,8 @@ const router = express.Router();
 const Reports = require('../../models/reportModel');
 const Users = require('../../models/usersModel');
 const Camp = require('../../models/campaignModel');
+const SkilledImpactRequests = require('../../models/skilledImpactRequestsModel.js');
+
 
 const mw = require('../../middleware/s3Upload');
 
@@ -90,25 +92,32 @@ router.get('/camp/:id', (req, res) => {
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
   const { location } = req.file;
+
   const postCamp = {
-    ...req.body,
+    users_id:req.body.users_id,
+    camp_name:req.body.camp_name,
+    camp_desc:req.body.camp_desc,
+    camp_cta:req.body.camp_cta,
+    urgency:req.body.urgency,
+    is_archived:req.body.is_archived,
     camp_img: location
   };
-
   try {
     const newCamps = await Camp.insert(postCamp);
-    if (newCamps) {
-      log.info(newCamps);
+    const newSkilledImpactRequests =
+        await SkilledImpactRequests.insertSkilledRequestsAndProjectGoals(req.body.skilled_impact_requests, newCamps.camp_id);
+    if (newCamps&&newSkilledImpactRequests) {
+      log.info(newCamps,newSkilledImpactRequests);
       res.status(201).json({ newCamps, msg: 'Campaign added to database' });
     } else if (
       !postCamp.camp_img ||
       !postCamp.camp_name ||
       !postCamp.camp_desc ||
-      !postCamp.camp_cta
+      !postCamp.camp_cta || !req.body.skilled_impact_requests
     ) {
       log.info('no data');
       res.status(404).json({
-        msg: 'You need campaign image, campaign name, and campaign description'
+        msg: 'You need campaign image, campaign name, campaign description, and skilled impact requests'
       });
     }
   } catch (err) {
