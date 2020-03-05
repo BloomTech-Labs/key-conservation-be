@@ -131,17 +131,12 @@ router.get('/subcheck/:sub', async (request, response) => {
 });
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
-  let user = req.body;
-  let location;
+  const { location } = req.file;
   console.log('posting user')
-
-  if (req.file) {
-    location = req.file.location;
-    user = {
-      ...req.body,
-      profile_image: location
-    };
-  }
+  const user = {
+    ...req.body,
+    profile_image: location
+  };
 
   console.log('processed file if any')
 
@@ -151,6 +146,7 @@ router.post('/', mw.upload.single('photo'), async (req, res) => {
 
     console.log('added');
     if (newUser) {
+      console.log('newUser', newUser);
       res.status(201).json({ newUser, message: 'User added to database' });
     }
   } catch (err) {
