@@ -131,22 +131,15 @@ router.get('/subcheck/:sub', async (request, response) => {
 });
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
-  const { location } = req.file;
-  console.log('posting user')
   const user = {
     ...req.body,
-    profile_image: location
+    profile_image: req.file ? req.file.location : undefined
   };
 
-  console.log('processed file if any')
-
   try {
-    console.log('trying to add... ')
     const newUser = await Users.add(user);
 
-    console.log('added');
     if (newUser) {
-      console.log('newUser', newUser);
       res.status(201).json({ newUser, message: 'User added to database' });
     }
   } catch (err) {
@@ -157,15 +150,11 @@ router.post('/', mw.upload.single('photo'), async (req, res) => {
 
 router.put('/:id', restricted, mw.upload.single('photo'), async (req, res) => {
   const { id } = req.params;
-  let location;
-  let newUser = req.body;
-  if (req.file) {
-    location = req.file.location;
-    newUser = {
-      ...newUser,
-      profile_image: location
-    };
-  }
+
+  const newUser = {
+    ...req.body,
+    profile_image: req.file ? req.file.location : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
+  };
 
   try {
     const reqUsr = await Users.findBySub(req.user.sub);
