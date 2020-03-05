@@ -14,7 +14,7 @@ async function findSkilledImpactRequests(campaign_id) {
             const skilledRequests = new Map();
             for(let i = 0; i<returnedQuery.length; i++){
                 if(!skilledRequests.has(returnedQuery[i].id)){
-                    let skillAndProject = {
+                    const skillAndProject = {
                         skill: returnedQuery[i].skill,
                         point_of_contact: returnedQuery[i].point_of_contact,
                         welcome_message: returnedQuery[i].welcome_message,
@@ -23,7 +23,7 @@ async function findSkilledImpactRequests(campaign_id) {
                     };
                     skilledRequests.set(returnedQuery[i].id, skillAndProject);
                 }
-                let projectGoal = {
+                const projectGoal = {
                     goal_title: returnedQuery[i].goal_title,
                     description: returnedQuery[i].description,
                 };
@@ -34,19 +34,18 @@ async function findSkilledImpactRequests(campaign_id) {
 }
 
 
-async function insertSkilledRequestsAndProjectGoals(skilledRequests, campaign_id){
-    let skillImpactRequests={};
-
-    for (let skilledRequest of skilledRequests) {
+async function insertSkilledImpactRequests(skilledRequests, campaign_id){
+    for (const skilledRequest of skilledRequests) {
+        let skillImpactRequests={};
         const skillProps=['skill','point_of_contact','welcome_message','our_contribution'];
         skillImpactRequests = await pick(skilledRequest,skillProps);
         skillImpactRequests.campaign_id=campaign_id;
         let skillImpactRequestId = await insert(skillImpactRequests);
 
-        for(let projectGoal of skilledRequest.project_goals){
+        Promise.all(skilledRequest.project_goals).then(async function(projectGoal) {
             projectGoal.skilled_impact_request_id = skillImpactRequestId;
             await ProjectGoal.insert(projectGoal);
-        }
+        });
     }
 }
 
@@ -67,7 +66,7 @@ async function pick(obj, props) {
 
 module.exports = {
     findSkilledImpactRequests,
-    insertSkilledRequestsAndProjectGoals,
+    insertSkilledImpactRequests,
     insert
 };
 

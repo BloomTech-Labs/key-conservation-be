@@ -92,7 +92,6 @@ router.get('/camp/:id', (req, res) => {
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
   const { location } = req.file;
-
   const postCamp = {
     users_id:req.body.users_id,
     camp_name:req.body.camp_name,
@@ -105,9 +104,9 @@ router.post('/', mw.upload.single('photo'), async (req, res) => {
   try {
     const newCamps = await Camp.insert(postCamp);
     const newSkilledImpactRequests =
-        await SkilledImpactRequests.insertSkilledRequestsAndProjectGoals(req.body.skilled_impact_requests, newCamps.camp_id);
+        await SkilledImpactRequests.insertSkilledImpactRequests(req.body.skilled_impact_requests, newCamps.camp_id);
     if (newCamps&&newSkilledImpactRequests) {
-      log.info(newCamps,newSkilledImpactRequests);
+      log.info('inserted campaign including skilled impact requests', newCamps, newSkilledImpactRequests);
       res.status(201).json({ newCamps, msg: 'Campaign added to database' });
     } else if (
       !postCamp.camp_img ||
