@@ -139,6 +139,7 @@ router.post('/', mw.upload.single('photo'), async (req, res) => {
   try {
     const newUser = await Users.add(user);
 
+    console.log('added');
     if (newUser) {
       res.status(201).json({ newUser, message: 'User added to database' });
     }
