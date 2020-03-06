@@ -77,9 +77,9 @@ function findUser(id) {
     .leftJoin('supporters as sup', 'sup.users_id', 'users.id')
     .where({ id })
     .first()
-    .then((usr) => ({
+    .then(usr => ({
       ...usr,
-      name: usr.org_name || usr.sup_name || undefined,
+      name: usr.org_name || usr.sup_name || undefined
     }));
 }
 
