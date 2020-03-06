@@ -6,6 +6,7 @@ const router = express.Router();
 const Campaigns = require('../../models/campaignModel');
 const CampUpdate = require('../../models/updateModel');
 const Users = require('../../models/usersModel');
+const Reports = require('../../models/reportModel');
 
 const mw = require('../../middleware/s3Upload');
 
@@ -204,6 +205,7 @@ router.delete('/:id', async (req, res) => {
       res.status(404).json({ msg: 'Unable to find campaign update ID' });
     }
   } catch (err) {
+    console.log(err);
     res
       .status(500)
       .json({ err, msg: 'Unable to delete campaign update from server' });

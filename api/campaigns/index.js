@@ -90,7 +90,6 @@ router.get('/camp/:id', (req, res) => {
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
   const { location } = req.file;
-
   const postCamp = {
     ...req.body,
     camp_img: location
