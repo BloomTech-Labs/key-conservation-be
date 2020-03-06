@@ -7,7 +7,7 @@ const Reports = require('../../models/reportModel');
 const Users = require('../../models/usersModel');
 const Camp = require('../../models/campaignModel');
 const SkilledImpactRequests = require('../../models/skilledImpactRequestsModel.js');
-
+const pick = require('../../util/pick.js');
 
 const mw = require('../../middleware/s3Upload');
 
@@ -92,15 +92,13 @@ router.get('/camp/:id', (req, res) => {
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
   const { location } = req.file;
+  const campaign_props=['users_id','camp_name','camp_desc','camp_cta', 'urgency', 'is_archived'];
+
   const postCamp = {
-    users_id:req.body.users_id,
-    camp_name:req.body.camp_name,
-    camp_desc:req.body.camp_desc,
-    camp_cta:req.body.camp_cta,
-    urgency:req.body.urgency,
-    is_archived:req.body.is_archived,
+    ...pick(req.body, campaign_props),
     camp_img: location
   };
+
   try {
     const newCamps = await Camp.insert(postCamp);
     const newSkilledImpactRequests =

@@ -1,10 +1,10 @@
 const db = require('../database/dbConfig');
 
 const ProjectGoal = require('./projectGoalsModel.js');
-
+const pick = require('../util/pick.js');
 
 async function findSkilledImpactRequests(campaign_id) {
-    return db('project_goals')
+    return await db('project_goals')
         .where({campaign_id})
         .fullOuterJoin('skilled_impact_requests', 'skilled_impact_requests.id','project_goals.skilled_impact_request_id')
         .select(
@@ -33,18 +33,19 @@ async function findSkilledImpactRequests(campaign_id) {
         });
 }
 
-
 async function insertSkilledImpactRequests(skilledRequests, campaign_id){
     for (const skilledRequest of skilledRequests) {
-        let skillImpactRequests={};
         const skillProps=['skill','point_of_contact','welcome_message','our_contribution'];
-        skillImpactRequests = await pick(skilledRequest,skillProps);
-        skillImpactRequests.campaign_id=campaign_id;
-        let skillImpactRequestId = await insert(skillImpactRequests);
-
-        Promise.all(skilledRequest.project_goals).then(async function(projectGoal) {
-            projectGoal.skilled_impact_request_id = skillImpactRequestId;
-            await ProjectGoal.insert(projectGoal);
+        const skillImpactRequests={
+            ...pick(skilledRequest,skillProps),
+            campaign_id:campaign_id
+        };
+        const skillImpactRequestId = await insert(skillImpactRequests);
+        await Promise.all(skilledRequest.project_goals).then(async function(projectGoals) {
+            for(const projectGoal of projectGoals) {
+                projectGoal.skilled_impact_request_id = skillImpactRequestId;
+                await ProjectGoal.insert(projectGoal);
+            }
         });
     }
 }
@@ -58,11 +59,6 @@ async function insert(skilledImpactRequest){
     }
 }
 
-async function pick(obj, props) {
-    return Object.keys(obj)
-        .filter(key => props.includes(key))
-        .reduce((picked, key) => ({...picked, [key]: obj[key]}), {});
-}
 
 module.exports = {
     findSkilledImpactRequests,
