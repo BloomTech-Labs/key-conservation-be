@@ -131,6 +131,7 @@ router.get('/subcheck/:sub', async (request, response) => {
 });
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
+
   const user = {
     ...req.body,
     profile_image: req.file ? req.file.location : undefined
@@ -151,6 +152,7 @@ router.post('/', mw.upload.single('photo'), async (req, res) => {
 
 router.put('/:id', restricted, mw.upload.single('photo'), async (req, res) => {
   const { id } = req.params;
+
 
   const newUser = {
     ...req.body,
@@ -357,6 +359,7 @@ router.put('/connect/:connectionId', async (req, res) => {
     req.body.status
   );
 
+
   try {
     if (updated === 1) {
       const newConnectionStatus = await Connections.getConnectionById(
@@ -373,21 +376,5 @@ router.put('/connect/:connectionId', async (req, res) => {
   }
 });
 
-// router.delete('/:id', restricted, async (req, res) => {
-//   const { id } = req.params;
-//   try {
-//     const user = await Users.remove(id);
-
-//     if (user) {
-//       res.status(200).json(user);
-//     } else {
-//       res.status(404).json({ message: 'Unable to find user ID' });
-//     }
-//   } catch (err) {
-//     res
-//       .status(500)
-//       .json({ err, message: 'Unable to delete user from database' });
-//   }
-// });
 
 module.exports = router;
