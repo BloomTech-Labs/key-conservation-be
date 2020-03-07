@@ -8,7 +8,6 @@ const pick = require('../util/pick');
 
 // Columns of the user model that are stored in the users table
 const userColumns = [
-  'username',
   'email',
   'profile_image',
   'location',
@@ -290,9 +289,9 @@ async function updateSkillsTable(user, id) {
 
   if (skills.length > 0) {
     // Need to manually build a query with a conflict statement here as Knex doesn't support Postgres conflicts
-    const insertQuery = db('skills').insert(
-      skills.map(skill => ({ user_id: id, skill }))
-    ).toQuery();
+    const insertQuery = db('skills')
+      .insert(skills.map(skill => ({ user_id: id, skill })))
+      .toQuery();
 
     await db.raw(`${insertQuery} ON CONFLICT DO NOTHING`);
   }
@@ -304,10 +303,10 @@ async function updateSkillsTable(user, id) {
 }
 
 async function update(user, id) {
-  const isEmpty = (obj) => Object.getOwnPropertyNames(obj).length === 0;
-  const triggerUsers = isEmpty(pick(user, userColumns));
-  const triggerConservationists = isEmpty(pick(user, conservationistColumns));
-  const triggerSupporters = isEmpty(pick(user, supporterColumns));
+  const isEmpty = obj => Object.getOwnPropertyNames(obj).length === 0;
+  const triggerUsers = !isEmpty(pick(user, userColumns));
+  const triggerConservationists = !isEmpty(pick(user, conservationistColumns));
+  const triggerSupporters = !isEmpty(pick(user, supporterColumns));
   const triggerSkills = user.skills && Array.isArray(user.skills);
 
   if (triggerUsers) {

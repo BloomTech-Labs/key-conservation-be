@@ -153,11 +153,12 @@ router.post('/', mw.upload.single('photo'), async (req, res) => {
 router.put('/:id', restricted, mw.upload.single('photo'), async (req, res) => {
   const { id } = req.params;
 
-
   const newUser = {
     ...req.body,
     profile_image: req.file ? req.file.location : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
   };
+
+  console.log(newUser);
 
   try {
     const reqUsr = await Users.findBySub(req.user.sub);
@@ -175,6 +176,7 @@ router.put('/:id', restricted, mw.upload.single('photo'), async (req, res) => {
       res.status(404).json({ message: 'The user would not be updated' });
     }
   } catch (err) {
+    console.log(err);
     res
       .status(500)
       .json({ err, message: 'Unable to update user on the database' });
