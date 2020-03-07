@@ -67,7 +67,6 @@ async function findById(camp_id) {
   campaign.updates = await CampUpdate.findUpdatesByCamp(camp_id);
   campaign.comments = await CampComments.findCampaignComments(camp_id);
   campaign.skilled_impact_requests = await SkilledImpactRequests.findSkilledImpactRequests(camp_id);
-
   return campaign;
 }
 

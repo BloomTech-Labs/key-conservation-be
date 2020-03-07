@@ -157,6 +157,8 @@ router.put('/:id', restricted, mw.upload.single('photo'), async (req, res) => {
     profile_image: req.file ? req.file.location : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
   };
 
+  console.log(newUser);
+
   try {
     const reqUsr = await Users.findBySub(req.user.sub);
 
@@ -173,6 +175,7 @@ router.put('/:id', restricted, mw.upload.single('photo'), async (req, res) => {
       res.status(404).json({ message: 'The user would not be updated' });
     }
   } catch (err) {
+    console.log(err);
     res
       .status(500)
       .json({ err, message: 'Unable to update user on the database' });
@@ -373,21 +376,5 @@ router.put('/connect/:connectionId', async (req, res) => {
   }
 });
 
-// router.delete('/:id', restricted, async (req, res) => {
-//   const { id } = req.params;
-//   try {
-//     const user = await Users.remove(id);
-
-//     if (user) {
-//       res.status(200).json(user);
-//     } else {
-//       res.status(404).json({ message: 'Unable to find user ID' });
-//     }
-//   } catch (err) {
-//     res
-//       .status(500)
-//       .json({ err, message: 'Unable to delete user from database' });
-//   }
-// });
 
 module.exports = router;
