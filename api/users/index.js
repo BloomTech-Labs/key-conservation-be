@@ -131,6 +131,7 @@ router.get('/subcheck/:sub', async (request, response) => {
 });
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
+
   const user = {
     ...req.body,
     profile_image: req.file ? req.file.location : undefined
@@ -359,6 +360,7 @@ router.put('/connect/:connectionId', async (req, res) => {
     req.params.connectionId,
     req.body.status
   );
+
 
   try {
     if (updated === 1) {
