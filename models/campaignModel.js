@@ -4,7 +4,6 @@ const CampUpdate = require('./updateModel.js');
 const CampComments = require('./commentsModel.js');
 const SkilledImpactRequests = require('./skilledImpactRequestsModel.js');
 
-
 function find() {
   return db('campaigns')
     .join('users', 'users.id', 'campaigns.users_id')
@@ -15,7 +14,6 @@ function find() {
       'users.location',
       'campaigns.*',
     )
-
     .then((campaigns) => db('comments')
       .join('users', 'users.id', 'comments.users_id')
       .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
