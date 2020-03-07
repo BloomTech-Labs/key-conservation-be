@@ -33,36 +33,40 @@ async function findSkilledImpactRequests(campaign_id) {
         });
 }
 
-async function insertSkilledImpactRequests(skilledRequests, campaign_id){
+async function insertSkilledImpactRequests(skilledRequests, campaign_id) {
     for (const skilledRequest of skilledRequests) {
-        const skillProps=['skill','point_of_contact','welcome_message','our_contribution'];
-        const skillImpactRequests={
-            ...pick(skilledRequest,skillProps),
-            campaign_id:campaign_id
+        const skillProps = ['skill', 'point_of_contact', 'welcome_message', 'our_contribution'];
+        const skillImpactRequests = {
+            ...pick(skilledRequest, skillProps),
+            campaign_id: campaign_id
         };
-        const skillImpactRequestId = await insert(skillImpactRequests);
-        await Promise.all(skilledRequest.project_goals).then(async function(projectGoals) {
-            for(const projectGoal of projectGoals) {
-                projectGoal.skilled_impact_request_id = skillImpactRequestId;
-                await ProjectGoal.insert(projectGoal);
-            }
-        });
+        db.transaction(function (transaction) {
+             db("skilled_impact_requests")
+                .transacting(transaction)
+                .insert(skillImpactRequests)
+                .returning('id')
+                .then(function (idArr) {
+                     return Promise.all((skilledRequest.project_goals).map( function (project_goal) {
+                        project_goal.skilled_impact_request_id = idArr[0];
+                        return db('project_goals').transacting(transaction).insert(project_goal).returning('id');
+                    }));
+                })
+                .then(transaction.commit)
+                .catch(transaction.rollback)
+        })
+            .then(function () {
+                // transaction suceeded, data written
+                console.log('Inserted skilled impact requests and project goals ');
+            })
+            .catch(function () {
+                // transaction failed, data rolled back
+                console.log('Error inserting skilled impact requests and project goals.');
+            });
     }
 }
-
-async function insert(skilledImpactRequest){
-    const [skilledImpactRequestId] = await db('skilled_impact_requests')
-        .insert(skilledImpactRequest)
-        .returning('id');
-    if (skilledImpactRequestId) {
-        return skilledImpactRequestId;
-    }
-}
-
 
 module.exports = {
     findSkilledImpactRequests,
-    insertSkilledImpactRequests,
-    insert
+    insertSkilledImpactRequests
 };
 

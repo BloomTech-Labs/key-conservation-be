@@ -98,7 +98,6 @@ router.post('/', mw.upload.single('photo'), async (req, res) => {
     ...pick(req.body, campaign_props),
     camp_img: location
   };
-
   try {
     const newCamps = await Camp.insert(postCamp);
     const newSkilledImpactRequests =
