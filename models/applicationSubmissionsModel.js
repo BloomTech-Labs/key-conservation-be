@@ -22,13 +22,15 @@ async function findAllByCampaignId(campaign_id) {
 
 async function insert(submission) {
   return db('application_submissions')
-    .insert(submission, ['*']);
+    .insert(submission)
+    .returning('*');
 }
 
 async function update(id, decision) {
   return db('application_submissions')
     .where({ id })
-    .update({decision}, ['*']);
+    .update({decision})
+    .returning('*');
 }
 
 async function acceptAndDenyAllOthers(id, skilled_impact_request_id) {
