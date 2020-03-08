@@ -1,18 +1,13 @@
-const db = require("../database/dbConfig");
+const db = require('../database/dbConfig');
 
 async function findById(id) {
-  return db("application_submissions")
+  return db('application_submissions')
     .where({ id })
     .first();
 }
 
-async function findAllBySkilledImpactRequestId(skilled_impact_request_id) {
-  return db("application_submissions")
-    .where({ skilled_impact_request_id });
-}
-
-async function findByCampaignId(campaign_id) {
-  return db("skilled_impact_requests")
+async function findAllByCampaignId(campaign_id) {
+  return db('skilled_impact_requests')
     .where({ campaign_id })
     .join(
       'application_submissions',
@@ -26,20 +21,40 @@ async function findByCampaignId(campaign_id) {
 }
 
 async function insert(submission) {
-  return db("application_submissions")
-    .insert(submission, ["*"]);
+  return db('application_submissions')
+    .insert(submission, ['*']);
 }
 
 async function update(id, decision) {
-  return db("application_submissions")
+  return db('application_submissions')
     .where({ id })
-    .update({decision}, ["*"]);
+    .update({decision}, ['*']);
+}
+
+async function acceptAndDenyAllOthers(id, skilled_impact_request_id) {
+  await db.transaction(transaction => {
+    db('application_submissions')
+      .where({ id })
+      .update({ decision : 'ACCEPTED' })
+      .transacting(transaction)
+      .then(async () => {
+        await db('application_submissions')
+          .where({ skilled_impact_request_id })
+          .where('id', '<>', id)
+          .update({ decision: 'DENIED' })
+          .transacting(transaction);
+      })
+      .then(transaction.commit)
+      .catch(transaction.rollback);
+  })
+  
+  return findById(id);
 }
 
 module.exports = {
   findById,
-  findByCampaignId,
-  findAllBySkilledImpactRequestId,
+  findAllByCampaignId,
   insert,
-  update
+  update,
+  acceptAndDenyAllOthers
 };

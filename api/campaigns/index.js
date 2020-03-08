@@ -94,7 +94,7 @@ router.get('/:id/submissions', async (req, res) => {
   
   const { id } = req.params;
 
-  ApplicationSubmissions.findByCampaignId(id)
+  await ApplicationSubmissions.findAllByCampaignId(id)
     .then(applicationSubmissions => {
       if(applicationSubmissions.length > 0) {
         res.status(200).json({ applicationSubmissions, error: null });
