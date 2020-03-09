@@ -96,11 +96,7 @@ router.get('/:id/submissions', async (req, res) => {
 
   await ApplicationSubmissions.findAllByCampaignId(id)
     .then(applicationSubmissions => {
-      if(applicationSubmissions.length > 0) {
-        res.status(200).json({ applicationSubmissions, error: null });
-      } else {
-        res.status(400).json({ message: "Submissions not found in the database" });
-      }
+      res.status(200).json({ applicationSubmissions, error: null });
     })
     .catch(error => {
       res.status(500).json({ error, message: "Unable to make request to server" });
