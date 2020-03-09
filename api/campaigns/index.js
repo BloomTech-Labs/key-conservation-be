@@ -91,16 +91,14 @@ router.get('/camp/:id', (req, res) => {
 });
 
 router.get('/:id/submissions', async (req, res) => {
-  
   const { id } = req.params;
-
-  await ApplicationSubmissions.findAllByCampaignId(id)
-    .then(applicationSubmissions => {
-      res.status(200).json({ applicationSubmissions, error: null });
-    })
-    .catch(error => {
-      res.status(500).json({ error, message: "Unable to make request to server" });
-  })
+  try {
+    const applicationSubmissions = await ApplicationSubmissions.findAllByCampaignId(id);
+    res.status(200).json({ applicationSubmissions, error: null});
+  }
+  catch(error) {
+    res.status(500).json({ error, message: "Unable to make request to server" });
+  }
 })
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
