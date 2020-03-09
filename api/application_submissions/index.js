@@ -11,7 +11,7 @@ router.get('/:id', async (req, res) => {
     if (applicationSubmission) {
       res.status(200).json({ applicationSubmission, error: null });
     } else {
-      res.status(400).json({ message: 'Submission not found in the database' });
+      res.status(404).json({ message: 'Submission not found in the database' });
     }
   } catch (error) {
     res.status(500).json({ error, message: 'Unable to make request to server' });
@@ -48,7 +48,7 @@ router.put('/:id', async (req, res) => {
       res.status(200).json({ applicationSubmission, message: 'Submission updated in database' });
     }
     else {
-      res.status(400).json({ message: 'Submission not found in database' });
+      res.status(404).json({ message: 'Submission not found in database' });
     }
   } 
   catch (error) {
