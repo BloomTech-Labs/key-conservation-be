@@ -11,16 +11,15 @@ exports.up = function(knex) {
             .references("supporters.sup_id")
             .onDelete("CASCADE")
             .onUpdate("CASCADE"); 
-        table.integer("conservasionist_id")
+        table.integer("conservationist_id")
             .notNullable()
             .references("conservationists.cons_id")
             .onDelete("CASCADE")
             .onUpdate("CASCADE");   
-        table.integer("campaign_id")
-            .notNullable()
-            .references("campaigns.camp_id")
+        table.integer("skilled_impact_request_id").notNullable()
+            .references("skilled_impact_requests.id")
             .onDelete("CASCADE")
-            .onUpdate("CASCADE");  
+            .onUpdate("CASCADE"); 
     });
 };
 
