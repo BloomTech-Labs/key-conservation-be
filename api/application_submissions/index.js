@@ -9,7 +9,7 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params;
     const applicationSubmission = await ApplicationSubmission.findById(id);
     if (applicationSubmission) {
-      res.status(200).json({ applicationSubmission, error: null, message: 'Submission found in the database' });
+      res.status(200).json({ applicationSubmission, error: null });
     } else {
       res.status(400).json({ message: 'Submission not found in the database' });
     }
@@ -25,7 +25,7 @@ router.post('/', async (req, res) => {
   };
   try {
     const [applicationSubmission] = await ApplicationSubmission.insert(postSubmission);
-    res.status(201).json({ applicationSubmission, message: 'Submission added to database' });
+    res.status(201).json({ applicationSubmission });
   } catch (error) {
     res.status(500).json({ error, message: 'Unable to add submission' });
   }
