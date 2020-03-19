@@ -1,3 +1,18 @@
+# Key Conservation
+
+Current version: 4.2.0. This app is in Beta for iOS and Android.
+
+[Key Conservation PVD](https://www.notion.so/Key-Conservation-9de81dcdeca546ba85509f2982d211cc)
+
+[Trello Board](https://trello.com/b/cUouSxH7/key-conservation-labs-20)
+
+[Git Flow](https://whimsical.com/PFQJs3Yxef3Uh4VWAub1D6)
+
+![MIT](https://img.shields.io/packagist/l/doctrine/orm.svg)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![Maintainability](https://api.codeclimate.com/v1/badges/5c50b1a3eebf18ff384e/maintainability)](https://codeclimate.com/github/Lambda-School-Labs/key-conservation-be/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/test_coverage)](https://codeclimate.com/github/Lambda-School-Labs/key-conservation-be/test_coverage)
+
 # API Documentation
 
 #### Backend deployed at [Heroku]:
@@ -32,7 +47,6 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 {
   "id": UUID,
   "sub": STRING,
-  "username": STRING,
   "email": STRING,
   "profile_image": STRING,
   "created_at": TIMESTAMP,
@@ -98,7 +112,7 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 }
 ```
 
-#### CAMPAIGNUPDATES
+#### CAMPAIGN_UPDATES
 
 ---
 
@@ -125,21 +139,6 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 "created_at": TIMESTAMP,
 "camp_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
 "comment_body": TEXT
-}
-
-```
-
-#### LIKES
-
----
-
-```
-
-{
-"like_id": UUID,
-"users_id": FOREIGN KEY - "id" in USERS table,
-"camp_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
-"update_id": FOREIGN KEY - "update_id" in CAMPAIGNUPDATES table
 }
 
 ```

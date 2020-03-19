@@ -39,6 +39,8 @@ router.get('/:id', restricted, async (req, res) => {
   try {
     const user = await Users.findById(id);
 
+    console.log('succeeded')
+
     if (!user) {
       return res
         .status(404)
@@ -49,20 +51,22 @@ router.get('/:id', restricted, async (req, res) => {
       const reqUsr = await Users.findBySub(req.user.sub);
 
       if (!reqUsr.admin) {
-        if (reqUsr.id === user.id)
+        if (reqUsr.id === user.id) {
           return res.status(401).json({
-            message: `Your account has been deactivated. If you believe this is a mistake, please contact support via our website`,
+            message:
+              'Your account has been deactivated. If you believe this is a mistake, please contact support via our website',
             logout: true
           });
-        else
-          return res
-            .status(401)
-            .json({ message: 'This account has been deactivated' });
+        }
+        return res
+          .status(401)
+          .json({ message: 'This account has been deactivated' });
       }
     }
 
     return res.status(200).json({ user, message: 'The user was found' });
   } catch (err) {
+    console.log(err)
     return res.status(500).json({ message: err.message, err });
   }
 });
@@ -75,22 +79,20 @@ router.get('/sub/:sub', restricted, async (req, res) => {
 
     if (user) {
       if (user.is_deactivated && !reqUsr.admin) {
-        if (reqUsr.id === user.id)
+        if (reqUsr.id === user.id) {
           return res.status(401).json({
-            message: `Your account has been deactivated. If you believe this is a mistake, please contact support via our website`,
+            message:
+              'Your account has been deactivated. If you believe this is a mistake, please contact support via our website',
             logout: true
           });
-        else
-          return res
-            .status(401)
-            .json({ message: 'This account has been deactivated' });
+        }
+        return res
+          .status(401)
+          .json({ message: 'This account has been deactivated' });
       }
       return res.status(200).json({ user, message: 'The user was found' });
-    } else {
-      return res
-        .status(404)
-        .json({ message: 'User not found in the database' });
     }
+    return res.status(404).json({ message: 'User not found in the database' });
   } catch (err) {
     return res
       .status(500)
@@ -110,13 +112,14 @@ router.get('/subcheck/:sub', async (request, response) => {
       // console.log(check);
       if (check.deactivated) {
         return response.status(401).json({
-          message: `Your account has been deactivated. If you believe this is a mistake, please contact support via our website`,
+          message:
+            'Your account has been deactivated. If you believe this is a mistake, please contact support via our website',
           logout: true
         });
-      } else
-        return response
-          .status(200)
-          .json({ check, message: 'Verification check for users on the DB' });
+      }
+      return response
+        .status(200)
+        .json({ check, message: 'Verification check for users on the DB' });
     })
     .catch(error => {
       log.error(error);
@@ -127,41 +130,44 @@ router.get('/subcheck/:sub', async (request, response) => {
     });
 });
 
-router.post('/', restricted, async (req, res) => {
-  const user = req.body;
+router.post('/', mw.upload.single('photo'), async (req, res) => {
+
+  const user = {
+    ...req.body,
+    profile_image: req.file ? req.file.location : undefined
+  };
 
   try {
-    const newUser = await Users.insert(user);
+    const newUser = await Users.add(user);
 
+    console.log('added');
     if (newUser) {
       res.status(201).json({ newUser, message: 'User added to database' });
     }
   } catch (err) {
+    console.log(err);
     res.status(500).json({ err, message: 'Unable to add user' });
   }
 });
 
 router.put('/:id', restricted, mw.upload.single('photo'), async (req, res) => {
   const { id } = req.params;
-  let location;
-  let newUser = req.body;
-  if (req.file) {
-    location = req.file.location;
-    newUser = {
-      ...req.body,
-      profile_image: location
-    };
-  }
+
+  const newUser = {
+    ...req.body,
+    profile_image: req.file ? req.file.location : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
+  };
+
+  console.log(newUser);
 
   try {
     const reqUsr = await Users.findBySub(req.user.sub);
 
-    if (reqUsr.id !== id && !reqUsr.admin) {
+    if (Number(reqUsr.id) !== Number(id) && !reqUsr.admin) {
       return res
         .status(401)
         .json({ message: 'You may not modify this profile!' });
     }
-
     const editUser = await Users.update(newUser, id);
 
     if (editUser) {
@@ -170,6 +176,7 @@ router.put('/:id', restricted, mw.upload.single('photo'), async (req, res) => {
       res.status(404).json({ message: 'The user would not be updated' });
     }
   } catch (err) {
+    console.log(err);
     res
       .status(500)
       .json({ err, message: 'Unable to update user on the database' });
@@ -249,28 +256,43 @@ router.post('/reactivate/:id', restricted, async (req, res) => {
 
 router.post(
   '/connect/:id',
+  restricted,
   checkConnection,
   checkUniqueIds,
   async (req, res) => {
-    if (!req.params.id) {
-      res
-        .status(400)
-        .json({ msg: 'You must pass in the connector_id in the request url' });
-    }
-
-    if (!req.body.connected_id || !req.body.status) {
-      res.status(400).json({
-        msg:
-          'You must pass in the connected_id and the stats in the body of the request'
-      });
-    }
-
-    const connectionData = {
-      connector_id: parseInt(req.params.id),
-      connected_id: parseInt(req.body.connected_id),
-      status: req.body.status
-    };
     try {
+      const usr = await Users.findBySub(req.user.sub);
+
+      if (Number(usr.id) === Number(req.params.id)) {
+        return res
+          .status(400)
+          .json({ message: 'You may not connect to yourself' });
+      }
+
+      const targetUsr = await Users.findById(req.params.id);
+
+      const status = targetUsr.roles === 'supporter' ? 'Pending' : 'Connected';
+
+      if (!req.params.id) {
+        res.status(400).json({
+          msg: 'You must pass in the connected_id in the request url'
+        });
+      }
+
+      const connectionData = {
+        connector_id: usr.id,
+        connected_id: req.params.id,
+        status
+      };
+
+      const duplicate = await Connections.alreadyExists(connectionData);
+
+      if (duplicate) {
+        return res
+          .status(400)
+          .json({ message: 'The users specified are already connected' });
+      }
+
       const newConnection = await Connections.addConnection(connectionData);
 
       if (newConnection) {
@@ -280,6 +302,7 @@ router.post(
         });
       }
     } catch (err) {
+      console.log(err);
       res
         .status(500)
         .json({ err, msg: 'Unable to add connection to database' });
@@ -301,21 +324,21 @@ router.delete('/connect/:id', async (req, res) => {
       res.status(404).json({ msg: 'Unable to find connection with that id' });
     }
   } catch (err) {
-    res.status(500).json({ err, msg: 'Unable to delete user from database' });
+    res
+      .status(500)
+      .json({ err, msg: 'Unable to remove connection from database' });
   }
 });
 
 router.get('/connect/:userId', async (req, res) => {
-  const id = req.params.userId;
-  const userConnections = await Connections.getConnectionsByUserId(id);
-
   try {
-    if (userConnections) {
-      res.status(200).json(userConnections);
-    } else {
-      res.status(404).json({ msg: 'No connections for that user' });
-    }
+    const userConnections = await Connections.getConnectionsByUserId(
+      req.params.userId
+    );
+
+    res.status(200).json(userConnections);
   } catch (err) {
+    console.log(err);
     res.status(500).json({ msg: 'Error connecting to database' });
   }
 });
@@ -338,6 +361,7 @@ router.put('/connect/:connectionId', async (req, res) => {
     req.body.status
   );
 
+
   try {
     if (updated === 1) {
       const newConnectionStatus = await Connections.getConnectionById(
@@ -354,21 +378,5 @@ router.put('/connect/:connectionId', async (req, res) => {
   }
 });
 
-// router.delete('/:id', restricted, async (req, res) => {
-//   const { id } = req.params;
-//   try {
-//     const user = await Users.remove(id);
-
-//     if (user) {
-//       res.status(200).json(user);
-//     } else {
-//       res.status(404).json({ message: 'Unable to find user ID' });
-//     }
-//   } catch (err) {
-//     res
-//       .status(500)
-//       .json({ err, message: 'Unable to delete user from database' });
-//   }
-// });
 
 module.exports = router;

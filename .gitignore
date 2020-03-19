@@ -60,6 +60,7 @@ typings/
 # next.js build output
 .next
 
-# IDEs
+# IDE files
 .idea/
 
+.DS_Store

@@ -6,6 +6,7 @@ const router = express.Router();
 const Campaigns = require('../../models/campaignModel');
 const CampUpdate = require('../../models/updateModel');
 const Users = require('../../models/usersModel');
+const Reports = require('../../models/reportModel');
 
 const mw = require('../../middleware/s3Upload');
 
@@ -22,6 +23,7 @@ router.get('/', async (req, res) => {
         .json({ msg: 'Campaign updates were not found in the database' });
     }
   } catch (err) {
+    console.log(err);
     res.status(500).json({ err, msg: 'Unable to make request to server' });
   }
 });
@@ -141,7 +143,7 @@ router.put('/:id', mw.upload.single('photo'), async (req, res) => {
 
   try {
     const campUpdate = await CampUpdate.findById(id);
-    const usr = await Users.findBySub(req.user.id);
+    const usr = await Users.findBySub(req.user.sub);
 
     if (usr.id !== campUpdate.users_id && !usr.admin)
       return res
@@ -195,7 +197,7 @@ router.delete('/:id', async (req, res) => {
 
     // Remove all reports relating to this update
 
-    await Reports.removeWhere({post_id: id, table_name: 'campaignUpdates'})
+    await Reports.removeWhere({post_id: id, table_name: 'campaign_updates'})
 
     if (campUpdates) {
       res.status(200).json(campUpdates);
@@ -203,6 +205,7 @@ router.delete('/:id', async (req, res) => {
       res.status(404).json({ msg: 'Unable to find campaign update ID' });
     }
   } catch (err) {
+    console.log(err);
     res
       .status(500)
       .json({ err, msg: 'Unable to delete campaign update from server' });

@@ -5,7 +5,7 @@ exports.up = function (knex, Promise) {
 };
 
 exports.down = function (knex, Promise) {
-  return knex.schema.table('campains', (tbl) => {
+  return knex.schema.table('campaigns', (tbl) => {
     tbl.dropColumn('urgency');
   });
 };
