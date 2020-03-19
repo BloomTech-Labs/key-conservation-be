@@ -31,24 +31,18 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
-  const { id } = req.params;
+router.put('/', async (req, res) => {
+  const ids = req.query.id;
   const { decision } = req.body;
 
   try {
-    let applicationSubmission = await ApplicationSubmission.findById(id);
-    if(applicationSubmission) {
-      if(decision == 'ACCEPTED') {
-        const { skilled_impact_request_id } = applicationSubmission;
-        applicationSubmission = await ApplicationSubmission.acceptAndDenyAllOthers(id, skilled_impact_request_id);
-      }
-      else {
-        applicationSubmission = await ApplicationSubmission.update(id, decision);
-      }
-      res.status(200).json({ applicationSubmission, message: 'Submission updated in database' });
+    let applicationSubmissions = await ApplicationSubmission.findAllByIds(ids);
+    if(applicationSubmissions.length > 0) {
+      applicationSubmissions = await ApplicationSubmission.updateAll(ids, decision);
+      res.status(200).json({ applicationSubmissions, message: 'Submissions updated in database' });
     }
     else {
-      res.status(404).json({ message: 'Submission not found in database' });
+      res.status(404).json({ message: 'Submissions not found in database' });
     }
   } 
   catch (error) {
