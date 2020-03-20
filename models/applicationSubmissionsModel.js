@@ -9,7 +9,7 @@ async function findById(id) {
 
 async function findAllByIds(ids) {
   return db('application_submissions')
-    .select('*')
+    .select('id')
     .whereIn('id', ids);
 }
 
@@ -35,7 +35,7 @@ async function insert(submission) {
 
 async function update(id, decision) {
   return db('application_submissions')
-    .update({decision})
+    .update({ decision })
     .where({ id })
     .returning('*');
 }
@@ -54,10 +54,4 @@ module.exports = {
   insert,
   update,
   updateAll,
-=======
-  findAllByCampaignId,
-  insert,
-  update,
-  acceptAndDenyAllOthers
->>>>>>> 1886a1b629b300e7828078c9e9daf53f5bc6835b
 };
