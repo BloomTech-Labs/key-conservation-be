@@ -8,21 +8,21 @@ function find() {
 
 function findById(id) {
   return db('comments')
-    .where({ comment_id: id })
+    .where({ id })
     .first();
 }
 
 function findCampaignComments(id) {
   return db('comments')
-    .where({ camp_id: id })
-    .join('users', 'users.id', 'comments.users_id')
-    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
-    .leftJoin('supporters as sup', 'sup.users_id', 'users.id')
+    .where({ id })
+    .join('users', 'users.id', 'comments.user_id')
+    .leftJoin('conservationists as cons', 'cons.user_id', 'user.id')
+    .leftJoin('supporters as sup', 'sup.user_id', 'users.id')
     .select(
       'comments.*',
       'users.profile_image',
-      'cons.org_name',
-      'sup.sup_name',
+      'cons.name as org_name',
+      'sup.name as sup_name',
       'users.is_deactivated',
     )
     .then((res) => {
@@ -38,10 +38,11 @@ function insert(comment) {
   return db('comments')
     .insert(comment)
     .then(
-      () => findCampaignComments(comment.camp_id),
+      () => findCampaignComments(comment.campaign),
+      // TODO is this safe to delete?
       // return db('campaigns')
       //   .where({ camp_id: comment.camp_id })
-      //   .join('users', 'users.id', 'campaigns.users_id')
+      //   .join('users', 'users.id', 'campaigns.user_id')
       //   .select(
       //     'users.username',
       //     'users.profile_image',
@@ -73,14 +74,14 @@ function insert(comment) {
 
 function update(id, changes) {
   return db('comments')
-    .where({ comment_id: id })
+    .where({ id })
     .update(changes)
     .then(() => findById(id));
 }
 
 function remove(id) {
   return db('comments')
-    .where({ comment_id: id })
+    .where({ id })
     .del()
     .then(() => id);
 }
