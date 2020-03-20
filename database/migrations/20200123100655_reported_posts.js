@@ -1,5 +1,5 @@
 exports.up = function (knex) {
-  return knex.schema.createTable('reported_posts', tbl => {
+  return knex.schema.createTable('reported_posts', (tbl) => {
     tbl.increments('id');
     // Who reported this item?
     tbl

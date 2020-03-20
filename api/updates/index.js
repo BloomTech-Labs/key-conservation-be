@@ -60,7 +60,7 @@ router.get('/camp/:id', (req, res) => {
   const { id } = req.params;
 
   CampUpdate.findCamp(id)
-    .then(result => {
+    .then((result) => {
       if (result) {
         if (result.is_deactivated) {
           return Users.findBySub(req.user.id);
@@ -68,7 +68,7 @@ router.get('/camp/:id', (req, res) => {
       }
       return res.status(400).json({ msg: 'This campaign does not exist' });
     })
-    .then(user => {
+    .then((user) => {
       log.info(user);
 
       if (user && !user.admin) {
@@ -77,7 +77,7 @@ router.get('/camp/:id', (req, res) => {
           .json({ msg: 'This post may only be viewed by an administrator' });
       } return CampUpdate.findUpdatesByCamp(id);
     })
-    .then(updates => {
+    .then((updates) => {
       if (updates[0]) {
         return res
           .status(200)
@@ -87,7 +87,7 @@ router.get('/camp/:id', (req, res) => {
         .status(400)
         .json({ msg: 'This campaign does not have an update yet' });
     })
-    .catch(err => res.status(500).json({ err, msg: 'Unable to make request to server' }));
+    .catch((err) => res.status(500).json({ err, msg: 'Unable to make request to server' }));
 });
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {

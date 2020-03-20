@@ -21,7 +21,7 @@ router.get('/', restricted, async (req, res) => {
     if (users) {
       const reqUsr = Users.findBySub(req.user.sub);
 
-      if (!reqUsr.admin) users = users.filter(usr => !usr.is_deactivated);
+      if (!reqUsr.admin) users = users.filter((usr) => !usr.is_deactivated);
 
       res.status(200).json({ users, message: 'The users were found' });
     } else {
@@ -107,7 +107,7 @@ router.get('/subcheck/:sub', async (request, response) => {
   const subID = request.params.sub;
 
   Users.findUserStatus(subID)
-    .then(check => {
+    .then((check) => {
       log.info(check, 'This is yes/no from server about if user is on DB');
       // console.log(check);
       if (check.deactivated) {
@@ -121,7 +121,7 @@ router.get('/subcheck/:sub', async (request, response) => {
         .status(200)
         .json({ check, message: 'Verification check for users on the DB' });
     })
-    .catch(error => {
+    .catch((error) => {
       log.error(error);
       response.status(500).json({
         error,

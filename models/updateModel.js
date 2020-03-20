@@ -14,7 +14,7 @@ function find() {
       'campaigns.camp_name',
       'campaign_updates.*',
     )
-    .then(updates => updates.filter(update => !update.is_deactivated));
+    .then((updates) => updates.filter((update) => !update.is_deactivated));
 }
 
 function findById(update_id) {

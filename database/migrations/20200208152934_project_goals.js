@@ -1,5 +1,5 @@
 exports.up = function (knex) {
-  return knex.schema.createTable('project_goals', table => {
+  return knex.schema.createTable('project_goals', (table) => {
     table.increments('id').notNullable().unique();
     table.string('goal_title').notNullable();
     table.text('description').notNullable();

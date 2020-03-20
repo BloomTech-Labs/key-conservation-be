@@ -31,20 +31,20 @@ router.get('/', async (req, res) => {
 
     switch (type) {
       case 'users':
-        response = response.filter(report => report.table_name === 'users');
+        response = response.filter((report) => report.table_name === 'users');
         break;
       case 'campaigns':
         response = response.filter(
-          report => report.table_name === 'campaigns'
+          (report) => report.table_name === 'campaigns'
             || report.table_name === 'campaign_updates',
         );
         break;
       case 'comments':
-        response = response.filter(report => report.table_name === 'comments');
+        response = response.filter((report) => report.table_name === 'comments');
         break;
     }
 
-    response = response.filter(report => {
+    response = response.filter((report) => {
       if (archive === 'true') {
         return report.is_archived;
       } return !report.is_archived;
@@ -68,7 +68,7 @@ router.get('/', async (req, res) => {
 
     console.log('constructing response');
 
-    const ids = reports.map(report => report.reported_user);
+    const ids = reports.map((report) => report.reported_user);
 
     const namesAndAvatars = await Users.getNameAndAvatarByIds(ids);
 
@@ -80,9 +80,9 @@ router.get('/', async (req, res) => {
       // usefulness to the frontend, and minimize requests to the
       // backend
       reports: await Promise.all(
-        reports.map(async report => {
+        reports.map(async (report) => {
           // Get data on the reported item
-          const user = namesAndAvatars.find(d => d.id === report.reported_user);
+          const user = namesAndAvatars.find((d) => d.id === report.reported_user);
 
           const unique_reports = await getSimilarReportCount(report);
 
@@ -134,16 +134,16 @@ router.get('/:id', async (req, res) => {
     });
 
     otherReports = otherReports.filter(
-      report => report.id !== parseInt(req.params.id),
+      (report) => report.id !== parseInt(req.params.id),
     );
 
-    const ids = otherReports.map(report => report.reported_by);
+    const ids = otherReports.map((report) => report.reported_by);
 
     const users = await Users.getNameAndAvatarByIds(ids);
 
     response.other_reports = await Promise.all(
-      otherReports.map(async report => {
-        const reported_by = users.find(u => u.id === report.reported_by);
+      otherReports.map(async (report) => {
+        const reported_by = users.find((u) => u.id === report.reported_by);
 
         return {
           ...report,

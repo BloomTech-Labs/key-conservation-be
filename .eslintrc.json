@@ -20,7 +20,6 @@
         "consistent-return": "off",
         "max-len": [ "warn", { "code": 120 }],
         "no-param-reassign": "warn",
-        "no-unused-vars": [ "error", { "argsIgnorePattern": "Promise|err" }],
-        "arrow-parens": "off"
+        "no-unused-vars": [ "error", { "argsIgnorePattern": "Promise|err" }]
     }
 }

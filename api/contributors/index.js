@@ -11,11 +11,11 @@ router.get('/', restricted, async (req, res) => {
   const skills = req.query.skills
     ? req.query.skills
       .split(',')
-      .map(skill => skill.toUpperCase())
+      .map((skill) => skill.toUpperCase())
     : [];
 
   if (skills.length > 0) {
-    const unknownSkills = skills.filter(skill => !(skill in Skills));
+    const unknownSkills = skills.filter((skill) => !(skill in Skills));
 
     if (unknownSkills.length > 0) {
       return res.status(400).json({ err: `unknown skills: ${unknownSkills.join(',')}` });

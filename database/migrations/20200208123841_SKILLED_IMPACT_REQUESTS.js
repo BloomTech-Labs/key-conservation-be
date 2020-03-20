@@ -1,5 +1,5 @@
 exports.up = function (knex) {
-  return knex.schema.createTable('skilled_impact_requests', table => {
+  return knex.schema.createTable('skilled_impact_requests', (table) => {
     table.increments('id').notNullable().unique();
     table.integer('campaign_id').notNullable()
       .references('campaigns.camp_id')

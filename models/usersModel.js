@@ -65,7 +65,7 @@ function findUser(id) {
     .leftJoin('supporters as sup', 'sup.users_id', 'users.id')
     .where({ id })
     .first()
-    .then(usr => ({
+    .then((usr) => ({
       ...usr,
       name: usr.org_name || usr.sup_name || 'User',
     }));
@@ -172,7 +172,7 @@ async function findUserStatus(sub) {
     .where({ sub })
     .first()
     .then(
-      usr => usr && {
+      (usr) => usr && {
         ...usr,
         name: usr.sup_name || usr.org_name || 'User',
       },
@@ -283,13 +283,13 @@ async function updateSupportersTable(user, id) {
 
 async function updateSkillsTable(user, id) {
   const skills = user.skills
-    .map(skill => skill.toUpperCase())
-    .filter(skill => skill in Skills);
+    .map((skill) => skill.toUpperCase())
+    .filter((skill) => skill in Skills);
 
   if (skills.length > 0) {
     // Need to manually build a query with a conflict statement here as Knex doesn't support Postgres conflicts
     const insertQuery = db('skills')
-      .insert(skills.map(skill => ({ user_id: id, skill })))
+      .insert(skills.map((skill) => ({ user_id: id, skill })))
       .toQuery();
 
     await db.raw(`${insertQuery} ON CONFLICT DO NOTHING`);
@@ -302,7 +302,7 @@ async function updateSkillsTable(user, id) {
 }
 
 async function update(user, id) {
-  const isEmpty = obj => Object.getOwnPropertyNames(obj).length === 0;
+  const isEmpty = (obj) => Object.getOwnPropertyNames(obj).length === 0;
   const triggerUsers = !isEmpty(pick(user, userColumns));
   const triggerConservationists = !isEmpty(pick(user, conservationistColumns));
   const triggerSupporters = !isEmpty(pick(user, supporterColumns));
@@ -328,7 +328,7 @@ async function update(user, id) {
 }
 
 // This is used for the getConnectionById function in connectionsModel
-const getNameAndAvatarByIds = async ids => {
+const getNameAndAvatarByIds = async (ids) => {
   try {
     const users = await db('users')
       .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
@@ -342,7 +342,7 @@ const getNameAndAvatarByIds = async ids => {
         'sup.sup_name',
       );
 
-    return users.map(user => ({
+    return users.map((user) => ({
       id: user.id,
       name: user.org_name || user.sup_name || 'User',
       avatar: user.profile_image,

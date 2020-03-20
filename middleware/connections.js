@@ -6,7 +6,7 @@ const checkConnection = async (req, res, next) => {
   const { id } = req.params;
   const allConnections = await Connections.getConnectionsByUserId(id);
   const found = allConnections.find(
-    connection => connection.connected_id === req.body.connected_id,
+    (connection) => connection.connected_id === req.body.connected_id,
   );
 
   if (found) {

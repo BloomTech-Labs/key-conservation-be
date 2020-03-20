@@ -9,10 +9,10 @@ const Campaigns = require('../../models/campaignModel');
 const Users = require('../../models/usersModel');
 
 router.post('/:id', async (req, res) => {
-  const { comment_body } = req.body;
+  const { comment_body: commentBody } = req.body;
   const { id } = req.params;
 
-  if (typeof comment_body !== 'string' || !comment_body.trim()) {
+  if (typeof commentBody !== 'string' || !commentBody.trim()) {
     return res.status(400).json({ msg: 'The comment_body field is required' });
   }
 
@@ -23,7 +23,7 @@ router.post('/:id', async (req, res) => {
   if (!camp) return res.status(404).json({ msg: 'A campaign with that ID could not be found!' });
 
   const newComment = {
-    comment_body: comment_body.trim(),
+    comment_body: commentBody.trim(),
     users_id: user.id,
     camp_id: id,
   };
@@ -31,7 +31,7 @@ router.post('/:id', async (req, res) => {
     const data = await Comments.insert(newComment);
     if (data) {
       res.status(201).json({ data, msg: 'Comment added to database' });
-    } else if (!comment_body) {
+    } else if (!commentBody) {
       res.status(404).json({ msg: 'Please add a body to this comment' });
     }
   } catch (err) {

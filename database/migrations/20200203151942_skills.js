@@ -50,7 +50,7 @@ const skills = [
 
 exports.up = function (knex) {
   return knex.schema
-    .createTable('skills', tbl => {
+    .createTable('skills', (tbl) => {
       tbl.increments('id');
       tbl.integer('user_id').unsigned().references('users.id').notNullable()
         .index();

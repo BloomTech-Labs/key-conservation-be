@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
 
     res.status(200).json({ camp, msg: 'The campaigns were found' });
   } catch (err) {
-    console.log(err);
+    log.error(err);
     res.status(500).json({ err, msg: 'Unable to make request to server' });
   }
 });
@@ -24,14 +24,13 @@ router.get('/:id', (req, res) => {
   const { id } = req.params;
 
   Camp.findCampaign(id)
-    .then(result => {
-      // log.info(result);
+    .then((result) => {
       if (result) {
         return Camp.findById(id);
       }
       res.status(400).json({ msg: 'Campaign was not found in the database' });
     })
-    .then(async camp => {
+    .then(async (camp) => {
       // If this campaign belongs to a deactivated account, then
       // only an admin should be able to see it
 
@@ -47,8 +46,8 @@ router.get('/:id', (req, res) => {
 
       return res.status(200).json({ camp, msg: 'The campaign was found' });
     })
-    .catch(err => {
-      console.log(err);
+    .catch((err) => {
+      log.error(err);
       res.status(500).json({ err, msg: 'Unable to make request to server' });
     });
 });
@@ -57,7 +56,7 @@ router.get('/camp/:id', (req, res) => {
   const { id } = req.params;
 
   Camp.findUser(id)
-    .then(result => {
+    .then((result) => {
       log.info(result);
       if (result) {
         if (result.is_deactivated) {
@@ -69,21 +68,21 @@ router.get('/camp/:id', (req, res) => {
           .json({ msg: 'Did not find the campaign by this user id' });
       }
     })
-    .then(user => {
+    .then((user) => {
       if (user && !user.admin) {
         return res.status(401).json({
           msg: "This user's campaigns may only be viewed by an administrator",
         });
       } return Camp.findCampByUserId(id);
     })
-    .then(camp => {
+    .then((camp) => {
       if (camp) {
         return res
           .status(200)
           .json({ camp, msg: 'The campaigns were found for this org' });
       }
     })
-    .catch(err => res.status(500).json({ msg: err.message }));
+    .catch((err) => res.status(500).json({ msg: err.message }));
 });
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
