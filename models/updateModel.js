@@ -76,8 +76,7 @@ async function insert(campUpdate) {
     .insert(campUpdate)
     .returning('update_id');
   if (update_id) {
-    const campUpdate = await findById(update_id);
-    return campUpdate;
+    return findById(id);
   }
 }
 
@@ -86,8 +85,7 @@ async function update(changes, update_id) {
     .where({ update_id })
     .update(changes);
   if (editedCampUpdate) {
-    const campUpdate = await findById(update_id);
-    return campUpdate;
+    return findById(id);
   }
 }
 

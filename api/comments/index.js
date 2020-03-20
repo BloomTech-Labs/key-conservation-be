@@ -18,12 +18,12 @@ router.post('/:id', async (req, res) => {
 
   const user = await Users.findBySub(req.user.sub);
 
-  const camp = await Campaigns.findCampaign(id);
+  const campaign = await Campaigns.findCampaign(id);
 
-  if (!camp) return res.status(404).json({ msg: 'A campaign with that ID could not be found!' });
+  if (!campaign) return res.status(404).json({ msg: 'A campaign with that ID could not be found!' });
 
   const newComment = {
-    comment_body: commentBody.trim(),
+    comment_body: comment_body.trim(),
     users_id: user.id,
     camp_id: id,
   };
@@ -43,10 +43,8 @@ router.post('/:id', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-
-    const camp = await Campaigns.findById(id);
-
-    if (camp.is_deactivated) {
+    const campaign = await Campaigns.findById(id);
+    if (campaign.is_deactivated) {
       const reqUsr = await Users.findBySub(req.user.sub);
 
       if (!reqUsr.admin) {
@@ -76,9 +74,9 @@ router.get('/com/:id', async (req, res) => {
     const comment = await Comments.findById(id);
     const usr = await Users.findById(comment.users_id);
 
-    const camp = await Campaigns.findById(comment.camp_id);
+    const campaign = await Campaigns.findById(comment.camp_id);
 
-    if (camp.is_deactivated || usr.is_deactivated) {
+    if (campaign.is_deactivated || usr.is_deactivated) {
       const reqUsr = await Users.findBySub(req.user.sub);
 
       if (!reqUsr.admin) {

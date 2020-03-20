@@ -199,9 +199,7 @@ async function addCons(cons) {
 
 // adds user to supporters table in add user function
 async function addSup(sup) {
-  const newSupporter = await db('supporters').insert(sup, 'sup_id');
-  console.log('added to supporter database');
-  return newSupporter;
+  return db('supporters').insert(sup, 'id');
 }
 
 async function add(user) {

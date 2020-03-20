@@ -1,7 +1,7 @@
 const db = require('../database/dbConfig');
 
-const CampUpdate = require('./updateModel.js');
-const CampComments = require('./commentsModel.js');
+const CampaignUpdate = require('./updateModel.js');
+const CampaignComments = require('./commentsModel.js');
 const SkilledImpactRequests = require('./skilledImpactRequestsModel.js');
 
 function find() {
@@ -64,9 +64,9 @@ async function findById(camp_id) {
       'campaigns.*',
     )
     .first();
-  campaign.updates = await CampUpdate.findUpdatesByCamp(camp_id);
-  campaign.comments = await CampComments.findCampaignComments(camp_id);
-  campaign.skilled_impact_requests = await SkilledImpactRequests.findSkilledImpactRequests(camp_id);
+  campaign.updates = await CampaignUpdate.findUpdatesByCamp(id);
+  campaign.comments = await CampaignComments.findCampaignComments(id);
+  campaign.skilled_impact_requests = await SkilledImpactRequests.findSkilledImpactRequests(id);
   return campaign;
 }
 
@@ -94,12 +94,11 @@ async function findCampByUserId(users_id) {
       'campaigns.*',
     );
   const withUpdates = campaigns.map(async (camp) => {
-    camp.updates = await CampUpdate.findUpdatesByCamp(camp.camp_id);
-    camp.comments = await CampComments.findCampaignComments(camp.camp_id);
+    camp.updates = await CampaignUpdate.findUpdatesByCamp(camp.idid);
+    camp.comments = await CampaignComments.findCampaignComments(camp.camp_id);
     return camp;
   });
-  const result = await Promise.all(withUpdates);
-  return result;
+  return Promise.all(withUpdates);
 }
 
 async function insert(campaign) {
@@ -107,8 +106,7 @@ async function insert(campaign) {
     .insert(campaign)
     .returning('camp_id');
   if (camp_id) {
-    const camp = await findById(camp_id);
-    return camp;
+    return findById(id);
   }
 }
 
@@ -117,8 +115,7 @@ async function update(campaign, camp_id) {
     .where({ camp_id })
     .update(campaign);
   if (editedCamp) {
-    const camp = await findById(camp_id);
-    return camp;
+    return findById(id);
   }
 }
 

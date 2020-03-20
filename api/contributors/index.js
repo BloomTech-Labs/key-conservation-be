@@ -2,7 +2,7 @@ const express = require('express');
 
 const db = require('../../database/dbConfig');
 const restricted = require('../../middleware/authJwt');
-const Skills = require('../../models/skillsEnum');
+const SkillsEnum = require('../../models/skillsEnum');
 
 const router = express.Router();
 
@@ -13,7 +13,7 @@ router.get('/', restricted, async (req, res) => {
     : [];
 
   if (skills.length > 0) {
-    const unknownSkills = skills.filter((skill) => !(skill in Skills));
+    const unknownSkills = skills.filter((skill) => !(skill in SkillsEnum));
 
     if (unknownSkills.length > 0) {
       return res.status(400).json({ err: `unknown skills: ${unknownSkills.join(',')}` });
