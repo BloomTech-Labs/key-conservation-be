@@ -7,12 +7,6 @@ async function findById(id) {
     .first();
 }
 
-async function findAllByIds(ids) {
-  return db('application_submissions')
-    .select('id')
-    .whereIn('id', ids);
-}
-
 async function findAllByCampaignId(campaign_id) {
   return db('skilled_impact_requests')
     .join(
@@ -49,7 +43,6 @@ async function updateAll(ids, decision) {
 
 module.exports = {
   findById,
-  findAllByIds,
   findAllByCampaignId,
   insert,
   update,
