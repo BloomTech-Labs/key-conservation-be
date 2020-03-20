@@ -12,9 +12,10 @@ const S3Upload = require('../../middleware/s3Upload');
 
 router.get('/', async (req, res) => {
   try {
-    const campUpdate = await CampaignUpdate.find();
-    if (campUpdate) {
-      res.status(200).json({ campUpdate, msg: 'The campaign updates were found' });
+    const campaignUpdate = await CampaignUpdate.find();
+    if (campaignUpdate) {
+      // TODO sync
+      res.status(200).json({ campaignUpdate, msg: 'The campaign updates were found' });
     } else {
       res.status(404).json({ msg: 'Campaign updates were not found in the database' });
     }
@@ -36,6 +37,7 @@ router.get('/:id', async (req, res) => {
       }
     }
 
+    // TODO sync
     if (campaignUpdate) {
       res.status(200).json({ campaignUpdate, msg: 'The campaign update was found' });
     } else {
@@ -67,6 +69,7 @@ router.get('/camp/:id', (req, res) => {
     })
     .then((updates) => {
       if (updates[0]) {
+        // TODO
         return res.status(200).json({ updates, msg: 'The updates were found for this campaign' });
       }
       return res.status(400).json({ msg: 'This campaign does not have an update yet' });
@@ -75,26 +78,28 @@ router.get('/camp/:id', (req, res) => {
 });
 
 router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
+  // TODO camp_id? sync with frontend
   const campaign = await Campaigns.findById(req.body.camp_id);
 
-  let postCampUpdate = {
+  let postCampaignUpdate = {
     ...req.body,
-    camp_name: camp.camp_name,
+    name: campaign.name,
   };
   let location;
   if (req.file) {
     location = req.file.location;
-    postCampUpdate = {
-      ...postCampUpdate,
-      update_img: location,
+    postCampaignUpdate = {
+      ...postCampaignUpdate,
+      image: location,
     };
   }
 
   try {
-    const newCampUpdates = await CampaignUpdate.insert(postCampUpdate);
-    if (newCampUpdates) {
-      log.info(newCampUpdates);
-      res.status(201).json({ newCampUpdates, msg: 'Campaign update added to database' });
+    const newCampaignUpdates = await CampaignUpdate.insert(postCampaignUpdate);
+    if (newCampaignUpdates) {
+      log.info(newCampaignUpdates);
+      // TODO sync
+      res.status(201).json({ newCampaignUpdates, msg: 'Campaign update added to database' });
       // TODO these variables aren't declared anyways? update_img and update_desc
     } else if (!update_img || !update_desc) {
       res.status(404).json({
@@ -116,20 +121,21 @@ router.put('/:id', S3Upload.upload.single('photo'), async (req, res) => {
 
   const newCampaignUpdates = {
     ...req.body,
-    update_img: location,
+    image: location,
   };
 
   try {
     const campaignUpdate = await CampaignUpdate.findById(id);
     const usr = await Users.findBySub(req.user.sub);
 
-    if (usr.id !== campaignUpdate.users_id && !usr.admin) {
+    if (usr.id !== campaignUpdate.user_id && !usr.admin) {
       return res.status(401).json({ msg: 'Unauthorized: You may not modify this post' });
     }
 
     const editCampaignUpdate = await CampaignUpdate.update(newCampaignUpdates, id);
 
     if (editCampaignUpdate) {
+      // TODO
       res.status(200).json({ msg: 'Successfully updated campaign update', editCampaignUpdate });
     } else {
       res.status(404).json({ msg: 'The campaign update would not be updated' });
@@ -146,7 +152,7 @@ router.delete('/:id', async (req, res) => {
     const usr = await Users.findBySub(req.user.sub);
     const campaignUpdate = await CampaignUpdate.findById(id);
 
-    if (campaignUpdate.users_id !== usr.id) {
+    if (campaignUpdate.user_id !== usr.id) {
       if (usr.admin) {
         // Strike this user
         // TODO rename campaign_updates.camp_id
@@ -173,6 +179,7 @@ router.delete('/:id', async (req, res) => {
     await Reports.removeWhere({ post_id: id, table_name: 'campaign_updates' });
 
     if (campaignUpdates) {
+      // TODO
       res.status(200).json(campaignUpdates);
     } else {
       res.status(404).json({ msg: 'Unable to find campaign update ID' });

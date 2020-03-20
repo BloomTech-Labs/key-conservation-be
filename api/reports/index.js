@@ -88,6 +88,7 @@ router.get('/', async (req, res) => {
 
           const unique_reports = await getSimilarReportCount(report);
 
+          // TODO rename shorthand
           return {
             id: report.id,
             reported_by: report.reported_by,
@@ -166,7 +167,7 @@ router.get('/:id', async (req, res) => {
 
     response.reported_by = {
       id: reported_by.id,
-      name: reported_by.sup_name || reported_by.org_name || 'User',
+      name: reported_by.name || reported_by.name || 'User',
     };
 
     return res.status(200).json(response);
@@ -217,36 +218,36 @@ router.post('/', async (req, res) => {
         // Campaigns
 
         // Get the campaign
-        const [camp] = await db('campaigns').where({
-          camp_id: req.body.postId,
+        const [campaign] = await db('campaigns').where({
+          id: req.body.postId,
         });
-        // Get 'users_id' from campaign
-        reportedUserId = camp.users_id;
+        // Get 'user_id' from campaign
+        reportedUserId = campaign.user_id;
         break;
       }
       case types[2]: {
         // Campaign Updates
 
         // Get campaign update
-        const [camp_update] = await db('campaign_updates').where({
-          update_id: req.body.postId,
+        const [campaign_update] = await db('campaign_updates').where({
+          id: req.body.postId,
         });
         // Get campaign from campaign update
         const [campaign] = await db('campaigns').where({
-          camp_id: camp_update.camp_id,
+          id: campaign_update.id,
         });
-        // Get 'users_id' from campaign
-        reportedUserId = campaign.users_id;
+        // Get 'user_id' from campaign
+        reportedUserId = campaign.user_id;
         break;
       }
       case types[3]: {
         // Comments
         // Get comment
         const [comment] = await db('comments').where({
-          comment_id: req.body.postId,
+          id: req.body.postId,
         });
-        // Get 'users_id' from comment
-        reportedUserId = comment.users_id;
+        // Get 'user_id' from comment
+        reportedUserId = comment.user_id;
         break;
       }
       default: {
@@ -267,6 +268,7 @@ router.post('/', async (req, res) => {
       return res.sendStatus(200);
     }
 
+    // TODO?
     // Construct report object
     const report = {
       reported_by: userId,

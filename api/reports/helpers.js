@@ -9,7 +9,7 @@ module.exports = {
         return 'comment_id';
       }
       case 'campaigns': {
-        return 'camp_id';
+        return 'campaign_id';
       }
       case 'campaign_updates': {
         return 'update_id';

@@ -23,9 +23,9 @@ router.post('/:id', async (req, res) => {
   if (!campaign) return res.status(404).json({ msg: 'A campaign with that ID could not be found!' });
 
   const newComment = {
-    comment_body: comment_body.trim(),
-    users_id: user.id,
-    camp_id: id,
+    body: comment_body.trim(),
+    user_id: user.id,
+    campaign: id,
   };
   try {
     const data = await Comments.insert(newComment);
@@ -67,14 +67,15 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// TODO update API routes too
 router.get('/com/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
     const comment = await Comments.findById(id);
-    const usr = await Users.findById(comment.users_id);
+    const usr = await Users.findById(comment.user_id);
 
-    const campaign = await Campaigns.findById(comment.camp_id);
+    const campaign = await Campaigns.findById(comment.campaign);
 
     if (campaign.is_deactivated || usr.is_deactivated) {
       const reqUsr = await Users.findBySub(req.user.sub);
@@ -101,7 +102,7 @@ router.put('/com/:id', async (req, res) => {
   try {
     const user = await Users.findBySub(req.user.sub);
     const comment = await Comments.findById(id);
-    if (user.id !== comment.users_id && !user.admin) {
+    if (user.id !== comment.user_id && !user.admin) {
       return res.status(401).json({ msg: 'Unauthorized: You may not modify this comment' });
     }
 
@@ -123,10 +124,10 @@ router.delete('/com/:id', async (req, res) => {
   try {
     const user = await Users.findBySub(req.user.sub);
     const comment = await Comments.findById(id);
-    if (user.id !== comment.users_id) {
+    if (user.id !== comment.user_id) {
       if (user.admin) {
         // If it's an admin deleting this, give this user a strike
-        const targetUsr = await Users.findById(comment.users_id);
+        const targetUsr = await Users.findById(comment.user_id);
 
         // Don't affect the strike counter if user is deactivated
         if (!targetUsr.is_deactivated) {
