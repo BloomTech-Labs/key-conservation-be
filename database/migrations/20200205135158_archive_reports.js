@@ -6,6 +6,6 @@ exports.up = function (knex, Promise) {
 
 exports.down = function (knex, Promise) {
   return knex.schema.alterTable('user_reports', (tbl) => {
-    // tbl.dropColumn('is_archived');
+    tbl.dropColumn('is_archived');
   });
 };

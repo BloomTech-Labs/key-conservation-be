@@ -1,6 +1,6 @@
 const db = require('../database/dbConfig');
 
-const CampUpdate = require('./updateModel');
+// const CampUpdate = require('./updateModel');
 
 function find() {
   return db('comments');

@@ -101,10 +101,10 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
       // TODO sync
       res.status(201).json({ newCampaignUpdates, msg: 'Campaign update added to database' });
       // TODO these variables aren't declared anyways? update_img and update_desc
-    } else if (!update_img || !update_desc) {
-      res.status(404).json({
-        msg: 'You need an update image and an update description',
-      });
+    // } else if (!update_img || !update_desc) {
+    //   res.status(404).json({
+    //     msg: 'You need an update image and an update description',
+    //   });
     }
   } catch (err) {
     log.error(err.message);

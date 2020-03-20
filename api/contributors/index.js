@@ -20,7 +20,7 @@ router.get('/', restricted, async (req, res) => {
     }
   }
 
-  if (distance && isNaN(distance)) {
+  if (distance && Number.isNaN(distance)) {
     return res.status(400).json({ err: 'distance must be a number' });
   }
 

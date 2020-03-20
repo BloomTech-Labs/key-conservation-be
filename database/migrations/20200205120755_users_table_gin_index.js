@@ -1,3 +1,4 @@
+/* eslint-disable no-tabs */
 const addUserIndex = `
 ALTER TABLE public.users
 	ADD COLUMN IF NOT EXISTS full_text_weighted tsvector;

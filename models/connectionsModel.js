@@ -14,6 +14,7 @@ async function getConnectionsByUserId(id) {
 
   const ids = [];
 
+  // eslint-disable-next-line no-restricted-syntax
   for (const conn of conns) {
     if (!ids.includes(conn.connector_id)) {
       ids.push(conn.connector_id);
@@ -22,7 +23,8 @@ async function getConnectionsByUserId(id) {
       ids.push(conn.connected_id);
     }
   }
-
+  // TODO possible fix
+  // const ids = Array.from(new Set(conns.flatMap((c) => [c.connector_id, c.connected_id])));
   const namesAndAvatars = await Users.getNameAndAvatarByIds(ids);
 
   return conns.map(conn => {

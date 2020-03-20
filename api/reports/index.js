@@ -16,7 +16,7 @@ const { getSimilarReportCount, assignIdTag } = require('./helpers');
 router.get('/', async (req, res) => {
   try {
     // Extract query parameters
-    let { page, type, archive } = req.query;
+    const { type, archive } = req.query;
 
     // Get the user's Auth0 ID (sub)
     const { sub } = req.user;
@@ -30,6 +30,7 @@ router.get('/', async (req, res) => {
     // Retrieve reports
     let response = await Reports.find();
 
+    // eslint-disable-next-line default-case
     switch (type) {
       case 'users':
         response = response.filter((report) => report.table_name === 'users');
@@ -57,8 +58,8 @@ router.get('/', async (req, res) => {
     let startIndex = 0;
     let endIndex = RESULTS_PER_PAGE;
 
-    if (page) {
-      page = parseInt(page, 10);
+    if (req.query.page) {
+      const page = parseInt(req.query.page, 10);
       startIndex = page * RESULTS_PER_PAGE;
       endIndex = startIndex + RESULTS_PER_PAGE;
     }
@@ -84,7 +85,7 @@ router.get('/', async (req, res) => {
       reports: await Promise.all(
         reports.map(async (report) => {
           // Get data on the reported item
-          const user = namesAndAvatars.find((d) => d.id === report.reported_user);
+          const reported_account = namesAndAvatars.find((d) => d.id === report.reported_user);
 
           const unique_reports = await getSimilarReportCount(report);
 
@@ -96,8 +97,8 @@ router.get('/', async (req, res) => {
             reported_at: report.reported_at,
             table_name: report.table_name,
             unique_reports, // How many unique reports have been made about this?
-            image: user.avatar, // Image of reported account/post goes here
-            name: user.name, // Name of the reported account/post
+            image: reported_account.avatar, // Image of reported account/post goes here
+            name: reported_account.name, // Name of the reported account/post
           };
         }),
       ),
@@ -137,7 +138,7 @@ router.get('/:id', async (req, res) => {
     });
 
     otherReports = otherReports.filter(
-      (report) => report.id !== parseInt(req.params.id),
+      (report) => report.id !== parseInt(req.params.id, 10),
     );
 
     const ids = otherReports.map((report) => report.reported_by);

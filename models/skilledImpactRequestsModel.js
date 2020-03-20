@@ -9,7 +9,7 @@ async function findSkilledImpactRequests(campaign_id) {
     )
     .then((returnedQuery) => {
       const skilledRequests = new Map();
-      for (let i = 0; i < returnedQuery.length; i++) {
+      for (let i = 0; i < returnedQuery.length; i += 1) {
         if (!skilledRequests.has(returnedQuery[i].id)) {
           const skillAndProject = {
             skill: returnedQuery[i].skill,

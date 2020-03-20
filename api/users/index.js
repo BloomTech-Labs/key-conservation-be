@@ -282,7 +282,8 @@ router.post(
       log.error(err);
       res.status(500).json({ err, msg: 'Unable to add connection to database' });
     }
-  });
+  },
+);
 
 router.delete('/connect/:id', async (req, res) => {
   const { id } = req.params;
