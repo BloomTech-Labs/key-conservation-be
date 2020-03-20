@@ -30,14 +30,14 @@ DROP FUNCTION IF EXISTS user_tsvector_trigger() CASCADE;
 DROP INDEX IF EXISTS full_text_weighted_index;
 `;
 
-exports.up = async function(knex, Promise) {
+exports.up = async function (knex, Promise) {
   const hasTable = await knex.schema.hasTable('users');
   if (!hasTable) return;
 
   return knex.schema.raw(addUserIndex);
 };
 
-exports.down = async function(knex, Promise) {
+exports.down = async function (knex, Promise) {
   const hasColumn = await knex.schema.hasColumn('users', 'full_text_weighted');
   await knex.schema.table('users', async tbl => {
     if (hasColumn) {

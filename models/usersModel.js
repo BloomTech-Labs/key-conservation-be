@@ -18,7 +18,7 @@ const userColumns = [
   'instagram',
   'phone_number',
   'is_deactivated',
-  'strikes'
+  'strikes',
 ];
 
 // Columns of the user model that are stored in the conservationists table
@@ -32,7 +32,7 @@ const conservationistColumns = [
   'issues',
   'support_us',
   'longitude',
-  'latitude'
+  'latitude',
 ];
 
 // Columns of the user model that are stored in the supporters table
@@ -54,7 +54,7 @@ function find() {
       'cons.issues',
       'cons.support_us',
       'sup.sup_name',
-      db.raw('array_to_json(array_agg(skills.skill)) as skills')
+      db.raw('array_to_json(array_agg(skills.skill)) as skills'),
     )
     .groupBy('users.id', 'cons.cons_id');
 }
@@ -67,7 +67,7 @@ function findUser(id) {
     .first()
     .then(usr => ({
       ...usr,
-      name: usr.org_name || usr.sup_name || 'User'
+      name: usr.org_name || usr.sup_name || 'User',
     }));
 }
 
@@ -100,7 +100,7 @@ async function findById(id) {
         'cons.point_of_contact_email',
         'cons.latitude',
         'cons.longitude',
-        db.raw('array_to_json(array_agg(skills.skill)) as skills')
+        db.raw('array_to_json(array_agg(skills.skill)) as skills'),
       )
       .groupBy('users.id', 'cons.cons_id')
       .first();
@@ -145,7 +145,7 @@ async function findBySub(sub) {
         'cons.support_us',
         'cons.longitude',
         'cons.latitude',
-        db.raw('array_to_json(array_agg(skills.skill)) as skills')
+        db.raw('array_to_json(array_agg(skills.skill)) as skills'),
       )
       .groupBy('users.id', 'cons.cons_id')
       .first();
@@ -172,14 +172,13 @@ async function findUserStatus(sub) {
     .where({ sub })
     .first()
     .then(
-      usr =>
-        usr && {
-          ...usr,
-          name: usr.sup_name || usr.org_name || 'User'
-        }
+      usr => usr && {
+        ...usr,
+        name: usr.sup_name || usr.org_name || 'User',
+      },
     );
 
-  let response = {};
+  const response = {};
 
   if (user) {
     response.is_deactivated = user.is_deactivated;
@@ -193,7 +192,7 @@ async function findUserStatus(sub) {
 async function addCons(cons) {
   const newConservationist = await db('conservationists').insert(
     cons,
-    'cons_id'
+    'cons_id',
   );
   return newConservationist;
 }
@@ -216,7 +215,7 @@ async function add(user) {
     facebook: user.facebook,
     instagram: user.instagram,
     phone_number: user.phone_number,
-    profile_image: user.profile_image
+    profile_image: user.profile_image,
   };
 
   console.log('constructed user data', usersTableInsert);
@@ -237,18 +236,18 @@ async function add(user) {
           country: user.country,
           point_of_contact_name: user.point_of_contact_name,
           longitude: user.longitude,
-          latitude: user.latitude
+          latitude: user.latitude,
         };
         console.log(
           'constructued conservationist profile',
-          conservationistsData
+          conservationistsData,
         );
         addCons(conservationistsData);
       }
       if (user.roles === 'supporter') {
         const supportersData = {
           users_id: id,
-          sup_name: user.name
+          sup_name: user.name,
         };
         console.log('constructed supporter profile', supportersData);
         addSup(supportersData);
@@ -340,17 +339,15 @@ const getNameAndAvatarByIds = async ids => {
         'users.roles',
         'users.profile_image',
         'cons.org_name',
-        'sup.sup_name'
+        'sup.sup_name',
       );
 
-    return users.map(user => {
-      return {
-        id: user.id,
-        name: user.org_name || user.sup_name || 'User',
-        avatar: user.profile_image,
-        role: user.roles
-      };
-    });
+    return users.map(user => ({
+      id: user.id,
+      name: user.org_name || user.sup_name || 'User',
+      avatar: user.profile_image,
+      role: user.roles,
+    }));
   } catch (err) {
     throw new Error(err);
   }
@@ -366,5 +363,5 @@ module.exports = {
   findUserStatus,
   add,
   update,
-  getNameAndAvatarByIds
+  getNameAndAvatarByIds,
 };

@@ -8,8 +8,8 @@ const router = express.Router();
 
 router.get('/', restricted, async (req, res) => {
   const { distance, lat, long } = req.query;
-  const skills = req.query.skills ?
-    req.query.skills
+  const skills = req.query.skills
+    ? req.query.skills
       .split(',')
       .map(skill => skill.toUpperCase())
     : [];
@@ -18,7 +18,7 @@ router.get('/', restricted, async (req, res) => {
     const unknownSkills = skills.filter(skill => !(skill in Skills));
 
     if (unknownSkills.length > 0) {
-      return res.status(400).json({ err: `unknown skills: ${unknownSkills.join(',')}`});
+      return res.status(400).json({ err: `unknown skills: ${unknownSkills.join(',')}` });
     }
   }
 

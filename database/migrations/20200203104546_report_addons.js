@@ -1,4 +1,4 @@
-exports.up = function(knex, Promise) {
+exports.up = function (knex, Promise) {
   return knex.schema
     .dropTableIfExists('reported_posts')
     .createTable('user_reports', tbl => {
@@ -32,7 +32,7 @@ exports.up = function(knex, Promise) {
     });
 };
 
-exports.down = function(knex, Promise) {
+exports.down = function (knex, Promise) {
   return knex.schema
     .dropTableIfExists('user_reports')
     .createTable('reported_posts', tbl => {

@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 
 const db = require('../../database/dbConfig');
@@ -23,8 +24,7 @@ router.get('/', async (req, res) => {
     const user = await Users.findBySub(sub);
 
     // Make sure user making request is an admin
-    if (!user.admin)
-      throw new Error('Only an admin is authorized to view reports!');
+    if (!user.admin) throw new Error('Only an admin is authorized to view reports!');
 
     // Retrieve reports
     let response = await Reports.find();
@@ -35,9 +35,8 @@ router.get('/', async (req, res) => {
         break;
       case 'campaigns':
         response = response.filter(
-          report =>
-            report.table_name === 'campaigns' ||
-            report.table_name === 'campaign_updates'
+          report => report.table_name === 'campaigns'
+            || report.table_name === 'campaign_updates',
         );
         break;
       case 'comments':
@@ -48,7 +47,7 @@ router.get('/', async (req, res) => {
     response = response.filter(report => {
       if (archive === 'true') {
         return report.is_archived;
-      } else return !report.is_archived;
+      } return !report.is_archived;
     });
 
     // Calculate section of response to be returned
@@ -69,7 +68,7 @@ router.get('/', async (req, res) => {
 
     console.log('constructing response');
 
-    let ids = reports.map(report => report.reported_user);
+    const ids = reports.map(report => report.reported_user);
 
     const namesAndAvatars = await Users.getNameAndAvatarByIds(ids);
 
@@ -83,7 +82,7 @@ router.get('/', async (req, res) => {
       reports: await Promise.all(
         reports.map(async report => {
           // Get data on the reported item
-          const user = namesAndAvatars.find(d => d.id === report.reported_user)
+          const user = namesAndAvatars.find(d => d.id === report.reported_user);
 
           const unique_reports = await getSimilarReportCount(report);
 
@@ -95,17 +94,17 @@ router.get('/', async (req, res) => {
             table_name: report.table_name,
             unique_reports, // How many unique reports have been made about this?
             image: user.avatar, // Image of reported account/post goes here
-            name: user.name // Name of the reported account/post
+            name: user.name, // Name of the reported account/post
           };
-        })
-      )
+        }),
+      ),
     };
 
     return res.status(200).json(response);
   } catch (err) {
     return res.status(500).json({
       error: err,
-      message: err.message || 'An internal server error occurred'
+      message: err.message || 'An internal server error occurred',
     });
   }
 });
@@ -120,25 +119,25 @@ router.get('/:id', async (req, res) => {
     const user = await Users.findBySub(sub);
 
     // Make sure user making request is an admin
-    if (!user.admin)
-      throw new Error('Only an admin is authorized to view reports!');
+    if (!user.admin) throw new Error('Only an admin is authorized to view reports!');
 
     const response = await Reports.findById(req.params.id);
 
-    if (!response)
+    if (!response) {
       return res
         .status(404)
         .json({ message: 'A report with that ID does not exist' });
+    }
 
     let otherReports = await Reports.findWhere({
-      reported_user: response.reported_user
+      reported_user: response.reported_user,
     });
 
     otherReports = otherReports.filter(
-      report => report.id !== parseInt(req.params.id)
+      report => report.id !== parseInt(req.params.id),
     );
 
-    let ids = otherReports.map(report => report.reported_by);
+    const ids = otherReports.map(report => report.reported_by);
 
     const users = await Users.getNameAndAvatarByIds(ids);
 
@@ -151,10 +150,10 @@ router.get('/:id', async (req, res) => {
           unique_reports: await getSimilarReportCount(report),
           reported_by: {
             id: reported_by.id,
-            name: reported_by.name
-          }
+            name: reported_by.name,
+          },
         };
-      })
+      }),
     );
 
     const unique_reports = await getSimilarReportCount(response);
@@ -165,7 +164,7 @@ router.get('/:id', async (req, res) => {
 
     response.reported_by = {
       id: reported_by.id,
-      name: reported_by.sup_name || reported_by.org_name || 'User'
+      name: reported_by.sup_name || reported_by.org_name || 'User',
     };
 
     return res.status(200).json(response);
@@ -173,7 +172,7 @@ router.get('/:id', async (req, res) => {
     console.log(err);
     return res.status(500).json({
       error: err.message,
-      message: 'An internal server error occurred'
+      message: 'An internal server error occurred',
     });
   }
 });
@@ -188,19 +187,20 @@ router.post('/', async (req, res) => {
     const types = ['users', 'campaigns', 'campaign_updates', 'comments'];
 
     // Make sure provided type is a valid table name
-    if (!types.includes(req.body.postType))
+    if (!types.includes(req.body.postType)) {
       throw new Error(
-        `Field 'postType' must be one of the following valid types: ${types}`
+        `Field 'postType' must be one of the following valid types: ${types}`,
       );
+    }
 
     // Make sure that item of provided id exists in provided table
     const [item] = await db(req.body.postType).where({
-      [assignIdTag(req.body.postType)]: req.body.postId
+      [assignIdTag(req.body.postType)]: req.body.postId,
     });
 
     if (!item) {
       throw new Error(
-        `An item of id ${req.body.postId} in table ${req.body.postType} does not exist`
+        `An item of id ${req.body.postId} in table ${req.body.postType} does not exist`,
       );
     }
 
@@ -216,7 +216,7 @@ router.post('/', async (req, res) => {
 
         // Get the campaign
         const [camp] = await db('campaigns').where({
-          camp_id: req.body.postId
+          camp_id: req.body.postId,
         });
         // Get 'users_id' from campaign
         reportedUserId = camp.users_id;
@@ -227,11 +227,11 @@ router.post('/', async (req, res) => {
 
         // Get campaign update
         const [camp_update] = await db('campaign_updates').where({
-          update_id: req.body.postId
+          update_id: req.body.postId,
         });
         // Get campaign from campaign update
         const [campaign] = await db('campaigns').where({
-          camp_id: camp_update.camp_id
+          camp_id: camp_update.camp_id,
         });
         // Get 'users_id' from campaign
         reportedUserId = campaign.users_id;
@@ -241,7 +241,7 @@ router.post('/', async (req, res) => {
         // Comments
         // Get comment
         const [comment] = await db('comments').where({
-          comment_id: req.body.postId
+          comment_id: req.body.postId,
         });
         // Get 'users_id' from comment
         reportedUserId = comment.users_id;
@@ -258,7 +258,7 @@ router.post('/', async (req, res) => {
       reported_by: userId,
       post_id: req.body.postId,
       table_name: req.body.postType,
-      reported_user: reportedUserId
+      reported_user: reportedUserId,
     });
 
     if (duplicates.length > 0) {
@@ -271,7 +271,7 @@ router.post('/', async (req, res) => {
       post_id: req.body.postId,
       table_name: req.body.postType,
       report_desc: req.body.desc || '',
-      reported_user: reportedUserId
+      reported_user: reportedUserId,
     };
 
     // Save report in database
@@ -282,7 +282,7 @@ router.post('/', async (req, res) => {
   } catch (err) {
     return res.status(500).json({
       error: err.message,
-      message: 'An internal server error occurred'
+      message: 'An internal server error occurred',
     });
   }
 });
@@ -290,7 +290,7 @@ router.post('/', async (req, res) => {
 router.post('/archive/:id', async (req, res) => {
   try {
     const updates = {
-      is_archived: true
+      is_archived: true,
     };
 
     await Reports.update(req.params.id, updates);
@@ -300,7 +300,7 @@ router.post('/archive/:id', async (req, res) => {
     return res
       .status(500)
       .json({
-        message: err.message || 'An error occurred while archiving this report'
+        message: err.message || 'An error occurred while archiving this report',
       });
   }
 });
@@ -314,8 +314,7 @@ router.delete('/:id', async (req, res) => {
     const user = await Users.findBySub(sub);
 
     // Make sure user making request is an admin
-    if (!user.admin)
-      throw new Error('Only an admin is authorized to delete reports!');
+    if (!user.admin) throw new Error('Only an admin is authorized to delete reports!');
 
     // Extract report ID from params
     const { id } = req.params;
@@ -328,7 +327,7 @@ router.delete('/:id', async (req, res) => {
   } catch (err) {
     return res.status(500).json({
       error: err.message,
-      message: 'An internal server error occurred.'
+      message: 'An internal server error occurred.',
     });
   }
 });

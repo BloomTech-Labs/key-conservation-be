@@ -78,7 +78,7 @@ function findUser(id) {
     .first()
     .then(usr => ({
       ...usr,
-      name: usr.org_name || usr.sup_name || undefined
+      name: usr.org_name || usr.sup_name || undefined,
     }));
 }
 

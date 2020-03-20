@@ -6,16 +6,16 @@ module.exports = {
   assignIdTag: table_name => {
     switch (table_name) {
       case 'comments': {
-        return `comment_id`;
+        return 'comment_id';
       }
       case 'campaigns': {
-        return `camp_id`;
+        return 'camp_id';
       }
       case 'campaign_updates': {
-        return `update_id`;
+        return 'update_id';
       }
       default: {
-        return `id`;
+        return 'id';
       }
     }
   },
@@ -24,9 +24,9 @@ module.exports = {
     const duplicates = await Reports.findWhere({
       reported_user: report.reported_user,
       post_id: report.post_id,
-      table_name: report.table_name
+      table_name: report.table_name,
     });
 
     return duplicates.length;
-  }
+  },
 };

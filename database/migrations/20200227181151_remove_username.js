@@ -1,4 +1,4 @@
-exports.up = function(knex, Promise) {
+exports.up = function (knex, Promise) {
   return knex.schema.alterTable('users', tbl => {
     tbl.dropColumn('username');
   }).alterTable('conservationists', tbl => {
@@ -8,7 +8,7 @@ exports.up = function(knex, Promise) {
   });
 };
 
-exports.down = function(knex, Promise) {
+exports.down = function (knex, Promise) {
   return knex.schema.table('users', tbl => {
     tbl
       .string('username', 30)

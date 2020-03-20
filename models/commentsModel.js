@@ -23,7 +23,7 @@ function findCampaignComments(id) {
       'users.profile_image',
       'cons.org_name',
       'sup.sup_name',
-      'users.is_deactivated'
+      'users.is_deactivated',
     )
     .then(res => {
       const comments = res
@@ -38,7 +38,7 @@ function insert(comment) {
   return db('comments')
     .insert(comment)
     .then(
-      () => findCampaignComments(comment.camp_id)
+      () => findCampaignComments(comment.camp_id),
       // return db('campaigns')
       //   .where({ camp_id: comment.camp_id })
       //   .join('users', 'users.id', 'campaigns.users_id')
@@ -91,5 +91,5 @@ module.exports = {
   findCampaignComments,
   insert,
   update,
-  remove
+  remove,
 };

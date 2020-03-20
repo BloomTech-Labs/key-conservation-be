@@ -28,9 +28,8 @@ router.get('/:id', (req, res) => {
       // log.info(result);
       if (result) {
         return Camp.findById(id);
-      } else {
-        res.status(400).json({ msg: 'Campaign was not found in the database' });
       }
+      res.status(400).json({ msg: 'Campaign was not found in the database' });
     })
     .then(async camp => {
       // If this campaign belongs to a deactivated account, then
@@ -41,7 +40,7 @@ router.get('/:id', (req, res) => {
 
         if (!user.admin) {
           return res.status(401).json({
-            msg: 'This campaign may only be viewed by an administrator'
+            msg: 'This campaign may only be viewed by an administrator',
           });
         }
       }
@@ -73,26 +72,25 @@ router.get('/camp/:id', (req, res) => {
     .then(user => {
       if (user && !user.admin) {
         return res.status(401).json({
-          msg: "This user's campaigns may only be viewed by an administrator"
+          msg: "This user's campaigns may only be viewed by an administrator",
         });
-      } else return Camp.findCampByUserId(id);
+      } return Camp.findCampByUserId(id);
     })
     .then(camp => {
-      if (camp)
+      if (camp) {
         return res
           .status(200)
           .json({ camp, msg: 'The campaigns were found for this org' });
+      }
     })
-    .catch(err => {
-      return res.status(500).json({ msg: err.message });
-    });
+    .catch(err => res.status(500).json({ msg: err.message }));
 });
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
   const { location } = req.file;
   const postCamp = {
     ...req.body,
-    camp_img: location
+    camp_img: location,
   };
 
   try {
@@ -101,14 +99,14 @@ router.post('/', mw.upload.single('photo'), async (req, res) => {
       log.info(newCamps);
       res.status(201).json({ newCamps, msg: 'Campaign added to database' });
     } else if (
-      !postCamp.camp_img ||
-      !postCamp.camp_name ||
-      !postCamp.camp_desc ||
-      !postCamp.camp_cta
+      !postCamp.camp_img
+      || !postCamp.camp_name
+      || !postCamp.camp_desc
+      || !postCamp.camp_cta
     ) {
       log.info('no data');
       res.status(404).json({
-        msg: 'You need campaign image, campaign name, and campaign description'
+        msg: 'You need campaign image, campaign name, and campaign description',
       });
     }
   } catch (err) {
@@ -126,7 +124,7 @@ router.put('/:id', mw.upload.single('photo'), async (req, res) => {
 
   const newCamps = {
     ...req.body,
-    camp_img: location
+    camp_img: location,
   };
 
   try {
@@ -168,15 +166,16 @@ router.delete('/:id', async (req, res) => {
 
         if (!targetUsr.is_deactivated) {
           const updates = {
-            strikes: targetUsr.strikes + 1
+            strikes: targetUsr.strikes + 1,
           };
 
           await Users.update(updates, targetUsr.id);
         }
-      } else
+      } else {
         return res
           .status(401)
           .json({ msg: 'Unauthorized: You may not delete this campaign' });
+      }
     }
 
     const camps = await Camp.remove(id);

@@ -64,10 +64,9 @@ router.get('/camp/:id', (req, res) => {
       if (result) {
         if (result.is_deactivated) {
           return Users.findBySub(req.user.id);
-        } else return null;
-      } else {
-        return res.status(400).json({ msg: 'This campaign does not exist' });
+        } return null;
       }
+      return res.status(400).json({ msg: 'This campaign does not exist' });
     })
     .then(user => {
       log.info(user);
@@ -76,38 +75,34 @@ router.get('/camp/:id', (req, res) => {
         return res
           .status(401)
           .json({ msg: 'This post may only be viewed by an administrator' });
-      } else return CampUpdate.findUpdatesByCamp(id);
+      } return CampUpdate.findUpdatesByCamp(id);
     })
     .then(updates => {
       if (updates[0]) {
         return res
           .status(200)
           .json({ updates, msg: 'The updates were found for this campaign' });
-      } else {
-        return res
-          .status(400)
-          .json({ msg: 'This campaign does not have an update yet' });
       }
+      return res
+        .status(400)
+        .json({ msg: 'This campaign does not have an update yet' });
     })
-    .catch(err =>
-      res.status(500).json({ err, msg: 'Unable to make request to server' })
-    );
+    .catch(err => res.status(500).json({ err, msg: 'Unable to make request to server' }));
 });
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
-
   const camp = await Campaigns.findById(req.body.camp_id);
 
   let postCampUpdate = {
     ...req.body,
-    camp_name: camp.camp_name
+    camp_name: camp.camp_name,
   };
   let location;
   if (req.file) {
     location = req.file.location;
     postCampUpdate = {
       ...postCampUpdate,
-      update_img: location
+      update_img: location,
     };
   }
 
@@ -120,7 +115,7 @@ router.post('/', mw.upload.single('photo'), async (req, res) => {
         .json({ newCampUpdates, msg: 'Campaign update added to database' });
     } else if (!update_img || !update_desc) {
       res.status(404).json({
-        msg: 'You need an update image and an update description'
+        msg: 'You need an update image and an update description',
       });
     }
   } catch (err) {
@@ -138,17 +133,18 @@ router.put('/:id', mw.upload.single('photo'), async (req, res) => {
 
   const newCampUpdates = {
     ...req.body,
-    update_img: location
+    update_img: location,
   };
 
   try {
     const campUpdate = await CampUpdate.findById(id);
     const usr = await Users.findBySub(req.user.sub);
 
-    if (usr.id !== campUpdate.users_id && !usr.admin)
+    if (usr.id !== campUpdate.users_id && !usr.admin) {
       return res
         .status(401)
         .json({ msg: 'Unauthorized: You may not modify this post' });
+    }
 
     const editCampUpdate = await CampUpdate.update(newCampUpdates, id);
 
@@ -173,7 +169,6 @@ router.delete('/:id', async (req, res) => {
     const campUpdate = await CampUpdate.findById(id);
 
     if (campUpdate.users_id !== usr.id) {
-
       if (usr.admin) {
         // Strike this user
         const camp = await Campaigns.findById(campUpdate.camp_id);
@@ -182,22 +177,23 @@ router.delete('/:id', async (req, res) => {
 
         if (!targetUsr.is_deactivated) {
           const updates = {
-            strikes: targetUsr.strikes + 1
+            strikes: targetUsr.strikes + 1,
           };
 
           await Users.update(updates, targetUsr.id);
         }
-      } else
+      } else {
         return res
           .status(401)
           .json({ msg: 'Unauthorized: You may not delete this post' });
+      }
     }
 
     const campUpdates = await CampUpdate.remove(id);
 
     // Remove all reports relating to this update
 
-    await Reports.removeWhere({post_id: id, table_name: 'campaign_updates'})
+    await Reports.removeWhere({ post_id: id, table_name: 'campaign_updates' });
 
     if (campUpdates) {
       res.status(200).json(campUpdates);

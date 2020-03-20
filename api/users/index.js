@@ -11,7 +11,7 @@ const mw = require('../../middleware/s3Upload');
 const restricted = require('../../middleware/authJwt.js');
 const {
   checkConnection,
-  checkUniqueIds
+  checkUniqueIds,
 } = require('../../middleware/connections');
 
 router.get('/', restricted, async (req, res) => {
@@ -39,7 +39,7 @@ router.get('/:id', restricted, async (req, res) => {
   try {
     const user = await Users.findById(id);
 
-    console.log('succeeded')
+    console.log('succeeded');
 
     if (!user) {
       return res
@@ -55,7 +55,7 @@ router.get('/:id', restricted, async (req, res) => {
           return res.status(401).json({
             message:
               'Your account has been deactivated. If you believe this is a mistake, please contact support via our website',
-            logout: true
+            logout: true,
           });
         }
         return res
@@ -66,7 +66,7 @@ router.get('/:id', restricted, async (req, res) => {
 
     return res.status(200).json({ user, message: 'The user was found' });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     return res.status(500).json({ message: err.message, err });
   }
 });
@@ -83,7 +83,7 @@ router.get('/sub/:sub', restricted, async (req, res) => {
           return res.status(401).json({
             message:
               'Your account has been deactivated. If you believe this is a mistake, please contact support via our website',
-            logout: true
+            logout: true,
           });
         }
         return res
@@ -114,7 +114,7 @@ router.get('/subcheck/:sub', async (request, response) => {
         return response.status(401).json({
           message:
             'Your account has been deactivated. If you believe this is a mistake, please contact support via our website',
-          logout: true
+          logout: true,
         });
       }
       return response
@@ -125,16 +125,15 @@ router.get('/subcheck/:sub', async (request, response) => {
       log.error(error);
       response.status(500).json({
         error,
-        message: 'Could not communicate with server to check for Users.'
+        message: 'Could not communicate with server to check for Users.',
       });
     });
 });
 
 router.post('/', mw.upload.single('photo'), async (req, res) => {
-
   const user = {
     ...req.body,
-    profile_image: req.file ? req.file.location : undefined
+    profile_image: req.file ? req.file.location : undefined,
   };
 
   try {
@@ -155,7 +154,7 @@ router.put('/:id', restricted, mw.upload.single('photo'), async (req, res) => {
 
   const newUser = {
     ...req.body,
-    profile_image: req.file ? req.file.location : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
+    profile_image: req.file ? req.file.location : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
   };
 
   console.log(newUser);
@@ -203,7 +202,7 @@ router.post('/deactivate/:id', restricted, async (req, res) => {
     // Update target user data to reflect deactivation
     const updates = {
       is_deactivated: true,
-      strikes
+      strikes,
     };
 
     console.log(updates);
@@ -213,7 +212,7 @@ router.post('/deactivate/:id', restricted, async (req, res) => {
     // Archive all reports relating to this user
     await Reports.updateWhere(
       { reported_user: req.params.id },
-      { is_archived: true }
+      { is_archived: true },
     );
 
     // Respond with 200 OK
@@ -221,7 +220,7 @@ router.post('/deactivate/:id', restricted, async (req, res) => {
   } catch (err) {
     return res.status(500).json({
       error: err.message,
-      message: 'Failed to deactivate user. Please try again'
+      message: 'Failed to deactivate user. Please try again',
     });
   }
 });
@@ -239,7 +238,7 @@ router.post('/reactivate/:id', restricted, async (req, res) => {
 
     // Update target user data to reflect deactivation
     const updates = {
-      is_deactivated: false
+      is_deactivated: false,
     };
 
     await Users.update(updates, req.params.id);
@@ -249,7 +248,7 @@ router.post('/reactivate/:id', restricted, async (req, res) => {
   } catch (err) {
     return res.status(500).json({
       error: err.message,
-      message: 'An internal server error occurred'
+      message: 'An internal server error occurred',
     });
   }
 });
@@ -275,14 +274,14 @@ router.post(
 
       if (!req.params.id) {
         res.status(400).json({
-          msg: 'You must pass in the connected_id in the request url'
+          msg: 'You must pass in the connected_id in the request url',
         });
       }
 
       const connectionData = {
         connector_id: usr.id,
         connected_id: req.params.id,
-        status
+        status,
       };
 
       const duplicate = await Connections.alreadyExists(connectionData);
@@ -298,7 +297,7 @@ router.post(
       if (newConnection) {
         res.status(201).json({
           newConnection,
-          msg: 'New connection was added to the database'
+          msg: 'New connection was added to the database',
         });
       }
     } catch (err) {
@@ -307,7 +306,7 @@ router.post(
         .status(500)
         .json({ err, msg: 'Unable to add connection to database' });
     }
-  }
+  },
 );
 
 router.delete('/connect/:id', async (req, res) => {
@@ -333,7 +332,7 @@ router.delete('/connect/:id', async (req, res) => {
 router.get('/connect/:userId', async (req, res) => {
   try {
     const userConnections = await Connections.getConnectionsByUserId(
-      req.params.userId
+      req.params.userId,
     );
 
     res.status(200).json(userConnections);
@@ -352,23 +351,23 @@ router.put('/connect/:connectionId', async (req, res) => {
   if (!req.body) {
     res.status(401).json({
       msg:
-        'Please include the status (accepted or rejected) in the request body'
+        'Please include the status (accepted or rejected) in the request body',
     });
   }
 
   const updated = await Connections.respondToConnectionRequest(
     req.params.connectionId,
-    req.body.status
+    req.body.status,
   );
 
 
   try {
     if (updated === 1) {
       const newConnectionStatus = await Connections.getConnectionById(
-        req.params.connectionId
+        req.params.connectionId,
       );
       res.status(201).json({
-        msg: `The status of connection with id ${req.params.connectionId} was changed to ${newConnectionStatus.status}`
+        msg: `The status of connection with id ${req.params.connectionId} was changed to ${newConnectionStatus.status}`,
       });
     } else {
       res.status(404).json({ msg: 'No connection found with that id' });

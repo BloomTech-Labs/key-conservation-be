@@ -1,5 +1,5 @@
 
-exports.up = function(knex) {
+exports.up = function (knex) {
   return knex.schema.alterTable('conservationists', tbl => {
     tbl.renameColumn('cons_id', 'id');
     tbl.renameColumn('users_id', 'user_id');
@@ -46,7 +46,7 @@ exports.up = function(knex) {
     });
 };
 
-exports.down = function(knex) {
+exports.down = function (knex) {
   return knex.schema.alterTable('conservationists', tbl => {
     tbl.renameColumn('id', 'cons_id');
     tbl.renameColumn('user_id', 'users_id');

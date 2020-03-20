@@ -19,7 +19,7 @@ router.use(
   '/contributors',
   checkJwt,
   checkDeactivated,
-  require('./contributors')
+  require('./contributors'),
 );
 // router.use('/connections', checkJwt, checkDeactivated, require('./connections'));
 

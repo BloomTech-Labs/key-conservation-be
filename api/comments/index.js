@@ -9,24 +9,23 @@ const Campaigns = require('../../models/campaignModel');
 const Users = require('../../models/usersModel');
 
 router.post('/:id', async (req, res) => {
-
   const { comment_body } = req.body;
   const { id } = req.params;
 
-  if(typeof comment_body !== 'string' || !comment_body.trim()) {
-    return res.status(400).json({msg: "The comment_body field is required"});
+  if (typeof comment_body !== 'string' || !comment_body.trim()) {
+    return res.status(400).json({ msg: 'The comment_body field is required' });
   }
 
   const user = await Users.findBySub(req.user.sub);
-  
+
   const camp = await Campaigns.findCampaign(id);
 
-  if(!camp) return res.status(404).json({msg: "A campaign with that ID could not be found!"});
+  if (!camp) return res.status(404).json({ msg: 'A campaign with that ID could not be found!' });
 
   const newComment = {
     comment_body: comment_body.trim(),
     users_id: user.id,
-    camp_id: id
+    camp_id: id,
   };
   try {
     const data = await Comments.insert(newComment);
@@ -53,7 +52,7 @@ router.get('/:id', async (req, res) => {
       if (!reqUsr.admin) {
         return res.status(401).json({
           msg:
-            'Comments for this campaign may only be viewed by an administrator'
+            'Comments for this campaign may only be viewed by an administrator',
         });
       }
     }
@@ -82,18 +81,19 @@ router.get('/com/:id', async (req, res) => {
     if (camp.is_deactivated || usr.is_deactivated) {
       const reqUsr = await Users.findBySub(req.user.sub);
 
-      if (!reqUsr.admin)
+      if (!reqUsr.admin) {
         return res
           .status(401)
           .json({ msg: 'This comment may only be viewed by an administrator' });
+      }
     }
 
     if (comment) {
       return res.status(200).json(comment);
-    } else return res.status(404).json({ message: 'Comment not found!' });
+    } return res.status(404).json({ message: 'Comment not found!' });
   } catch (err) {
     return res.status(500).json({
-      message: err.message || 'An error occurred retreiving this comment'
+      message: err.message || 'An error occurred retreiving this comment',
     });
   }
 });
@@ -140,21 +140,22 @@ router.delete('/com/:id', async (req, res) => {
         // Don't affect the strike counter if user is deactivated
         if (!targetUsr.is_deactivated) {
           const updates = {
-            strikes: targetUsr.strikes + 1
+            strikes: targetUsr.strikes + 1,
           };
 
           await Users.update(updates, targetUsr.id);
         }
-      } else
+      } else {
         return res
           .status(401)
           .json({ msg: 'Unauthorized: You may not delete this comment' });
+      }
     }
 
     const data = await Comments.remove(id);
 
     // remove all reports relating to this comment
-    await Reports.removeWhere({post_id: id, table_name: 'comments'})
+    await Reports.removeWhere({ post_id: id, table_name: 'comments' });
 
     if (data) {
       res.status(200).json({ data, msg: 'Comment was deleted' });
