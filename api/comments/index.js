@@ -9,10 +9,10 @@ const Campaigns = require('../../models/campaignModel');
 const Users = require('../../models/usersModel');
 
 router.post('/:id', async (req, res) => {
-  const { comment_body: commentBody } = req.body;
+  const { comment_body } = req.body;
   const { id } = req.params;
 
-  if (typeof commentBody !== 'string' || !commentBody.trim()) {
+  if (typeof comment_body !== 'string' || !comment_body.trim()) {
     return res.status(400).json({ msg: 'The comment_body field is required' });
   }
 
@@ -31,7 +31,7 @@ router.post('/:id', async (req, res) => {
     const data = await Comments.insert(newComment);
     if (data) {
       res.status(201).json({ data, msg: 'Comment added to database' });
-    } else if (!commentBody) {
+    } else if (!comment_body) {
       res.status(404).json({ msg: 'Please add a body to this comment' });
     }
   } catch (err) {
@@ -82,15 +82,14 @@ router.get('/com/:id', async (req, res) => {
       const reqUsr = await Users.findBySub(req.user.sub);
 
       if (!reqUsr.admin) {
-        return res
-          .status(401)
-          .json({ msg: 'This comment may only be viewed by an administrator' });
+        return res.status(401).json({ msg: 'This comment may only be viewed by an administrator' });
       }
     }
 
     if (comment) {
       return res.status(200).json(comment);
-    } return res.status(404).json({ message: 'Comment not found!' });
+    }
+    return res.status(404).json({ message: 'Comment not found!' });
   } catch (err) {
     return res.status(500).json({
       message: err.message || 'An error occurred retreiving this comment',
@@ -103,13 +102,9 @@ router.put('/com/:id', async (req, res) => {
   const changes = req.body;
   try {
     const user = await Users.findBySub(req.user.sub);
-
     const comment = await Comments.findById(id);
-
     if (user.id !== comment.users_id && !user.admin) {
-      return res
-        .status(401)
-        .json({ msg: 'Unauthorized: You may not modify this comment' });
+      return res.status(401).json({ msg: 'Unauthorized: You may not modify this comment' });
     }
 
     const data = await Comments.update(id, changes);
@@ -129,9 +124,7 @@ router.delete('/com/:id', async (req, res) => {
 
   try {
     const user = await Users.findBySub(req.user.sub);
-
     const comment = await Comments.findById(id);
-
     if (user.id !== comment.users_id) {
       if (user.admin) {
         // If it's an admin deleting this, give this user a strike
@@ -146,9 +139,7 @@ router.delete('/com/:id', async (req, res) => {
           await Users.update(updates, targetUsr.id);
         }
       } else {
-        return res
-          .status(401)
-          .json({ msg: 'Unauthorized: You may not delete this comment' });
+        return res.status(401).json({ msg: 'Unauthorized: You may not delete this comment' });
       }
     }
 
@@ -167,19 +158,5 @@ router.delete('/com/:id', async (req, res) => {
     res.status(500).json({ err, msg: 'Unable to delete this comment' });
   }
 });
-
-// Retrieves all comments in the database. Only use for testing.
-// router.get('/', async (req, res) => {
-//   const comments = await Comments.find();
-//   try {
-//     if (comments) {
-//       res.status(200).json(comments);
-//     } else {
-//       log.error('There was an error');
-//     }
-//   } catch (err) {
-//     res.status(500).json({ msg: 'Unable to retrieve comments' });
-//   }
-// });
 
 module.exports = router;

@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const db = require('../../database/dbConfig');
+const log = require('../../logger');
 
 const Reports = require('../../models/reportModel');
 const Users = require('../../models/usersModel');
@@ -47,7 +48,8 @@ router.get('/', async (req, res) => {
     response = response.filter((report) => {
       if (archive === 'true') {
         return report.is_archived;
-      } return !report.is_archived;
+      }
+      return !report.is_archived;
     });
 
     // Calculate section of response to be returned
@@ -56,7 +58,7 @@ router.get('/', async (req, res) => {
     let endIndex = RESULTS_PER_PAGE;
 
     if (page) {
-      page = parseInt(page);
+      page = parseInt(page, 10);
       startIndex = page * RESULTS_PER_PAGE;
       endIndex = startIndex + RESULTS_PER_PAGE;
     }
@@ -66,7 +68,7 @@ router.get('/', async (req, res) => {
 
     const reports = response.slice(startIndex, endIndex);
 
-    console.log('constructing response');
+    log.info('constructing response');
 
     const ids = reports.map((report) => report.reported_user);
 
@@ -169,7 +171,7 @@ router.get('/:id', async (req, res) => {
 
     return res.status(200).json(response);
   } catch (err) {
-    console.log(err);
+    log.error(err);
     return res.status(500).json({
       error: err.message,
       message: 'An internal server error occurred',
@@ -297,11 +299,9 @@ router.post('/archive/:id', async (req, res) => {
 
     return res.sendStatus(200);
   } catch (err) {
-    return res
-      .status(500)
-      .json({
-        message: err.message || 'An error occurred while archiving this report',
-      });
+    return res.status(500).json({
+      message: err.message || 'An error occurred while archiving this report',
+    });
   }
 });
 

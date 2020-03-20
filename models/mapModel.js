@@ -5,7 +5,5 @@ const findConservationOrganizations = () => db('users')
   .where('roles', 'conservationist')
   .select('users.*', 'cons.*', 'cons.org_name as name')
   .then((res) => res.filter((con) => !con.is_deactivated));
-// .include()
-// .where("")
 
 module.exports = { findConservationOrganizations };

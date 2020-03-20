@@ -1,16 +1,5 @@
 const db = require('../database/dbConfig');
 
-module.exports = {
-  find,
-  findById,
-  findWhere,
-  insert,
-  update,
-  updateWhere,
-  remove,
-  removeWhere,
-};
-
 function find() {
   return db('user_reports');
 }
@@ -56,3 +45,7 @@ function removeWhere(cond) {
     .where(cond)
     .del();
 }
+
+module.exports = {
+  find, findById, findWhere, insert, update, updateWhere, remove, removeWhere,
+};

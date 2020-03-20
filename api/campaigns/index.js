@@ -7,7 +7,7 @@ const Reports = require('../../models/reportModel');
 const Users = require('../../models/usersModel');
 const Camp = require('../../models/campaignModel');
 
-const mw = require('../../middleware/s3Upload');
+const S3Upload = require('../../middleware/s3Upload');
 
 router.get('/', async (req, res) => {
   try {
@@ -63,9 +63,7 @@ router.get('/camp/:id', (req, res) => {
           return Users.findBySub(req.user.sub);
         }
       } else {
-        return res
-          .status(404)
-          .json({ msg: 'Did not find the campaign by this user id' });
+        return res.status(404).json({ msg: 'Did not find the campaign by this user id' });
       }
     })
     .then((user) => {
@@ -85,7 +83,7 @@ router.get('/camp/:id', (req, res) => {
     .catch((err) => res.status(500).json({ msg: err.message }));
 });
 
-router.post('/', mw.upload.single('photo'), async (req, res) => {
+router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   const { location } = req.file;
   const postCamp = {
     ...req.body,
@@ -114,7 +112,7 @@ router.post('/', mw.upload.single('photo'), async (req, res) => {
   }
 });
 
-router.put('/:id', mw.upload.single('photo'), async (req, res) => {
+router.put('/:id', S3Upload.upload.single('photo'), async (req, res) => {
   const { id } = req.params;
   let location;
   if (req.file) {
@@ -131,9 +129,7 @@ router.put('/:id', mw.upload.single('photo'), async (req, res) => {
     const user = await Users.findBySub(req.user.sub);
 
     if (camp.users_id !== user.id && !user.admin) {
-      return res
-        .status(401)
-        .json({ msg: 'Unauthorized: You may not modify this campaign' });
+      return res.status(401).json({ msg: 'Unauthorized: You may not modify this campaign' });
     }
 
     const editCamp = await Camp.update(newCamps, id);
@@ -144,10 +140,7 @@ router.put('/:id', mw.upload.single('photo'), async (req, res) => {
     }
   } catch (err) {
     log.error(err);
-
-    res
-      .status(500)
-      .json({ err, msg: 'Unable to update campaign to the server' });
+    res.status(500).json({ err, msg: 'Unable to update campaign to the server' });
   }
 });
 
@@ -171,9 +164,7 @@ router.delete('/:id', async (req, res) => {
           await Users.update(updates, targetUsr.id);
         }
       } else {
-        return res
-          .status(401)
-          .json({ msg: 'Unauthorized: You may not delete this campaign' });
+        return res.status(401).json({ msg: 'Unauthorized: You may not delete this campaign' });
       }
     }
 
