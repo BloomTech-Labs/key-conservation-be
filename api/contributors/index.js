@@ -9,9 +9,7 @@ const router = express.Router();
 router.get('/', restricted, async (req, res) => {
   const { distance, lat, long } = req.query;
   const skills = req.query.skills
-    ? req.query.skills
-      .split(',')
-      .map((skill) => skill.toUpperCase())
+    ? req.query.skills.split(',').map((skill) => skill.toUpperCase())
     : [];
 
   if (skills.length > 0) {

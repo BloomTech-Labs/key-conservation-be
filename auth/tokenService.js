@@ -2,23 +2,14 @@ const jwt = require('jsonwebtoken');
 
 const secrets = require('../config/secrets.js');
 
-module.exports = {
-  generateToken,
-};
-
 function generateToken(user) {
   const payload = {
     subject: user.id, // sub in payload is what the token is about if you want
     name: user.sup_name || user.org_name || 'User',
     roles: ['Student'],
-    // Include other data as is needed
   };
-
-  // You can put in any days/hours/minutes that you want
-  const options = {
-    expiresIn: '1d',
-  };
-
-  // Returns a completed token to where this function is imported
+  const options = { expiresIn: '1d' };
   return jwt.sign(payload, secrets.jwtSecret, options);
 }
+
+module.exports = { generateToken };
