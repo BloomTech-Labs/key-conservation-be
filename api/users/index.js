@@ -20,7 +20,6 @@ router.get('/', restricted, async (req, res) => {
 
       if (!reqUsr.admin) users = users.filter((usr) => !usr.is_deactivated);
 
-      // TODO
       res.status(200).json({ users, message: 'The users were found' });
     } else {
       res.status(400).json({ message: 'Users were not found in the database' });
@@ -55,7 +54,6 @@ router.get('/:id', restricted, async (req, res) => {
       }
     }
 
-    // TODO
     return res.status(200).json({ user, message: 'The user was found' });
   } catch (err) {
     log.error(err);
@@ -80,7 +78,6 @@ router.get('/sub/:sub', restricted, async (req, res) => {
         }
         return res.status(401).json({ message: 'This account has been deactivated' });
       }
-      // TODO
       return res.status(200).json({ user, message: 'The user was found' });
     }
     return res.status(404).json({ message: 'User not found in the database' });
@@ -118,7 +115,6 @@ router.get('/subcheck/:sub', async (request, response) => {
 
 router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   const user = {
-    // TODO
     ...req.body,
     profile_image: req.file ? req.file.location : undefined,
   };
@@ -126,7 +122,6 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   try {
     const newUser = await Users.add(user);
     if (newUser) {
-      // TODO
       res.status(201).json({ newUser, message: 'User added to database' });
     }
   } catch (err) {
@@ -138,7 +133,6 @@ router.put('/:id', restricted, S3Upload.upload.single('photo'), async (req, res)
   const { id } = req.params;
 
   const newUser = {
-    // TODO
     ...req.body,
     profile_image: req.file
       ? req.file.location : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
@@ -148,9 +142,7 @@ router.put('/:id', restricted, S3Upload.upload.single('photo'), async (req, res)
     const reqUsr = await Users.findBySub(req.user.sub);
 
     if (Number(reqUsr.id) !== Number(id) && !reqUsr.admin) {
-      return res
-        .status(401)
-        .json({ message: 'You may not modify this profile!' });
+      return res.status(401).json({ message: 'You may not modify this profile!' });
     }
     const editUser = await Users.update(newUser, id);
 

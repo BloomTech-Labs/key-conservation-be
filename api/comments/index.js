@@ -49,8 +49,7 @@ router.get('/:id', async (req, res) => {
 
       if (!reqUsr.admin) {
         return res.status(401).json({
-          msg:
-            'Comments for this campaign may only be viewed by an administrator',
+          msg: 'Comments for this campaign may only be viewed by an administrator',
         });
       }
     }
@@ -91,7 +90,7 @@ router.get('/com/:id', async (req, res) => {
     return res.status(404).json({ message: 'Comment not found!' });
   } catch (err) {
     return res.status(500).json({
-      message: err.message || 'An error occurred retreiving this comment',
+      message: err.message || 'An error occurred retrieving this comment',
     });
   }
 });

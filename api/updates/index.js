@@ -14,7 +14,6 @@ router.get('/', async (req, res) => {
   try {
     const campaignUpdate = await CampaignUpdate.find();
     if (campaignUpdate) {
-      // TODO sync
       res.status(200).json({ campaignUpdate, msg: 'The campaign updates were found' });
     } else {
       res.status(404).json({ msg: 'Campaign updates were not found in the database' });
@@ -37,7 +36,6 @@ router.get('/:id', async (req, res) => {
       }
     }
 
-    // TODO sync
     if (campaignUpdate) {
       res.status(200).json({ campaignUpdate, msg: 'The campaign update was found' });
     } else {
@@ -54,22 +52,18 @@ router.get('/camp/:id', (req, res) => {
   CampaignUpdate.findCamp(id)
     .then((result) => {
       if (result) {
-        if (result.is_deactivated) {
-          return Users.findBySub(req.user.id);
-        }
-        return null;
+        return result.is_deactivated ? Users.findBySub(req.user.id) : null;
       }
       return res.status(400).json({ msg: 'This campaign does not exist' });
     })
     .then((user) => {
-      log.info(user);
       if (user && !user.admin) {
         return res.status(401).json({ msg: 'This post may only be viewed by an administrator' });
-      } return CampaignUpdate.findUpdatesByCamp(id);
+      }
+      return CampaignUpdate.findUpdatesByCamp(id);
     })
     .then((updates) => {
       if (updates[0]) {
-        // TODO
         return res.status(200).json({ updates, msg: 'The updates were found for this campaign' });
       }
       return res.status(400).json({ msg: 'This campaign does not have an update yet' });
@@ -98,7 +92,6 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
     const newCampaignUpdates = await CampaignUpdate.insert(postCampaignUpdate);
     if (newCampaignUpdates) {
       log.info(newCampaignUpdates);
-      // TODO sync
       res.status(201).json({ newCampaignUpdates, msg: 'Campaign update added to database' });
       // TODO these variables aren't declared anyways? update_img and update_desc
     // } else if (!update_img || !update_desc) {
@@ -135,7 +128,6 @@ router.put('/:id', S3Upload.upload.single('photo'), async (req, res) => {
     const editCampaignUpdate = await CampaignUpdate.update(newCampaignUpdates, id);
 
     if (editCampaignUpdate) {
-      // TODO
       res.status(200).json({ msg: 'Successfully updated campaign update', editCampaignUpdate });
     } else {
       res.status(404).json({ msg: 'The campaign update would not be updated' });
@@ -155,7 +147,6 @@ router.delete('/:id', async (req, res) => {
     if (campaignUpdate.user_id !== usr.id) {
       if (usr.admin) {
         // Strike this user
-        // TODO rename campaign_updates.camp_id
         const campaign = await Campaigns.findById(campaignUpdate.camp_id);
 
         const targetUsr = await Users.findById(campaign.user_id);
@@ -179,7 +170,6 @@ router.delete('/:id', async (req, res) => {
     await Reports.removeWhere({ post_id: id, table_name: 'campaign_updates' });
 
     if (campaignUpdates) {
-      // TODO
       res.status(200).json(campaignUpdates);
     } else {
       res.status(404).json({ msg: 'Unable to find campaign update ID' });

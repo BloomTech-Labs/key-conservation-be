@@ -128,9 +128,7 @@ router.get('/:id', async (req, res) => {
     const response = await Reports.findById(req.params.id);
 
     if (!response) {
-      return res
-        .status(404)
-        .json({ message: 'A report with that ID does not exist' });
+      return res.status(404).json({ message: 'A report with that ID does not exist' });
     }
 
     let otherReports = await Reports.findWhere({
