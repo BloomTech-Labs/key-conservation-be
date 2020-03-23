@@ -2,7 +2,7 @@ const db = require('../database/dbConfig');
 
 function find() {
   return db('campaign_updates')
-    .join('campaigns', 'campaigns.id', 'campaign_updates.camp_id')
+    .join('campaigns', 'campaigns.id', 'campaign_updates.campaign_id')
     .join('users', 'users.id', 'campaign_updates.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
     .select(
@@ -19,7 +19,7 @@ function find() {
 
 function findById(id) {
   return db('campaign_updates')
-    .join('campaigns', 'campaigns.id', 'campaign_updates.camp_id')
+    .join('campaigns', 'campaigns.id', 'campaign_updates.campaign_id')
     .join('users', 'users.id', 'campaign_updates.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
     .where('campaign_updates.id', id)
@@ -43,7 +43,7 @@ function findCamp(id) {
 
 function findUpdatesByCamp(id) {
   return db('campaign_updates')
-    .join('campaigns', 'campaigns.id', 'campaign_updates.camp_id')
+    .join('campaigns', 'campaigns.id', 'campaign_updates.campaign_id')
     .join('users', 'users.id', 'campaign_updates.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
     .where('campaign_updates.camp_id', id)
@@ -59,7 +59,7 @@ function findUpdatesByCamp(id) {
 // TODO duplicate code with this and findUpdatesByCamp
 function findUpdatesByUser(user_id) {
   return db('campaign_updates')
-    .join('campaigns', 'campaigns.id', 'campaign_updates.camp_id')
+    .join('campaigns', 'campaigns.id', 'campaign_updates.campaign_id')
     .join('users', 'users.id', 'campaign_updates.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
     .where('campaign_updates.user_id', user_id)

@@ -72,8 +72,7 @@ router.get('/camp/:id', (req, res) => {
 });
 
 router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
-  // TODO camp_id? sync with frontend
-  const campaign = await Campaigns.findById(req.body.camp_id);
+  const campaign = await Campaigns.findById(req.body.campaign_id);
 
   let postCampaignUpdate = {
     ...req.body,
@@ -89,10 +88,10 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   }
 
   try {
-    const newCampaignUpdates = await CampaignUpdate.insert(postCampaignUpdate);
-    if (newCampaignUpdates) {
-      log.info(newCampaignUpdates);
-      res.status(201).json({ newCampaignUpdates, msg: 'Campaign update added to database' });
+    const campaignUpdate = await CampaignUpdate.insert(postCampaignUpdate);
+    if (campaignUpdate) {
+      log.info(campaignUpdate);
+      res.status(201).json({ campaignUpdate, msg: 'Campaign update added to database' });
       // TODO these variables aren't declared anyways? update_img and update_desc
     // } else if (!update_img || !update_desc) {
     //   res.status(404).json({
@@ -118,17 +117,17 @@ router.put('/:id', S3Upload.upload.single('photo'), async (req, res) => {
   };
 
   try {
-    const campaignUpdate = await CampaignUpdate.findById(id);
+    let campaignUpdate = await CampaignUpdate.findById(id);
     const usr = await Users.findBySub(req.user.sub);
 
     if (usr.id !== campaignUpdate.user_id && !usr.admin) {
       return res.status(401).json({ msg: 'Unauthorized: You may not modify this post' });
     }
 
-    const editCampaignUpdate = await CampaignUpdate.update(newCampaignUpdates, id);
+    campaignUpdate = await CampaignUpdate.update(newCampaignUpdates, id);
 
-    if (editCampaignUpdate) {
-      res.status(200).json({ msg: 'Successfully updated campaign update', editCampaignUpdate });
+    if (campaignUpdate) {
+      res.status(200).json({ msg: 'Successfully updated campaign update', campaignUpdate });
     } else {
       res.status(404).json({ msg: 'The campaign update would not be updated' });
     }
@@ -147,7 +146,7 @@ router.delete('/:id', async (req, res) => {
     if (campaignUpdate.user_id !== usr.id) {
       if (usr.admin) {
         // Strike this user
-        const campaign = await Campaigns.findById(campaignUpdate.camp_id);
+        const campaign = await Campaigns.findById(campaignUpdate.campaign_id);
 
         const targetUsr = await Users.findById(campaign.user_id);
 

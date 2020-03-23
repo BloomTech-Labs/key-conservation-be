@@ -22,6 +22,7 @@ exports.up = function (knex) {
       tbl.renameColumn('camp_cta', 'call_to_action');
     })
     .alterTable('campaign_updates', (tbl) => {
+      tbl.renameColumn('camp_id', 'campaign_id');
       tbl.renameColumn('update_id', 'id');
       tbl.renameColumn('users_id', 'user_id');
       tbl.renameColumn('update_img', 'image');
@@ -69,6 +70,7 @@ exports.down = function (knex) {
       tbl.renameColumn('call_to_action', 'camp_cta');
     })
     .alterTable('campaign_updates', (tbl) => {
+      tbl.renameColumn('campaign_id', 'camp_id');
       tbl.renameColumn('id', 'update_id');
       tbl.renameColumn('user_id', 'users_id');
       tbl.renameColumn('image', 'update_img');

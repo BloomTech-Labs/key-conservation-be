@@ -114,15 +114,15 @@ router.get('/subcheck/:sub', async (request, response) => {
 });
 
 router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
-  const user = {
+  let user = {
     ...req.body,
     profile_image: req.file ? req.file.location : undefined,
   };
 
   try {
-    const newUser = await Users.add(user);
-    if (newUser) {
-      res.status(201).json({ newUser, message: 'User added to database' });
+    user = await Users.add(user);
+    if (user) {
+      res.status(201).json({ user, message: 'User added to database' });
     }
   } catch (err) {
     res.status(500).json({ err, message: 'Unable to add user' });
@@ -144,10 +144,10 @@ router.put('/:id', restricted, S3Upload.upload.single('photo'), async (req, res)
     if (Number(reqUsr.id) !== Number(id) && !reqUsr.admin) {
       return res.status(401).json({ message: 'You may not modify this profile!' });
     }
-    const editUser = await Users.update(newUser, id);
+    const user = await Users.update(newUser, id);
 
-    if (editUser) {
-      res.status(200).json({ message: 'Successfully updated user', editUser });
+    if (user) {
+      res.status(200).json({ message: 'Successfully updated user', user });
     } else {
       res.status(404).json({ message: 'The user would not be updated' });
     }
