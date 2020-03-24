@@ -12,19 +12,21 @@ async function getConnectionsByUserId(id) {
     .where({ connector_id: id })
     .orWhere({ connected_id: id });
 
-  let ids = [];
+  const ids = [];
 
+  // eslint-disable-next-line no-restricted-syntax
   for (const conn of conns) {
-    if(!ids.includes(conn.connector_id)) {
+    if (!ids.includes(conn.connector_id)) {
       ids.push(conn.connector_id);
     }
-    if(!ids.includes(conn.connected_id)) {
+    if (!ids.includes(conn.connected_id)) {
       ids.push(conn.connected_id);
     }
   }
-
+  // TODO possible fix
+  // const ids = Array.from(new Set(conns.flatMap((c) => [c.connector_id, c.connected_id])));
   const namesAndAvatars = await Users.getNameAndAvatarByIds(ids);
-  
+
   return conns.map(conn => {
     const connected_data = namesAndAvatars.find(d => d.id === conn.connected_id);
     const connector_data = namesAndAvatars.find(d => d.id === conn.connector_id);
@@ -39,9 +41,9 @@ async function getConnectionsByUserId(id) {
       connected_role: connected_data.role,
       connector_name: connector_data.name,
       connector_avatar: connector_data.avatar,
-      connector_role: connector_data.role
-    }
-  })
+      connector_role: connector_data.role,
+    };
+  });
 }
 
 // use this to "unfriend" OR to cancel a connection request
@@ -78,16 +80,16 @@ function alreadyExists(connection) {
   return db('connections')
     .where({
       connected_id: connection.connected_id,
-      connector_id: connection.connector_id
+      connector_id: connection.connector_id,
     })
     .orWhere({
       connected_id: connection.connector_id,
-      connector_id: connection.connected_id
+      connector_id: connection.connected_id,
     })
     .then(res => {
       if (res.length) {
         return true;
-      } else return false;
+      } return false;
     });
 }
 
@@ -98,5 +100,5 @@ module.exports = {
   getConnectionById,
   addConnection,
   respondToConnectionRequest,
-  alreadyExists
+  alreadyExists,
 };

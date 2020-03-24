@@ -45,7 +45,7 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 
 ```
 {
-  "id": UUID,
+  "id": INTEGER,
   "sub": STRING,
   "email": STRING,
   "profile_image": STRING,
@@ -71,12 +71,12 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 
 ```
 {
-  "cons_id": UUID,
-  "users_id": FOREIGN KEY - "id" in USERS table,
-  "org_name": STRING,
-  "org_link_url": STRING,
-  "org_link_text": STRING,
-  "org_cta": STRING,
+  "id": INTEGER,
+  "user_id": FOREIGN KEY - "id" in USERS table,
+  "name": STRING,
+  "link_url": STRING,
+  "link_text": STRING,
+  "call_to_action": STRING,
   "about_us": STRING,
   "issues": STRING,
   "support_us": STRING
@@ -89,9 +89,9 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 
 ```
 {
-  "sup_id": UUID,
-  "users_id": FOREIGN KEY - "id" in USERS table,
-  "sup_name": STRING
+  "id": INTEGER,
+  "user_id": FOREIGN KEY - "id" in USERS table,
+  "name": STRING
 }
 ```
 
@@ -101,13 +101,13 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 
 ```
 {
-  "camp_id": UUID,
-  "users_id": FOREIGN KEY - "id" in USERS table,
+  "id": INTEGER,
+  "user_id": FOREIGN KEY - "id" in USERS table,
   "created_at": TIMESTAMP,
-  "camp_img": STRING,
-  "camp_name": STRING,
-  "camp_desc": STRING,
-  "camp_cta": STRING,
+  "image": STRING,
+  "name": STRING,
+  "description": STRING,
+  "call_to_action": STRING,
   "is_archived": BOOLEAN
 }
 ```
@@ -118,11 +118,11 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 
 ```
 {
-  "update_id": UUID,
-  "users_id": FOREIGN KEY - "id" in USERS table,
+  "id": INTEGER,
+  "user_id": FOREIGN KEY - "id" in USERS table,
   "created_at": TIMESTAMP,
-  "update_img": STRING,
-  "update_desc": STRING,
+  "image": STRING,
+  "description": STRING,
   "is_archived": BOOLEAN
 }
 ```
@@ -132,15 +132,13 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 ---
 
 ```
-
 {
-"comment_id": UUID,
-"users_id": FOREIGN KEY - "id" in USERS table,
-"created_at": TIMESTAMP,
-"camp_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
-"comment_body": TEXT
+  "id": INTEGER,
+  "user_id": FOREIGN KEY - "id" in USERS table,
+  "created_at": TIMESTAMP,
+  "campaign_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
+  "body": TEXT
 }
-
 ```
 
 #### BOOKMARKS
@@ -148,40 +146,39 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 ---
 
 ```
-
 {
-"bookmark_id": UUID,
-"users_id": FOREIGN KEY - "id" in USERS table,
-"camp_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
+  "id": INTEGER,
+  "user_id": FOREIGN KEY - "id" in USERS table,
+  "campaign_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
 }
-
 ```
 
 #### USER_REPORTS
 
 ---
-
+```
 {
-"id": UUID,
-"reported_by": FOREIGN KEY - "id" in USERS table,
-"reported_user": FOREIGN KEY - "id" in USERS table,
-"post_id": INTEGER,
-"table_name": STRING,
-"report_desc": STRING,
-"reported_at": TIMESTAMP,
-"is_archived": BOOLEAN
+  "id": INTEGER,
+  "reported_by": FOREIGN KEY - "id" in USERS table,
+  "reported_user": FOREIGN KEY - "id" in USERS table,
+  "post_id": INTEGER,
+  "table_name": STRING,
+  "description": STRING,
+  "reported_at": TIMESTAMP,
+  "is_archived": BOOLEAN
 }
+```
 
 #### CONNECTIONS
 
 ---
 
+```
 {
-"connection_id": UUID,
-"connector_id": FOREIGN KEY - "id" in USERS table,
-"connected_id": FOREIGN KEY - "id" in USERS table
+  "id": INTEGER,
+  "connector_id": FOREIGN KEY - "id" in USERS table,
+  "connected_id": FOREIGN KEY - "id" in USERS table
 }
-
 ```
 
 ## Contributing
@@ -222,9 +219,3 @@ These contribution guidelines have been adapted from [this good-Contributing.md-
 ## Documentation
 
 See [Key Conservation](https://github.com/labs14-key-conservation/Frontend-Mobile) for details on the frontend of our project.
-
-```
-
-```
-
-```

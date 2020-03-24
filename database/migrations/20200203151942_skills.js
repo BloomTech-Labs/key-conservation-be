@@ -45,19 +45,20 @@ const skills = [
   'VIDEOGRAPHY',
   'WEB_DESIGN',
   'WEB_DEVELOPMENT',
-  'WRITING'
+  'WRITING',
 ];
 
-exports.up = function(knex) {
+exports.up = function (knex) {
   return knex.schema
-    .createTable('skills', tbl => {
+    .createTable('skills', (tbl) => {
       tbl.increments('id');
-      tbl.integer('user_id').unsigned().references('users.id').notNullable().index();
+      tbl.integer('user_id').unsigned().references('users.id').notNullable()
+        .index();
       tbl.enum('skill', skills, { useNative: true, enumName: 'enum_skills' }).notNullable().index();
-      tbl.unique(['user_id', 'skill'])
+      tbl.unique(['user_id', 'skill']);
     });
 };
 
-exports.down = function(knex) {
+exports.down = function (knex) {
   return knex.schema.dropTable('skills');
 };
