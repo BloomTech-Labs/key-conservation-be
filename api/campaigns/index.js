@@ -6,6 +6,7 @@ const router = express.Router();
 const Reports = require('../../models/reportModel');
 const Users = require('../../models/usersModel');
 const Camp = require('../../models/campaignModel');
+const ApplicationSubmissions = require('../../models/applicationSubmissionsModel');
 
 const mw = require('../../middleware/s3Upload');
 
@@ -88,9 +89,19 @@ router.get('/camp/:id', (req, res) => {
     });
 });
 
+router.get('/:id/submissions', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const applicationSubmissions = await ApplicationSubmissions.findAllByCampaignId(id);
+    res.status(200).json({ applicationSubmissions, error: null});
+  }
+  catch(error) {
+    res.status(500).json({ error, message: "Unable to make request to server" });
+  }
+})
+
 router.post('/', mw.upload.single('photo'), async (req, res) => {
   const { location } = req.file;
-
   const postCamp = {
     ...req.body,
     camp_img: location

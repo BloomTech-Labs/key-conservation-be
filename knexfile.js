@@ -2,7 +2,6 @@ require('dotenv').config();
 
 // Postgres imports
 const pg = require('pg');
-pg.defaults.ssl = true;
 
 const localPgConnection = {
   host: 'localhost',
@@ -49,7 +48,8 @@ module.exports = {
     seeds: {
       directory: './database/seeds'
     },
-    useNullAsDefault: true
+    useNullAsDefault: true,
+    ssl: true
   },
 
   production: {
@@ -66,6 +66,7 @@ module.exports = {
     seeds: {
       directory: './database/seeds'
     },
-    useNullAsDefault: true
+    useNullAsDefault: true,
+    ssl: true
   }
 };
