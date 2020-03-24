@@ -2,27 +2,24 @@ const express = require('express');
 
 const db = require('../../database/dbConfig');
 const restricted = require('../../middleware/authJwt');
-const Skills = require('../../models/skillsEnum');
+const SkillsEnum = require('../../models/skillsEnum');
 
 const router = express.Router();
 
 router.get('/', restricted, async (req, res) => {
   const { distance, lat, long } = req.query;
-  const skills = req.query.skills ?
-    req.query.skills
-      .split(',')
-      .map(skill => skill.toUpperCase())
+  const skills = req.query.skills
+    ? req.query.skills.split(',').map((skill) => skill.toUpperCase())
     : [];
 
   if (skills.length > 0) {
-    const unknownSkills = skills.filter(skill => !(skill in Skills));
-
+    const unknownSkills = skills.filter((skill) => !(skill in SkillsEnum));
     if (unknownSkills.length > 0) {
-      return res.status(400).json({ err: `unknown skills: ${unknownSkills.join(',')}`});
+      return res.status(400).json({ err: `unknown skills: ${unknownSkills.join(',')}` });
     }
   }
 
-  if (distance && isNaN(distance)) {
+  if (distance && Number.isNaN(distance)) {
     return res.status(400).json({ err: 'distance must be a number' });
   }
 
@@ -35,7 +32,8 @@ router.get('/', restricted, async (req, res) => {
   }
 
   // Inner query: join users table with skills table and aggregate to find all skills for each user.
-  // Outer query: find all users where accepting_help_requests is true, and where the user's skills is a superset of the requested skills in the query params.
+  // Outer query: find all users where accepting_help_requests is true, and where the user's skills
+  // is a superset of the requested skills in the query params.
   const query = db.raw(`
   SELECT *, array_to_json(skills) as skills FROM (
     SELECT users.*, array_agg(skills.skill) AS skills
