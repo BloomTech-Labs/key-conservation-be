@@ -21,6 +21,8 @@ router.use(
   checkDeactivated,
   require('./contributors'),
 );
+router.use('/submissions', checkJwt, checkDeactivated, require('./application_submissions'));
+
 // router.use('/connections', checkJwt, checkDeactivated, require('./connections'));
 
 module.exports = router;
