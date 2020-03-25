@@ -12,11 +12,11 @@ async function findAllByCampaignId(campaign_id) {
     .join(
       'application_submissions',
       'skilled_impact_requests.id',
-      'application_submissions.skilled_impact_request_id'
+      'application_submissions.skilled_impact_request_id',
     )
     .select(
       'skilled_impact_requests.campaign_id',
-      'application_submissions.*'
+      'application_submissions.*',
     );
 }
 
@@ -29,15 +29,15 @@ async function insert(submission) {
 async function update(id, decision) {
   return db('application_submissions')
     .where({ id })
-    .update({decision})
+    .update({ decision })
     .returning('*');
 }
 
 async function acceptAndDenyAllOthers(id, skilled_impact_request_id) {
-  await db.transaction(transaction => {
+  await db.transaction((transaction) => {
     db('application_submissions')
       .where({ id })
-      .update({ decision : 'ACCEPTED' })
+      .update({ decision: 'ACCEPTED' })
       .transacting(transaction)
       .then(async () => {
         await db('application_submissions')
@@ -48,8 +48,8 @@ async function acceptAndDenyAllOthers(id, skilled_impact_request_id) {
       })
       .then(transaction.commit)
       .catch(transaction.rollback);
-  })
-  
+  });
+
   return findById(id);
 }
 
@@ -58,5 +58,5 @@ module.exports = {
   findAllByCampaignId,
   insert,
   update,
-  acceptAndDenyAllOthers
+  acceptAndDenyAllOthers,
 };
