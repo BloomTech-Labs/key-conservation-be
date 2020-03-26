@@ -46,12 +46,12 @@ function findUpdatesByCamp(id) {
     .join('campaigns', 'campaigns.id', 'campaign_updates.campaign_id')
     .join('users', 'users.id', 'campaign_updates.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
-    .where('campaign_updates.camp_id', id)
+    .where('campaign_updates.campaign_id', id)
     .select(
       'cons.name',
       'users.profile_image',
       'users.location',
-      'campaigns.camp_name as campaign_name',
+      'campaigns.name as campaign_name',
       'campaign_updates.*',
     );
 }
