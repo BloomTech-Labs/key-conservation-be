@@ -77,7 +77,7 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
 
   let postCampaignUpdate = {
     ...req.body,
-    name: campaign.name,
+    camp_name: campaign.name,
   };
   let location;
   if (req.file) {
