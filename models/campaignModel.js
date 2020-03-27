@@ -103,16 +103,11 @@ async function findCampByUserId(user_id) {
 }
 
 async function insert(campaign) {
-  console.log(campaign);
-  try {
-    const [id] = await db('campaigns')
-      .insert(campaign)
-      .returning('id');
-    if (id) {
-      return findById(id);
-    }
-  } catch (e) {
-    console.log(e);
+  const [id] = await db('campaigns')
+    .insert(campaign)
+    .returning('id');
+  if (id) {
+    return findById(id);
   }
 }
 

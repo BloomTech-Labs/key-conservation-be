@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const db = require('../database/dbConfig.js');
-const Campaign = require('./campaignModel.js');
-const CampaignUpdate = require('./updateModel.js');
+const Camp = require('./campaignModel.js');
+const CampUpdate = require('./updateModel.js');
 const Bookmarks = require('./socialModel');
 const Skills = require('./skillsEnum');
 const pick = require('../util/pick');
@@ -84,7 +84,7 @@ async function findById(id) {
       .where('users.id', id)
       .select(
         'users.*',
-        'cons.id AS conservationist_id',
+        'cons.id',
         'cons.name',
         'cons.link_url',
         'cons.link_text',
@@ -103,8 +103,8 @@ async function findById(id) {
       .groupBy('users.id', 'cons.id')
       .first();
     user.bookmarks = await Bookmarks.findUserBookmarks(id);
-    const campaigns = await Campaign.findCampByUserId(id);
-    const campaign_updates = await CampaignUpdate.findUpdatesByUser(id);
+    const campaigns = await Camp.findCampByUserId(id);
+    const campaign_updates = await CampUpdate.findUpdatesByUser(id);
     user.campaigns = campaigns.concat(campaign_updates);
   } else if (user.roles === 'supporter') {
     user = await db('users')
@@ -133,7 +133,7 @@ async function findBySub(sub) {
       .where('users.id', id)
       .select(
         'users.*',
-        'cons.id AS conservationist_id',
+        'cons.id',
         'cons.name',
         'cons.link_url',
         'cons.link_text',

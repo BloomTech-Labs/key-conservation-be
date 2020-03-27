@@ -12,8 +12,8 @@ const S3Upload = require('../../middleware/s3Upload');
 
 router.get('/', async (req, res) => {
   try {
-    const campaigns = await Campaigns.find();
-    res.status(200).json({ campaigns, msg: 'The campaigns were found' });
+    const campaign = await Campaigns.find();
+    res.status(200).json({ camp: campaign, msg: 'The campaigns were found' });
   } catch (err) {
     log.error(err);
     res.status(500).json({ err, msg: 'Unable to make request to server' });
@@ -92,7 +92,6 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
     ...req.body,
     image: location,
   };
-  console.log(postCampaign);
 
   try {
     const newCampaigns = await Campaigns.insert(postCampaign);
