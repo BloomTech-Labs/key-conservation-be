@@ -23,11 +23,10 @@ const userColumns = [
 
 // Columns of the user model that are stored in the conservationists table
 const conservationistColumns = [
-  'org_name',
-  'org_link_url',
-  'org_link_text',
-  'cons.org_cta',
-  'org_cta',
+  'name',
+  'link_url',
+  'link_text',
+  'call_to_action',
   'about_us',
   'issues',
   'support_us',
