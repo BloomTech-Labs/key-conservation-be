@@ -103,9 +103,7 @@ async function findById(id) {
       .groupBy('users.id', 'cons.id')
       .first();
     user.bookmarks = await Bookmarks.findUserBookmarks(id);
-    const campaigns = await Campaign.findCampByUserId(id);
-    const campaign_updates = await CampaignUpdate.findUpdatesByUser(id);
-    user.campaigns = campaigns.concat(campaign_updates);
+    user.campaigns = await Campaign.findCampByUserId(id);
   } else if (user.roles === 'supporter') {
     user = await db('users')
       .leftJoin('supporters as sup', 'sup.user_id', 'users.id')
