@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 const db = require('../database/dbConfig.js');
 const Campaign = require('./campaignModel.js');
-const CampaignUpdate = require('./updateModel.js');
 const Bookmarks = require('./socialModel');
 const Skills = require('./skillsEnum');
 const pick = require('../util/pick');
@@ -35,7 +34,7 @@ const conservationistColumns = [
 ];
 
 // Columns of the user model that are stored in the supporters table
-const supporterColumns = ['sup_name'];
+const supporterColumns = ['name'];
 
 function find() {
   return db('users')
@@ -294,10 +293,11 @@ async function updateSkillsTable(user, id) {
 }
 
 async function update(user, id) {
+  const existingUser = await findById(id);
   const isEmpty = (obj) => Object.getOwnPropertyNames(obj).length === 0;
   const triggerUsers = !isEmpty(pick(user, userColumns));
-  const triggerConservationists = !isEmpty(pick(user, conservationistColumns));
-  const triggerSupporters = !isEmpty(pick(user, supporterColumns));
+  const triggerConservationists = !isEmpty(pick(user, conservationistColumns)) && existingUser.roles === 'conservationist';
+  const triggerSupporters = !isEmpty(pick(user, supporterColumns)) && existingUser.roles === 'supporter';
   const triggerSkills = user.skills && Array.isArray(user.skills);
 
   if (triggerUsers) {
