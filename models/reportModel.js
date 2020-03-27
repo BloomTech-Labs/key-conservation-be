@@ -1,5 +1,16 @@
 const db = require('../database/dbConfig');
 
+module.exports = {
+  find,
+  findById,
+  findWhere,
+  insert,
+  update,
+  updateWhere,
+  remove,
+  removeWhere
+};
+
 function find() {
   return db('user_reports');
 }
@@ -24,7 +35,9 @@ function update(id, changes) {
   return db('user_reports')
     .where({ id })
     .update(changes)
-    .then(() => findById(id));
+    .then(() => {
+      return findById(id);
+    });
 }
 
 function updateWhere(cond, changes) {
@@ -37,7 +50,9 @@ function remove(id) {
   return db('user_reports')
     .where({ id })
     .del()
-    .then(() => id);
+    .then(() => {
+      return id;
+    });
 }
 
 function removeWhere(cond) {
@@ -45,7 +60,3 @@ function removeWhere(cond) {
     .where(cond)
     .del();
 }
-
-module.exports = {
-  find, findById, findWhere, insert, update, updateWhere, remove, removeWhere,
-};

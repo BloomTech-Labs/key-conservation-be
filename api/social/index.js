@@ -11,7 +11,9 @@ router.post('/bookmark/:id', async (req, res) => {
     if (data) {
       res.status(201).json({ data, msg: 'Bookmark added to database' });
     } else {
-      res.status(404).json({ msg: 'The bookmark object was not properly formatted' });
+      res
+        .status(404)
+        .json({ msg: 'The bookmark object was not properly formatted' });
     }
   } catch (err) {
     log.error(err);
@@ -25,7 +27,9 @@ router.delete('/bookmark/:id/:user', async (req, res) => {
     if (data) {
       res.status(200).json({ data, msg: 'Bookmark removed from the database' });
     } else {
-      res.status(404).json({ msg: 'That bookmark object does not exist in the database' });
+      res
+        .status(404)
+        .json({ msg: 'That bookmark object does not exist in the database' });
     }
   } catch (err) {
     log.error(err);

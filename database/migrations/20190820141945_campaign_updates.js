@@ -1,5 +1,5 @@
-exports.up = function (knex, Promise) {
-  return knex.schema.createTable('campaign_updates', (tbl) => {
+exports.up = function(knex, Promise) {
+  return knex.schema.createTable('campaign_updates', tbl => {
     tbl.increments('update_id');
     tbl
       .integer('camp_id')
@@ -22,12 +22,12 @@ exports.up = function (knex, Promise) {
       .string('update_img', 255)
       .notNullable()
       .defaultTo(
-        'https://static.wixstatic.com/media/62bd1e_1047458b0f524502862b0130ced09e98~mv2.gif',
+        'https://static.wixstatic.com/media/62bd1e_1047458b0f524502862b0130ced09e98~mv2.gif'
       );
     tbl.string('update_desc', 500).notNullable();
   });
 };
 
-exports.down = function (knex, Promise) {
+exports.down = function(knex, Promise) {
   return knex.schema.dropTableIfExists('campaign_updates');
 };

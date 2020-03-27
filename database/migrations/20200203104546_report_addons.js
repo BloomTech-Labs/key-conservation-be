@@ -1,7 +1,7 @@
-exports.up = function (knex, Promise) {
+exports.up = function(knex, Promise) {
   return knex.schema
     .dropTableIfExists('reported_posts')
-    .createTable('user_reports', (tbl) => {
+    .createTable('user_reports', tbl => {
       tbl.increments('id');
       // Who reported this item?
       tbl
@@ -32,10 +32,10 @@ exports.up = function (knex, Promise) {
     });
 };
 
-exports.down = function (knex, Promise) {
+exports.down = function(knex, Promise) {
   return knex.schema
     .dropTableIfExists('user_reports')
-    .createTable('reported_posts', (tbl) => {
+    .createTable('reported_posts', tbl => {
       tbl.increments('id');
       // Who reported this item?
       tbl

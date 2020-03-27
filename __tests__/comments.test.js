@@ -1,6 +1,6 @@
 const supertest = require('supertest');
 const server = require('../index');
-// const db = require('../database/dbConfig');
+const db = require('../database/dbConfig');
 const commentsModel = require('../models/commentsModel');
 
 describe('comment route', () => {
