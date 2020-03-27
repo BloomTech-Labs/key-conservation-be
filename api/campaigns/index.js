@@ -79,11 +79,12 @@ router.get('/:id/submissions', async (req, res) => {
   const { id } = req.params;
   try {
     const applicationSubmissions = await ApplicationSubmissions.findAllByCampaignId(id);
-    res.status(200).json({ applicationSubmissions, error: null });
-  } catch (error) {
-    res.status(500).json({ error, message: 'Unable to make request to server' });
+    res.status(200).json({ applicationSubmissions, error: null});
   }
-});
+  catch(error) {
+    res.status(500).json({ error, message: "Unable to make request to server" });
+  }
+})
 
 router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   const { location } = req.file;

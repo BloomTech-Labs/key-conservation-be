@@ -14,10 +14,10 @@ function findById(id) {
 
 function findCampaignComments(id) {
   return db('comments')
+    .where({ id })
     .join('users', 'users.id', 'comments.user_id')
-    .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
+    .leftJoin('conservationists as cons', 'cons.user_id', 'user.id')
     .leftJoin('supporters as sup', 'sup.user_id', 'users.id')
-    .where({ 'comments.campaign_id': id })
     .select(
       'comments.*',
       'users.profile_image',
@@ -25,17 +25,20 @@ function findCampaignComments(id) {
       'sup.name as sup_name',
       'users.is_deactivated',
     )
-    .then((res) => res
-      .map((com) => ({ ...com, name: com.org_name || com.sup_name || 'User' }))
-      .filter((c) => !c.is_deactivated)
-      .sort((a, b) => b.created_at - a.created_at));
+    .then((res) => {
+      const comments = res
+        .map((com) => ({ ...com, name: com.org_name || com.sup_name || 'User' }))
+        .filter((c) => !c.is_deactivated)
+        .sort((a, b) => b.created_at - a.created_at);
+      return comments;
+    });
 }
 
 function insert(comment) {
   return db('comments')
     .insert(comment)
     .then(
-      () => findCampaignComments(comment.campaign_id),
+      () => findCampaignComments(comment.campaign),
       // TODO is this safe to delete?
       // return db('campaigns')
       //   .where({ camp_id: comment.camp_id })

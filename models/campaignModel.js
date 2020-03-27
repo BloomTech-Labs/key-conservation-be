@@ -29,7 +29,7 @@ function find() {
       .then((comments) => campaigns.map((cam) => ({
         ...cam,
         comments: comments
-          .filter((com) => com.campaign_id === cam.id && !com.is_deactivated)
+          .filter((com) => com.campaign === cam.campaign && !com.is_deactivated)
           .map((com) => ({
             ...com,
             name: com.org_name || com.sup_name || 'User',
@@ -52,7 +52,7 @@ function findCampaign(id) {
 
 async function findById(id) {
   const campaign = await db('campaigns')
-    .where({ 'campaigns.id': id })
+    .where({ id })
     .join('users', 'users.id', 'campaigns.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'campaigns.user_id')
     .select(
@@ -75,7 +75,7 @@ function findUser(id) {
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
     .leftJoin('supporters as sup', 'sup.user_id', 'users.id')
     .select('*', 'sup.name as sup_name', 'cons.name as cons_name')
-    .where({ 'users.id': id })
+    .where({ id })
     .first()
     .then((usr) => ({
       ...usr,
@@ -95,8 +95,8 @@ async function findCampByUserId(user_id) {
       'campaigns.*',
     );
   const withUpdates = campaigns.map(async (camp) => {
-    camp.updates = await CampaignUpdate.findUpdatesByCamp(camp.id);
-    camp.comments = await CampaignComments.findCampaignComments(camp.id);
+    camp.updates = await CampaignUpdate.findUpdatesByCamp(camp.idid);
+    camp.comments = await CampaignComments.findCampaignComments(camp.camp_id);
     return camp;
   });
   return Promise.all(withUpdates);
