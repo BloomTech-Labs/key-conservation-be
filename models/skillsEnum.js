@@ -4,7 +4,7 @@
  * Contributors specify areas they are skilled in to help match them to organizations looking for assistance in certain areas.
  * Organizations can search for available contributors with a certain skill set.
  *
- * @type {{GRAPHIC_DESIGN: string, ART: string, STRATEGY_CONSULTING: string, DATA_ANALYSIS: string, LANDSCAPE: string, BUSINESS_DEVELOPMENT: string, CAMERA_TRAPS: string, DIVING: string, DATABASE_MANAGEMENT: string, WEB_DESIGN: string, PHOTOGRAPHY: string, PLUMBING: string, TRANSLATION: string, APP_DEVELOPMENT: string, FUNDRAISING: string, ENTREPRENEURSHIP: string, GAMING: string, MUSICAL: string, CULINARY: string, FINANCE: string, SOCIAL_MEDIA: string, CRAFT: string, LEGAL: string, DRONE: string, ACCOUNTING: string, RESEARCH: string, SENSORS: string, HUMAN_RESOURCES: string, MANAGEMENT: string, BOATING: string, MARKETING: string, WEB_DEVELOPMENT: string, HOSPITALITY: string, PUBLIC_RELATIONS: string, WRITING: string, COMMUNITY_LIAISON: string, MEDICAL: string, AVIATION: string, AUTO: string, INFORMATION_TECHNOLOGY: string, CONSTRUCTION: string, ARCHITECTURE: string, TAXI: string, RENEWABLE_ENERGY: string, VIDEOGRAPHY: string, COMMUNICATION: string, ELECTRICITY: string, ENGINEERING: string, VETERINARY_SERVICES: string}}
+ * @type {{GRAPHIC_DESIGN: string, ART: string, STRATEGY_CONSULTING: string, DATA_ANALYSIS: string, LANDSCAPE: string, BUSINESS_DEVELOPMENT: string, DIVING: string, DATABASE_MANAGEMENT: string, WEB_DESIGN: string, PHOTOGRAPHY: string, PLUMBING: string, TRANSLATION: string, APP_DEVELOPMENT: string, FUNDRAISING: string, ENTREPRENEURSHIP: string, GAMING: string, MUSICAL: string, CULINARY: string, FINANCE: string, SOCIAL_MEDIA: string, CRAFT: string, LEGAL: string, DRONE: string, ACCOUNTING: string, RESEARCH: string, HUMAN_RESOURCES: string, MANAGEMENT: string, BOATING: string, MARKETING: string, WEB_DEVELOPMENT: string, HOSPITALITY: string, PUBLIC_RELATIONS: string, WRITING: string, COMMUNITY_LIAISON: string, MEDICAL: string, AVIATION: string, AUTO: string, INFORMATION_TECHNOLOGY: string, CONSTRUCTION: string, ARCHITECTURE: string, TAXI: string, RENEWABLE_ENERGY: string, VIDEOGRAPHY: string, COMMUNICATION: string, ELECTRICITY: string, ENGINEERING: string, VETERINARY_SERVICES: string}}
  */
 const SkillsEnum = {
   ACCOUNTING: 'Accounting',
@@ -15,7 +15,6 @@ const SkillsEnum = {
   AVIATION: 'Aviation',
   BOATING: 'Boating',
   BUSINESS_DEVELOPMENT: 'Business Development',
-  CAMERA_TRAPS: 'Camera Traps',
   COMMUNICATION: 'Communication',
   COMMUNITY_LIAISON: 'Community Liaison',
   CONSTRUCTION: 'Construction',
@@ -46,7 +45,6 @@ const SkillsEnum = {
   PUBLIC_RELATIONS: 'Public Relations',
   RENEWABLE_ENERGY: 'Renewable Energy ',
   RESEARCH: 'Research',
-  SENSORS: 'Sensors',
   SOCIAL_MEDIA: 'Social Media',
   STRATEGY_CONSULTING: 'Strategy Consulting',
   TAXI: 'Taxi',
