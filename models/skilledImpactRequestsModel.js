@@ -1,6 +1,5 @@
 const db = require('../database/dbConfig');
 
-const ProjectGoal = require('./projectGoalsModel.js');
 const pick = require('../util/pick.js');
 
 async function findSkilledImpactRequests(campaign_id) {
@@ -34,16 +33,16 @@ async function findSkilledImpactRequests(campaign_id) {
 }
 
 async function insertSkilledImpactRequests(skilledRequests, campaign_id) {
+    const skillProps = ['skill', 'point_of_contact', 'welcome_message', 'our_contribution'];
     for (const skilledRequest of skilledRequests) {
-        const skillProps = ['skill', 'point_of_contact', 'welcome_message', 'our_contribution'];
-        const skillImpactRequests = {
+        const skilledRequestsWithCampaignId = {
             ...pick(skilledRequest, skillProps),
             campaign_id: campaign_id
         };
         db.transaction(function (transaction) {
              db("skilled_impact_requests")
                 .transacting(transaction)
-                .insert(skillImpactRequests)
+                .insert(skilledRequestsWithCampaignId)
                 .returning('id')
                 .then(function (idArr) {
                      return Promise.all((skilledRequest.project_goals).map( function (project_goal) {
