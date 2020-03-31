@@ -113,21 +113,6 @@ router.get('/subcheck/:sub', async (request, response) => {
     });
 });
 
-<<<<<<< HEAD
-router.post('/', mw.upload.single('photo'), async (req, res) => {
-
-  const user = {
-    ...req.body,
-    profile_image: req.file ? req.file.location : undefined
-  };
-
-  try {
-    const newUser = await Users.add(user);
-
-    console.log('added');
-    if (newUser) {
-      res.status(201).json({ newUser, message: 'User added to database' });
-=======
 router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   let user = {
     ...req.body,
@@ -138,7 +123,6 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
     user = await Users.add(user);
     if (user) {
       res.status(201).json({ user, message: 'User added to database' });
->>>>>>> master
     }
   } catch (err) {
     res.status(500).json({ err, message: 'Unable to add user' });
@@ -148,13 +132,6 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
 router.put('/:id', restricted, S3Upload.upload.single('photo'), async (req, res) => {
   const { id } = req.params;
 
-<<<<<<< HEAD
-
-  const newUser = {
-    ...req.body,
-    profile_image: req.file ? req.file.location : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
-  };
-=======
   const newUser = {
     ...req.body,
     profile_image: req.file
@@ -162,7 +139,6 @@ router.put('/:id', restricted, S3Upload.upload.single('photo'), async (req, res)
   };
 
   console.log(newUser);
->>>>>>> master
 
   try {
     const reqUsr = await Users.findBySub(req.user.sub);
@@ -170,17 +146,11 @@ router.put('/:id', restricted, S3Upload.upload.single('photo'), async (req, res)
     if (Number(reqUsr.id) !== Number(id) && !reqUsr.admin) {
       return res.status(401).json({ message: 'You may not modify this profile!' });
     }
-<<<<<<< HEAD
-    const editUser = await Users.update(newUser, id);
 
-    if (editUser) {
-      res.status(200).json({ message: 'Successfully updated user', editUser });
-=======
     const user = await Users.update(newUser, id);
 
     if (user) {
       res.status(200).json({ message: 'Successfully updated user', user });
->>>>>>> master
     } else {
       res.status(404).json({ message: 'The user would not be updated' });
     }
