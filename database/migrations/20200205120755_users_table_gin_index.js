@@ -1,3 +1,4 @@
+/* eslint-disable no-tabs */
 const addUserIndex = `
 ALTER TABLE public.users
 	ADD COLUMN IF NOT EXISTS full_text_weighted tsvector;
@@ -30,16 +31,16 @@ DROP FUNCTION IF EXISTS user_tsvector_trigger() CASCADE;
 DROP INDEX IF EXISTS full_text_weighted_index;
 `;
 
-exports.up = async function(knex, Promise) {
+exports.up = async function (knex, Promise) {
   const hasTable = await knex.schema.hasTable('users');
   if (!hasTable) return;
 
   return knex.schema.raw(addUserIndex);
 };
 
-exports.down = async function(knex, Promise) {
+exports.down = async function (knex, Promise) {
   const hasColumn = await knex.schema.hasColumn('users', 'full_text_weighted');
-  await knex.schema.table('users', async tbl => {
+  await knex.schema.table('users', async (tbl) => {
     if (hasColumn) {
       tbl.dropColumn('full_text_weighted');
     }

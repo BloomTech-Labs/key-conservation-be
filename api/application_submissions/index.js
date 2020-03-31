@@ -21,7 +21,7 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   const postSubmission = {
     ...req.body,
-    decision: 'PENDING'
+    decision: 'PENDING',
   };
   try {
     const [applicationSubmission] = await ApplicationSubmission.insert(postSubmission);

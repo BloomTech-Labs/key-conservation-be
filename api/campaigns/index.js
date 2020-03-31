@@ -5,52 +5,42 @@ const router = express.Router();
 
 const Reports = require('../../models/reportModel');
 const Users = require('../../models/usersModel');
-const Camp = require('../../models/campaignModel');
+const Campaigns = require('../../models/campaignModel');
 const ApplicationSubmissions = require('../../models/applicationSubmissionsModel');
 
-const mw = require('../../middleware/s3Upload');
+const S3Upload = require('../../middleware/s3Upload');
 
 router.get('/', async (req, res) => {
   try {
-    const camp = await Camp.find();
-
-    res.status(200).json({ camp, msg: 'The campaigns were found' });
+    const campaigns = await Campaigns.find();
+    res.status(200).json({ campaigns, msg: 'The campaigns were found' });
   } catch (err) {
-    console.log(err);
+    log.error(err);
     res.status(500).json({ err, msg: 'Unable to make request to server' });
   }
 });
 
 router.get('/:id', (req, res) => {
   const { id } = req.params;
+  Campaigns.findCampaign(id).then((result) => {
+    if (result) {
+      return Campaigns.findById(id);
+    }
+    res.status(400).json({ msg: 'Campaign was not found in the database' });
+  }).then(async (campaign) => {
+    // If this campaign belongs to a deactivated account, then
+    // only an admin should be able to see it
 
-  Camp.findCampaign(id)
-    .then(result => {
-      // log.info(result);
-      if (result) {
-        return Camp.findById(id);
-      } else {
-        res.status(400).json({ msg: 'Campaign was not found in the database' });
+    if (campaign.is_deactivated) {
+      const user = await Users.findBySub(req.user.sub);
+      if (!user.admin) {
+        return res.status(401).json({ msg: 'This campaign may only be viewed by an administrator' });
       }
-    })
-    .then(async camp => {
-      // If this campaign belongs to a deactivated account, then
-      // only an admin should be able to see it
-
-      if (camp.is_deactivated) {
-        const user = await Users.findBySub(req.user.sub);
-
-        if (!user.admin) {
-          return res.status(401).json({
-            msg: 'This campaign may only be viewed by an administrator'
-          });
-        }
-      }
-
-      return res.status(200).json({ camp, msg: 'The campaign was found' });
-    })
-    .catch(err => {
-      console.log(err);
+    }
+    return res.status(200).json({ campaign, msg: 'The campaign was found' });
+  })
+    .catch((err) => {
+      log.error(err);
       res.status(500).json({ err, msg: 'Unable to make request to server' });
     });
 });
@@ -58,69 +48,66 @@ router.get('/:id', (req, res) => {
 router.get('/camp/:id', (req, res) => {
   const { id } = req.params;
 
-  Camp.findUser(id)
-    .then(result => {
+  // TODO Campaigns.findUser is a duplicate of Users.findUser so use that instead
+  Campaigns.findUser(id)
+    .then((result) => {
       log.info(result);
       if (result) {
         if (result.is_deactivated) {
           return Users.findBySub(req.user.sub);
         }
       } else {
-        return res
-          .status(404)
-          .json({ msg: 'Did not find the campaign by this user id' });
+        return res.status(404).json({ msg: 'Did not find the campaign by this user id' });
       }
     })
-    .then(user => {
+    .then((user) => {
       if (user && !user.admin) {
         return res.status(401).json({
-          msg: "This user's campaigns may only be viewed by an administrator"
+          msg: "This user's campaigns may only be viewed by an administrator",
         });
-      } else return Camp.findCampByUserId(id);
+      } return Campaigns.findCampByUserId(id);
     })
-    .then(camp => {
-      if (camp)
-        return res
-          .status(200)
-          .json({ camp, msg: 'The campaigns were found for this org' });
+    .then((campaign) => {
+      if (campaign) {
+        return res.status(200).json({ campaign, msg: 'The campaigns were found for this org' });
+      }
     })
-    .catch(err => {
-      return res.status(500).json({ msg: err.message });
-    });
+    .catch((err) => res.status(500).json({ msg: err.message }));
 });
 
 router.get('/:id/submissions', async (req, res) => {
   const { id } = req.params;
   try {
     const applicationSubmissions = await ApplicationSubmissions.findAllByCampaignId(id);
-    res.status(200).json({ applicationSubmissions, error: null});
+    res.status(200).json({ applicationSubmissions, error: null });
+  } catch (error) {
+    res.status(500).json({ error, message: 'Unable to make request to server' });
   }
-  catch(error) {
-    res.status(500).json({ error, message: "Unable to make request to server" });
-  }
-})
+});
 
-router.post('/', mw.upload.single('photo'), async (req, res) => {
+
+router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   const { location } = req.file;
-  const postCamp = {
+  const postCampaign = {
     ...req.body,
-    camp_img: location
+    image: location,
   };
+  console.log(postCampaign);
 
   try {
-    const newCamps = await Camp.insert(postCamp);
-    if (newCamps) {
-      log.info(newCamps);
-      res.status(201).json({ newCamps, msg: 'Campaign added to database' });
+    const newCampaigns = await Campaigns.insert(postCampaign);
+    if (newCampaigns) {
+      log.info(newCampaigns);
+      res.status(201).json({ newCampaigns, msg: 'Campaign added to database' });
     } else if (
-      !postCamp.camp_img ||
-      !postCamp.camp_name ||
-      !postCamp.camp_desc ||
-      !postCamp.camp_cta
+      !postCampaign.image
+      || !postCampaign.name
+      || !postCampaign.description
+      || !postCampaign.call_to_action
     ) {
       log.info('no data');
       res.status(404).json({
-        msg: 'You need campaign image, campaign name, and campaign description'
+        msg: 'You need campaign image, campaign name, and campaign description',
       });
     }
   } catch (err) {
@@ -129,40 +116,35 @@ router.post('/', mw.upload.single('photo'), async (req, res) => {
   }
 });
 
-router.put('/:id', mw.upload.single('photo'), async (req, res) => {
+router.put('/:id', S3Upload.upload.single('photo'), async (req, res) => {
   const { id } = req.params;
   let location;
   if (req.file) {
     location = req.file.location;
   }
 
-  const newCamps = {
+  const newCampaigns = {
     ...req.body,
-    camp_img: location
+    image: location,
   };
 
   try {
-    const camp = await Camp.findById(id);
+    const campaign = await Campaigns.findById(id);
     const user = await Users.findBySub(req.user.sub);
 
-    if (camp.users_id !== user.id && !user.admin) {
-      return res
-        .status(401)
-        .json({ msg: 'Unauthorized: You may not modify this campaign' });
+    if (campaign.user_id !== user.id && !user.admin) {
+      return res.status(401).json({ msg: 'Unauthorized: You may not modify this campaign' });
     }
 
-    const editCamp = await Camp.update(newCamps, id);
-    if (editCamp) {
-      res.status(200).json({ msg: 'Successfully updated campaign', editCamp });
+    const editCampaign = await Campaigns.update(newCampaigns, id);
+    if (editCampaign) {
+      res.status(200).json({ msg: 'Successfully updated campaign', editCampaign });
     } else {
       res.status(404).json({ msg: 'The campaign would not be updated' });
     }
   } catch (err) {
     log.error(err);
-
-    res
-      .status(500)
-      .json({ err, msg: 'Unable to update campaign to the server' });
+    res.status(500).json({ err, msg: 'Unable to update campaign to the server' });
   }
 });
 
@@ -171,33 +153,32 @@ router.delete('/:id', async (req, res) => {
 
   try {
     const user = await Users.findBySub(req.user.sub);
-    const camp = await Camp.findById(id);
+    const campaign = await Campaigns.findById(id);
 
-    if (camp.users_id !== user.id) {
+    if (campaign.user_id !== user.id) {
       if (user.admin) {
         // Strike this user
-        const targetUsr = await Users.findById(camp.users_id);
+        const targetUsr = await Users.findById(campaign.user_id);
 
         if (!targetUsr.is_deactivated) {
           const updates = {
-            strikes: targetUsr.strikes + 1
+            strikes: targetUsr.strikes + 1,
           };
 
           await Users.update(updates, targetUsr.id);
         }
-      } else
-        return res
-          .status(401)
-          .json({ msg: 'Unauthorized: You may not delete this campaign' });
+      } else {
+        return res.status(401).json({ msg: 'Unauthorized: You may not delete this campaign' });
+      }
     }
 
-    const camps = await Camp.remove(id);
+    const campaigns = await Campaigns.remove(id);
 
     // Remove all reports relating to this post
     await Reports.removeWhere({ post_id: id, table_name: 'campaigns' });
 
-    if (camps) {
-      res.status(200).json(camps);
+    if (campaigns) {
+      res.status(200).json(campaigns);
     } else {
       res.status(404).json({ msg: 'Unable to find campaign ID' });
     }
