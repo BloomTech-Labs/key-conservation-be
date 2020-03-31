@@ -49,13 +49,13 @@ async function getConnectionsByUserId(id) {
 // use this to "unfriend" OR to cancel a connection request
 function deleteConnection(id) {
   return db('connections')
-    .where({ connection_id: id })
+    .where({ id })
     .del();
 }
 
 function getConnectionById(id) {
   return db('connections')
-    .where({ connection_id: id })
+    .where({ id })
     .first();
 }
 
@@ -63,16 +63,16 @@ function getConnectionById(id) {
 function addConnection(data) {
   return db('connections')
     .insert(data)
-    .returning('connection_id')
+    .returning('id')
     .then(res => {
       const [id] = res;
       return getConnectionById(id);
     });
 }
 
-function respondToConnectionRequest(connectionId, status) {
+function respondToConnectionRequest(id, status) {
   return db('connections')
-    .where({ connection_id: connectionId })
+    .where({ id })
     .update({ status });
 }
 
