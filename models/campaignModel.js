@@ -1,146 +1,140 @@
 const db = require('../database/dbConfig');
 
-const CampUpdate = require('./updateModel.js');
-const CampComments = require('./commentsModel.js');
+const CampaignUpdate = require('./updateModel.js');
+const CampaignComments = require('./commentsModel.js');
 const SkilledImpactRequests = require('./skilledImpactRequestsModel.js');
-
 
 function find() {
   return db('campaigns')
-    .join('users', 'users.id', 'campaigns.users_id')
-    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
+    .join('users', 'users.id', 'campaigns.user_id')
+    .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
     .select(
-      'cons.org_name as name',
+      'cons.name',
       'users.profile_image',
       'users.location',
       'campaigns.*',
     )
-
     .then((campaigns) => db('comments')
-      .join('users', 'users.id', 'comments.users_id')
-      .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
-      .leftJoin('supporters as sup', 'sup.users_id', 'users.id')
+      .join('users', 'users.id', 'comments.user_id')
+      .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
+      .leftJoin('supporters as sup', 'sup.user_id', 'users.id')
       .select(
         'comments.*',
         'users.profile_image',
-        'cons.org_name',
-        'sup.sup_name',
+        'cons.name as org_name',
+        'sup.name as sup_name',
         'users.is_deactivated',
       )
+      // TODO fold this into the query
       .then((comments) => campaigns.map((cam) => ({
         ...cam,
         comments: comments
-          .filter((com) => com.camp_id === cam.camp_id && !com.is_deactivated)
+          .filter((com) => com.campaign_id === cam.id && !com.is_deactivated)
           .map((com) => ({
             ...com,
             name: com.org_name || com.sup_name || 'User',
           })),
       }))))
     .then((campaigns) => db('users').then((users) => campaigns.filter((camp) => {
-      const [user] = users.filter((user) => user.id === camp.users_id);
-      if (user.is_deactivated) {
-        return false;
-      } return true;
+      const [user] = users.filter((u) => u.id === camp.user_id);
+      return !user.is_deactivated;
     })))
     .catch((err) => {
       throw new Error(err.message);
     });
 }
 
-function findCampaign(camp_id) {
+function findCampaign(id) {
   return db('campaigns')
-    .where({ camp_id })
+    .where({ id })
     .first();
 }
 
-async function findById(camp_id) {
+async function findById(id) {
   const campaign = await db('campaigns')
-    .where({ camp_id })
-    .join('users', 'users.id', 'campaigns.users_id')
-    .leftJoin('conservationists as cons', 'cons.users_id', 'campaigns.users_id')
+    .join('users', 'users.id', 'campaigns.user_id')
+    .leftJoin('conservationists as cons', 'cons.user_id', 'campaigns.user_id')
+    .where({ 'campaigns.id': id })
     .select(
-      'cons.org_name as name',
+      'cons.name as org_name',
       'users.profile_image',
       'users.location',
       'users.is_deactivated',
       'campaigns.*',
     )
     .first();
-  campaign.updates = await CampUpdate.findUpdatesByCamp(camp_id);
-  campaign.comments = await CampComments.findCampaignComments(camp_id);
-  campaign.skilled_impact_requests = await SkilledImpactRequests.findSkilledImpactRequests(camp_id);
+  campaign.updates = await CampaignUpdate.findUpdatesByCamp(id);
+  campaign.comments = await CampaignComments.findCampaignComments(id);
+  campaign.skilled_impact_requests = await SkilledImpactRequests.findSkilledImpactRequests(id);
   return campaign;
 }
 
+// TODO this shouldn't be here?
 function findUser(id) {
   return db('users')
-    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
-    .leftJoin('supporters as sup', 'sup.users_id', 'users.id')
-    .where({ id })
+    .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
+    .leftJoin('supporters as sup', 'sup.user_id', 'users.id')
+    .select('*', 'sup.name as sup_name', 'cons.name as cons_name')
+    .where({ 'users.id': id })
     .first()
-    .then(usr => ({
+    .then((usr) => ({
       ...usr,
-      name: usr.org_name || usr.sup_name || undefined
+      name: usr.sup_name || usr.cons_name,
     }));
 }
 
-async function findCampByUserId(users_id) {
+async function findCampByUserId(user_id) {
   const campaigns = await db('campaigns')
-    .where('campaigns.users_id', users_id)
-    .join('users', 'users.id', 'campaigns.users_id')
-    .leftJoin('conservationists as cons', 'cons.users_id', 'users.id')
+    .where('campaigns.user_id', user_id)
+    .join('users', 'users.id', 'campaigns.user_id')
+    .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
     .select(
-      'cons.org_name as name',
+      'cons.name',
       'users.profile_image',
       'users.location',
       'campaigns.*',
     );
   const withUpdates = campaigns.map(async (camp) => {
-    camp.updates = await CampUpdate.findUpdatesByCamp(camp.camp_id);
-    camp.comments = await CampComments.findCampaignComments(camp.camp_id);
+    camp.updates = await CampaignUpdate.findUpdatesByCamp(camp.id);
+    camp.comments = await CampaignComments.findCampaignComments(camp.id);
     return camp;
   });
-  const result = await Promise.all(withUpdates);
-  return result;
+  return Promise.all(withUpdates);
 }
 
 async function insert(campaign) {
-  const [camp_id] = await db('campaigns')
-    .insert(campaign)
-    .returning('camp_id');
-  if (camp_id) {
-    const camp = await findById(camp_id);
-    return camp;
+  console.log(campaign);
+  try {
+    const [id] = await db('campaigns')
+      .insert(campaign)
+      .returning('id');
+    if (id) {
+      return findById(id);
+    }
+  } catch (e) {
+    console.log(e);
   }
 }
 
-async function update(campaign, camp_id) {
+async function update(campaign, id) {
   const editedCamp = await db('campaigns')
-    .where({ camp_id })
+    .where({ id })
     .update(campaign);
   if (editedCamp) {
-    const camp = await findById(camp_id);
-    return camp;
+    return findById(id);
   }
 }
 
-async function remove(camp_id) {
+async function remove(id) {
   const deleted = await db('campaigns')
-    .where({ camp_id })
+    .where({ id })
     .del();
   if (deleted) {
-    return camp_id;
+    return id;
   }
   return 0;
 }
 
 module.exports = {
-  find,
-  findCampaign,
-  findById,
-  findUser,
-  findCampByUserId,
-  insert,
-  remove,
-  update,
+  find, findCampaign, findById, findUser, findCampByUserId, insert, remove, update,
 };
