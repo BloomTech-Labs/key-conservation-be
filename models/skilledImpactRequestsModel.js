@@ -9,26 +9,26 @@ async function findSkilledImpactRequests(campaign_id) {
         .select(
            '*'
         )
-        .then((returnedQuery)=>{
-            const skilledRequests = new Map();
-            for(let i = 0; i<returnedQuery.length; i++){
-                if(!skilledRequests.has(returnedQuery[i].id)){
-                    const skillAndProject = {
-                        skill: returnedQuery[i].skill,
-                        point_of_contact: returnedQuery[i].point_of_contact,
-                        welcome_message: returnedQuery[i].welcome_message,
-                        our_contribution: returnedQuery[i].our_contribution,
-                        project_goals:[]
+        .then((rows)=>{
+            const skilledRequestsMap = new Map();
+            for(const skilledRequest of rows){
+                    if(!skilledRequestsMap.has(skilledRequest.id)){
+                        const skillAndProject = {
+                            skill: skilledRequest.skill,
+                            point_of_contact: skilledRequest.point_of_contact,
+                            welcome_message: skilledRequest.welcome_message,
+                            our_contribution: skilledRequest.our_contribution,
+                            project_goals:[]
+                        };
+                        skilledRequestsMap.set(skilledRequest.id, skillAndProject);
+                    }
+                    const projectGoal = {
+                        goal_title: skilledRequest.goal_title,
+                        description: skilledRequest.description,
                     };
-                    skilledRequests.set(returnedQuery[i].id, skillAndProject);
-                }
-                const projectGoal = {
-                    goal_title: returnedQuery[i].goal_title,
-                    description: returnedQuery[i].description,
-                };
-                skilledRequests.get(returnedQuery[i].id).project_goals.push(projectGoal);
+                    skilledRequestsMap.get(skilledRequest.id).project_goals.push(projectGoal);
             }
-            return Array.from(skilledRequests.values());
+            return Array.from(skilledRequestsMap.values());
         });
 }
 
