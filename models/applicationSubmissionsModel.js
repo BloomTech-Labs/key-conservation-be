@@ -12,7 +12,7 @@ async function findAllByCampaignId(campaign_id) {
     .join(
       'application_submissions',
       'skilled_impact_requests.id',
-      'application_submissions.skilled_impact_request_id'
+      'application_submissions.skilled_impact_request_id',
     )
     .select(
       'skilled_impact_requests.campaign_id',

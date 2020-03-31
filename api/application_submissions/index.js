@@ -54,8 +54,7 @@ router.put('/', async (req, res) => {
         message: `${numSubmissionsFound} submissions updated in database, ${numSubmissionsNotFound} submissions not found in database`
       });
     }
-  } 
-  catch (error) {
+  } catch (error) {
     res.status(500).json({ error, message: 'Unable to update submission' });
   }
 });

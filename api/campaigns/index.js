@@ -85,7 +85,6 @@ router.get('/:id/submissions', async (req, res) => {
   }
 });
 
-
 router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   const { location } = req.file;
   const postCampaign = {
