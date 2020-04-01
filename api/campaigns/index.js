@@ -103,10 +103,11 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
       log.info('inserted campaign including skilled impact requests', newCampaigns, newSkilledImpactRequests);
       res.status(201).json({ newCampaigns, msg: 'Campaign added to database' });
     } else if (
-      !postCampaign.camp_img
-        || !postCampaign.camp_name
-        || !postCampaign.camp_desc
-        || !postCampaign.camp_cta || !req.body.skilled_impact_requests
+      !postCampaign.image
+        || !postCampaign.name
+        || !postCampaign.description
+        || !postCampaign.call_to_action
+        || !req.body.skilled_impact_requests
     ) {
       log.info('no data');
       res.status(404).json({
