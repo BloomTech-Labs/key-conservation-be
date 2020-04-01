@@ -7,8 +7,10 @@ const Reports = require('../../models/reportModel');
 const Users = require('../../models/usersModel');
 const Campaigns = require('../../models/campaignModel');
 const ApplicationSubmissions = require('../../models/applicationSubmissionsModel');
-
+const SkilledImpactRequests = require('../../models/skilledImpactRequestsModel');
 const S3Upload = require('../../middleware/s3Upload');
+
+const pick = require('../../util/pick.js');
 
 router.get('/', async (req, res) => {
   try {
@@ -87,26 +89,28 @@ router.get('/:id/submissions', async (req, res) => {
 
 router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   const { location } = req.file;
-  const postCampaign = {
-    ...req.body,
+  const campaign_props = ['user_id', 'name', 'description', 'call_to_action', 'urgency'];
+
+  const postCamp = {
+    ...pick(req.body, campaign_props),
     image: location,
   };
-  console.log(postCampaign);
 
   try {
-    const newCampaigns = await Campaigns.insert(postCampaign);
-    if (newCampaigns) {
-      log.info(newCampaigns);
-      res.status(201).json({ newCampaigns, msg: 'Campaign added to database' });
+    const newCamps = await Campaigns.insert(postCamp);
+    const newSkilledImpactRequests = await SkilledImpactRequests.insertSkilledImpactRequests(req.body.skilled_impact_requests, newCamps.id);
+    if (newCamps && newSkilledImpactRequests) {
+      log.info('inserted campaign including skilled impact requests', newCamps, newSkilledImpactRequests);
+      res.status(201).json({ newCamps, msg: 'Campaign added to database' });
     } else if (
-      !postCampaign.image
-      || !postCampaign.name
-      || !postCampaign.description
-      || !postCampaign.call_to_action
+      !postCamp.camp_img
+        || !postCamp.camp_name
+        || !postCamp.camp_desc
+        || !postCamp.camp_cta || !req.body.skilled_impact_requests
     ) {
       log.info('no data');
       res.status(404).json({
-        msg: 'You need campaign image, campaign name, and campaign description',
+        msg: 'You need campaign image, campaign name, campaign description, and skilled impact requests',
       });
     }
   } catch (err) {
