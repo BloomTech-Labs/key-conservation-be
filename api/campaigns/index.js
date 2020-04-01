@@ -91,22 +91,22 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   const { location } = req.file;
   const campaign_props = ['user_id', 'name', 'description', 'call_to_action', 'urgency'];
 
-  const postCamp = {
+  const postCampaign = {
     ...pick(req.body, campaign_props),
     image: location,
   };
 
   try {
-    const newCamps = await Campaigns.insert(postCamp);
-    const newSkilledImpactRequests = await SkilledImpactRequests.insertSkilledImpactRequests(req.body.skilled_impact_requests, newCamps.id);
-    if (newCamps && newSkilledImpactRequests) {
-      log.info('inserted campaign including skilled impact requests', newCamps, newSkilledImpactRequests);
-      res.status(201).json({ newCamps, msg: 'Campaign added to database' });
+    const newCampaigns = await Campaigns.insert(postCampaign);
+    const newSkilledImpactRequests = await SkilledImpactRequests.insertSkilledImpactRequests(req.body.skilled_impact_requests, newCampaigns.id);
+    if (newCampaigns && newSkilledImpactRequests) {
+      log.info('inserted campaign including skilled impact requests', newCampaigns, newSkilledImpactRequests);
+      res.status(201).json({ newCampaigns, msg: 'Campaign added to database' });
     } else if (
-      !postCamp.camp_img
-        || !postCamp.camp_name
-        || !postCamp.camp_desc
-        || !postCamp.camp_cta || !req.body.skilled_impact_requests
+      !postCampaign.camp_img
+        || !postCampaign.camp_name
+        || !postCampaign.camp_desc
+        || !postCampaign.camp_cta || !req.body.skilled_impact_requests
     ) {
       log.info('no data');
       res.status(404).json({
