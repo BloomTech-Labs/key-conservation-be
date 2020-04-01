@@ -16,7 +16,7 @@ async function findAllByCampaignId(campaign_id) {
     )
     .select(
       'skilled_impact_requests.campaign_id',
-      'application_submissions.*'
+      'application_submissions.*',
     )
     .where({ campaign_id });
 }
