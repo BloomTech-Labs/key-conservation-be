@@ -51,6 +51,7 @@ function findCampaign(id) {
 }
 
 async function findById(id) {
+  console.log('Campaign.findById');
   const campaign = await db('campaigns')
     .join('users', 'users.id', 'campaigns.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'campaigns.user_id')
@@ -63,8 +64,11 @@ async function findById(id) {
       'campaigns.*',
     )
     .first();
+  console.log('Campaign.findUpdatesByCamp');
   campaign.updates = await CampaignUpdate.findUpdatesByCamp(id);
+  console.log('Campaign.findCampaignComments');
   campaign.comments = await CampaignComments.findCampaignComments(id);
+  console.log('Campaign.findSkilledImpactRequests');
   campaign.skilled_impact_requests = await SkilledImpactRequests.findSkilledImpactRequests(id);
   return campaign;
 }
