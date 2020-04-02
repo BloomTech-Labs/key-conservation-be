@@ -14,7 +14,7 @@ function find() {
       'users.location',
       'campaigns.*',
       'campaigns.name as camp_name',
-      'cons.name',
+      'cons.name as org_name',
     )
     .then((campaigns) => db('comments')
       .join('users', 'users.id', 'comments.user_id')
@@ -95,7 +95,7 @@ async function findCampByUserId(user_id) {
     .join('users', 'users.id', 'campaigns.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
     .select(
-      'cons.name',
+      'cons.name as org_name',
       'users.profile_image',
       'users.location',
       'campaigns.*',
