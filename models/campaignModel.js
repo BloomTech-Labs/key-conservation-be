@@ -51,7 +51,6 @@ function findCampaign(id) {
 }
 
 async function findById(id) {
-  console.log('Campaign.findById');
   const campaign = await db('campaigns')
     .join('users', 'users.id', 'campaigns.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'campaigns.user_id')
