@@ -7,8 +7,10 @@ const Reports = require('../../models/reportModel');
 const Users = require('../../models/usersModel');
 const Campaigns = require('../../models/campaignModel');
 const ApplicationSubmissions = require('../../models/applicationSubmissionsModel');
-
+const SkilledImpactRequests = require('../../models/skilledImpactRequestsModel');
 const S3Upload = require('../../middleware/s3Upload');
+
+const pick = require('../../util/pick.js');
 
 router.get('/', async (req, res) => {
   try {
@@ -87,22 +89,24 @@ router.get('/:id/submissions', async (req, res) => {
 
 router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   const { location } = req.file;
+  const campaign_props = ['user_id', 'name', 'description', 'call_to_action', 'urgency'];
+
   const postCampaign = {
-    ...req.body,
+    ...pick(req.body, campaign_props),
     image: location,
   };
-  console.log(postCampaign);
 
   try {
     const newCampaigns = await Campaigns.insert(postCampaign);
+    const newSkilledImpactRequests = await SkilledImpactRequests.insertSkilledImpactRequests(req.body.skilled_impact_requests, newCampaigns.id);
     if (newCampaigns) {
-      log.info(newCampaigns);
+      log.info('inserted campaign ', newCampaigns, ' and skilled impact requests ', newSkilledImpactRequests);
       res.status(201).json({ newCampaigns, msg: 'Campaign added to database' });
     } else if (
       !postCampaign.image
-      || !postCampaign.name
-      || !postCampaign.description
-      || !postCampaign.call_to_action
+        || !postCampaign.name
+        || !postCampaign.description
+        || !postCampaign.call_to_action
     ) {
       log.info('no data');
       res.status(404).json({
