@@ -100,18 +100,17 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
     const newCampaigns = await Campaigns.insert(postCampaign);
     const newSkilledImpactRequests = await SkilledImpactRequests.insertSkilledImpactRequests(req.body.skilled_impact_requests, newCampaigns.id);
     if (newCampaigns) {
-      log.info('inserted campaign including skilled impact requests', newCampaigns, newSkilledImpactRequests);
+      log.info('inserted campaign ', newCampaigns, ' and skilled impact requests ', newSkilledImpactRequests);
       res.status(201).json({ newCampaigns, msg: 'Campaign added to database' });
     } else if (
       !postCampaign.image
         || !postCampaign.name
         || !postCampaign.description
         || !postCampaign.call_to_action
-        || !req.body.skilled_impact_requests
     ) {
       log.info('no data');
       res.status(404).json({
-        msg: 'You need campaign image, campaign name, campaign description, and skilled impact requests',
+        msg: 'You need campaign image, campaign name, and campaign description',
       });
     }
   } catch (err) {
