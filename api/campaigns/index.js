@@ -99,7 +99,7 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   try {
     const newCampaigns = await Campaigns.insert(postCampaign);
     const newSkilledImpactRequests = await SkilledImpactRequests.insertSkilledImpactRequests(req.body.skilled_impact_requests, newCampaigns.id);
-    if (newCampaigns && newSkilledImpactRequests) {
+    if (newCampaigns) {
       log.info('inserted campaign including skilled impact requests', newCampaigns, newSkilledImpactRequests);
       res.status(201).json({ newCampaigns, msg: 'Campaign added to database' });
     } else if (
