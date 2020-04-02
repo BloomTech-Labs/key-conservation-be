@@ -72,8 +72,6 @@ router.get('/camp/:id', (req, res) => {
 });
 
 router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
-  console.log(req.body);
-  req.body.campaign_id = req.body.id;
   const campaign = await Campaigns.findById(req.body.campaign_id);
 
   let postCampaignUpdate = {
