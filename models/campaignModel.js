@@ -63,11 +63,8 @@ async function findById(id) {
       'campaigns.*',
     )
     .first();
-  console.log('Campaign.findUpdatesByCamp');
   campaign.updates = await CampaignUpdate.findUpdatesByCamp(id);
-  console.log('Campaign.findCampaignComments');
   campaign.comments = await CampaignComments.findCampaignComments(id);
-  console.log('Campaign.findSkilledImpactRequests');
   campaign.skilled_impact_requests = await SkilledImpactRequests.findSkilledImpactRequests(id);
   return campaign;
 }
