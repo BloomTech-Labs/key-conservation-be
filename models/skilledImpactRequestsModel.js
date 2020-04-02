@@ -44,32 +44,27 @@ async function insertSkilledImpactRequests(skilledRequests, campaign_id) {
     projectGoals2DArr.push(skilledRequest.project_goals);
     return skilledRequestWithCampaignId;
   });
-  db.transaction((transaction) => {
-    db('skilled_impact_requests')
-      .transacting(transaction)
-      .insert(skilledRequestArr)
-      .returning('id')
-      .then(async (idArr) => {
-        const projectGoalsArr = [].concat(...projectGoals2DArr.map((data, index) => {
-          data = data.map((row) => {
-            row.skilled_impact_request_id = idArr[index];
-            return row;
-          });
-          return data;
-        }));
-        await db('project_goals').transacting(transaction).insert(projectGoalsArr);
-      })
-      .then(transaction.commit)
-      .catch(transaction.rollback);
-  })
-    .then(() => {
-      // transaction suceeded, data written
+  await db.transaction(async (transaction) => {
+    try {
+      const idArr = await db('skilled_impact_requests')
+        .insert(skilledRequestArr)
+        .transacting(transaction)
+        .returning('id');
+      const projectGoalsArr = [].concat(...projectGoals2DArr.map((data, index) => {
+        data = data.map((row) => {
+          row.skilled_impact_request_id = idArr[index];
+          return row;
+        });
+        return data;
+      }));
+      await db('project_goals').transacting(transaction).insert(projectGoalsArr);
       console.log('Inserted skilled impact requests and project goals ');
-    })
-    .catch((err) => {
-      // transaction failed, data rolled back
+      await transaction.commit();
+    } catch (err) {
       console.log('Error inserting skilled impact requests and project goals.', err);
-    });
+      await transaction.rollback();
+    }
+  });
 }
 
 module.exports = {
