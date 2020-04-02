@@ -1,5 +1,7 @@
 const db = require('../database/dbConfig');
 
+const pick = require('../util/pick.js');
+
 async function findSkilledImpactRequests(campaign_id) {
   return db('project_goals')
     .where({ campaign_id })
@@ -7,27 +9,65 @@ async function findSkilledImpactRequests(campaign_id) {
     .select(
       '*',
     )
-    .then((returnedQuery) => {
-      const skilledRequests = new Map();
-      for (let i = 0; i < returnedQuery.length; i += 1) {
-        if (!skilledRequests.has(returnedQuery[i].id)) {
+    .then((rows) => {
+      const skilledRequestsMap = new Map();
+      for (let i = 0; i < rows.length; i += 1) {
+        const skilledRequest = rows[i];
+        if (!skilledRequestsMap.has(skilledRequest.id)) {
           const skillAndProject = {
-            skill: returnedQuery[i].skill,
-            point_of_contact: returnedQuery[i].point_of_contact,
-            welcome_message: returnedQuery[i].welcome_message,
-            our_contribution: returnedQuery[i].our_contribution,
+            skill: skilledRequest.skill,
+            point_of_contact: skilledRequest.point_of_contact,
+            welcome_message: skilledRequest.welcome_message,
+            our_contribution: skilledRequest.our_contribution,
             project_goals: [],
           };
-          skilledRequests.set(returnedQuery[i].id, skillAndProject);
+          skilledRequestsMap.set(skilledRequest.id, skillAndProject);
         }
         const projectGoal = {
-          goal_title: returnedQuery[i].goal_title,
-          description: returnedQuery[i].description,
+          goal_title: skilledRequest.goal_title,
+          description: skilledRequest.description,
         };
-        skilledRequests.get(returnedQuery[i].id).project_goals.push(projectGoal);
+        skilledRequestsMap.get(skilledRequest.id).project_goals.push(projectGoal);
       }
-      return Array.from(skilledRequests.values());
+      return Array.from(skilledRequestsMap.values());
     });
 }
 
-module.exports = { findSkilledImpactRequests };
+async function insertSkilledImpactRequests(skilledRequests, campaign_id) {
+  const skillProps = ['skill', 'point_of_contact', 'welcome_message', 'our_contribution'];
+  const projectGoals2DArr = [];
+  const skilledRequestArr = skilledRequests.map((skilledRequest) => {
+    const skilledRequestWithCampaignId = {
+      ...pick(skilledRequest, skillProps),
+      campaign_id,
+    };
+    projectGoals2DArr.push(skilledRequest.project_goals);
+    return skilledRequestWithCampaignId;
+  });
+  await db.transaction(async (transaction) => {
+    try {
+      const idArr = await db('skilled_impact_requests')
+        .insert(skilledRequestArr)
+        .transacting(transaction)
+        .returning('id');
+      const projectGoalsArr = [].concat(...projectGoals2DArr.map((data, index) => {
+        data = data.map((row) => {
+          row.skilled_impact_request_id = idArr[index];
+          return row;
+        });
+        return data;
+      }));
+      await db('project_goals').transacting(transaction).insert(projectGoalsArr);
+      console.log('Inserted skilled impact requests and project goals ');
+      await transaction.commit();
+    } catch (err) {
+      console.log('Error inserting skilled impact requests and project goals.', err);
+      await transaction.rollback();
+    }
+  });
+}
+
+module.exports = {
+  findSkilledImpactRequests,
+  insertSkilledImpactRequests,
+};
