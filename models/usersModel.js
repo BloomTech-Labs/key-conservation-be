@@ -23,11 +23,10 @@ const userColumns = [
 
 // Columns of the user model that are stored in the conservationists table
 const conservationistColumns = [
-  'org_name',
-  'org_link_url',
-  'org_link_text',
-  'cons.org_cta',
-  'org_cta',
+  'name',
+  'link_url',
+  'link_text',
+  'call_to_action',
   'about_us',
   'issues',
   'support_us',
@@ -36,7 +35,7 @@ const conservationistColumns = [
 ];
 
 // Columns of the user model that are stored in the supporters table
-const supporterColumns = ['sup_name'];
+const supporterColumns = ['name'];
 
 function find() {
   return db('users')
@@ -297,10 +296,11 @@ async function updateSkillsTable(user, id) {
 }
 
 async function update(user, id) {
+  const existingUser = await findById(id);
   const isEmpty = (obj) => Object.getOwnPropertyNames(obj).length === 0;
   const triggerUsers = !isEmpty(pick(user, userColumns));
-  const triggerConservationists = !isEmpty(pick(user, conservationistColumns));
-  const triggerSupporters = !isEmpty(pick(user, supporterColumns));
+  const triggerConservationists = !isEmpty(pick(user, conservationistColumns)) && existingUser.roles === 'conservationist';
+  const triggerSupporters = !isEmpty(pick(user, supporterColumns)) && existingUser.roles === 'supporter';
   const triggerSkills = user.skills && Array.isArray(user.skills);
 
   if (triggerUsers) {

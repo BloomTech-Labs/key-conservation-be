@@ -60,6 +60,7 @@ async function findById(id) {
     .where({ 'campaigns.id': id })
     .join('users', 'users.id', 'campaigns.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'campaigns.user_id')
+    .where({ 'campaigns.id': id })
     .select(
       'cons.name as org_name',
       'users.profile_image',
