@@ -7,7 +7,7 @@ function find() {
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
     .select(
       'users.id as users_id',
-      'cons.name',
+      'cons.name as org_name',
       'users.profile_image',
       'users.location',
       'users.is_deactivated',
@@ -25,7 +25,7 @@ function findById(id) {
     .where('campaign_updates.id', id)
     .select(
       'users.id as users_id',
-      'cons.name',
+      'cons.name as org_name',
       'users.profile_image',
       'users.location',
       'users.is_deactivated',
@@ -48,7 +48,7 @@ function findUpdatesByCamp(id) {
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
     .where('campaign_updates.campaign_id', id)
     .select(
-      'cons.name',
+      'cons.name as org_name',
       'users.profile_image',
       'users.location',
       'campaigns.name as campaign_name',
@@ -64,7 +64,7 @@ function findUpdatesByUser(user_id) {
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
     .where('campaign_updates.user_id', user_id)
     .select(
-      'cons.name',
+      'cons.name as org_name',
       'users.profile_image',
       'users.location',
       'campaigns.name as campaign_name',

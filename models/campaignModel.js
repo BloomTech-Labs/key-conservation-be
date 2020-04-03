@@ -5,14 +5,16 @@ const CampaignComments = require('./commentsModel.js');
 const SkilledImpactRequests = require('./skilledImpactRequestsModel.js');
 
 function find() {
+  console.log('getting camapaigns')
   return db('campaigns')
     .join('users', 'users.id', 'campaigns.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
     .select(
-      'cons.name',
       'users.profile_image',
       'users.location',
       'campaigns.*',
+      'campaigns.name as camp_name',
+      'cons.name as org_name',
     )
     .then((campaigns) => db('comments')
       .join('users', 'users.id', 'comments.user_id')
@@ -26,7 +28,9 @@ function find() {
         'users.is_deactivated',
       )
       // TODO fold this into the query
-      .then((comments) => campaigns.map((cam) => ({
+      .then((comments) => campaigns.map((cam) => {
+        console.log(campaigns);
+        return ({
         ...cam,
         comments: comments
           .filter((com) => com.campaign_id === cam.id && !com.is_deactivated)
@@ -34,9 +38,10 @@ function find() {
             ...com,
             name: com.org_name || com.sup_name || 'User',
           })),
-      }))))
+      })})))
     .then((campaigns) => db('users').then((users) => campaigns.filter((camp) => {
       const [user] = users.filter((u) => u.id === camp.user_id);
+      // console.log(campaigns)
       return !user.is_deactivated;
     })))
     .catch((err) => {
@@ -52,6 +57,7 @@ function findCampaign(id) {
 
 async function findById(id) {
   const campaign = await db('campaigns')
+    .where({ 'campaigns.id': id })
     .join('users', 'users.id', 'campaigns.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'campaigns.user_id')
     .where({ 'campaigns.id': id })
@@ -89,7 +95,7 @@ async function findCampByUserId(user_id) {
     .join('users', 'users.id', 'campaigns.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
     .select(
-      'cons.name',
+      'cons.name as org_name',
       'users.profile_image',
       'users.location',
       'campaigns.*',

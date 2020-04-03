@@ -146,6 +146,7 @@ router.put('/:id', restricted, S3Upload.upload.single('photo'), async (req, res)
     if (Number(reqUsr.id) !== Number(id) && !reqUsr.admin) {
       return res.status(401).json({ message: 'You may not modify this profile!' });
     }
+
     const user = await Users.update(newUser, id);
 
     if (user) {

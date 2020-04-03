@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 const db = require('../database/dbConfig.js');
 const Campaign = require('./campaignModel.js');
+const CampaignUpdate = require('./updateModel.js');
 const Bookmarks = require('./socialModel');
 const Skills = require('./skillsEnum');
 const pick = require('../util/pick');
@@ -101,7 +102,9 @@ async function findById(id) {
       .groupBy('users.id', 'cons.id')
       .first();
     user.bookmarks = await Bookmarks.findUserBookmarks(id);
-    user.campaigns = await Campaign.findCampByUserId(id);
+    const campaigns = await Campaign.findCampByUserId(id);
+    const campaign_updates = await CampaignUpdate.findUpdatesByUser(id);
+    user.campaigns = campaigns.concat(campaign_updates);
   } else if (user.roles === 'supporter') {
     user = await db('users')
       .leftJoin('supporters as sup', 'sup.user_id', 'users.id')
