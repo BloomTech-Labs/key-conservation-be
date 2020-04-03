@@ -32,30 +32,25 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/', async (req, res) => {
-  const { ids } = req.body; 
+  const { ids } = req.body;
   const { decision } = req.body;
 
   try {
-    const applicationSubmissions = await ApplicationSubmission.updateAll(ids, decision);
-    // return 200 if all submissions successfully updated
-    if(applicationSubmissions.length == ids.length) {
+    // check if all of submissions exist first
+    const idsFoundJSON = await ApplicationSubmission.findAllByIds(ids);
+    const idsFound = idsFoundJSON.map((idJSON) => idJSON.id);
+    if (idsFound.length === ids.length) {
+      const applicationSubmissions = await ApplicationSubmission.updateAll(ids, decision);
       res.status(200).json({ applicationSubmissions, message: 'Submissions updated in database' });
-    }
-    // return 404 if no submissions found, else return 202 (accepted, but some processing still needed)
-    // for when some submissions are updated and some aren't
-    else if(applicationSubmissions.length == 0){ 
-      res.status(404).json({ message: 'Submissions not found in database' });
-    }
-    else {
-      const numSubmissionsFound = applicationSubmissions.length;
-      const numSubmissionsNotFound = ids.length - numSubmissionsFound;
-      res.status(202).json({
-        applicationSubmissions,
-        message: `${numSubmissionsFound} submissions updated in database, ${numSubmissionsNotFound} submissions not found in database`
+    } else {
+      // if any submissions are not present in database, then don't update anything
+      const idsNotFound = ids.filter((id) => !idsFound.includes(id));
+      res.status(400).json({
+        message: `No submissions were updated. These id's sent were not found in database: ${idsNotFound}`,
       });
     }
   } catch (error) {
-    res.status(500).json({ error, message: 'Unable to update submission' });
+    res.status(500).json({ error, message: 'Unable to update submissions' });
   }
 });
 
