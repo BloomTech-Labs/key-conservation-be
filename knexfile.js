@@ -2,6 +2,7 @@ require('dotenv').config();
 
 // Postgres imports
 const pg = require('pg');
+
 pg.defaults.ssl = true;
 
 const localPgConnection = {

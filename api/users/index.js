@@ -154,8 +154,8 @@ router.put('/:id', restricted, S3Upload.upload.single('photo'), async (req, res)
       res.status(404).json({ message: 'The user would not be updated' });
     }
   } catch (err) {
-      log.error(err);
-      res.status(500).json({ err, message: 'Unable to update user on the database' });
+    log.error(err);
+    res.status(500).json({ err, message: 'Unable to update user on the database' });
   }
 });
 
