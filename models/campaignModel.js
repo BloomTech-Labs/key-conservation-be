@@ -5,7 +5,7 @@ const CampaignComments = require('./commentsModel.js');
 const SkilledImpactRequests = require('./skilledImpactRequestsModel.js');
 
 function find() {
-  console.log('getting camapaigns')
+  console.log('getting camapaigns');
   return db('campaigns')
     .join('users', 'users.id', 'campaigns.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
@@ -31,14 +31,15 @@ function find() {
       .then((comments) => campaigns.map((cam) => {
         console.log(campaigns);
         return ({
-        ...cam,
-        comments: comments
-          .filter((com) => com.campaign_id === cam.id && !com.is_deactivated)
-          .map((com) => ({
-            ...com,
-            name: com.org_name || com.sup_name || 'User',
-          })),
-      })})))
+          ...cam,
+          comments: comments
+            .filter((com) => com.campaign_id === cam.id && !com.is_deactivated)
+            .map((com) => ({
+              ...com,
+              name: com.org_name || com.sup_name || 'User',
+            })),
+        });
+      })))
     .then((campaigns) => db('users').then((users) => campaigns.filter((camp) => {
       const [user] = users.filter((u) => u.id === camp.user_id);
       // console.log(campaigns)
