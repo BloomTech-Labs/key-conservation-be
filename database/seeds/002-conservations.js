@@ -2,35 +2,33 @@ exports.seed = function (knex, Promise) {
   // Deletes ALL existing entries
   return knex('conservationists')
     .del()
-    .then(() =>
-      // Inserts seed entries
-      knex('conservationists').insert([
-        {
-          users_id: 1,
-          org_name: 'Beaver Town',
-          org_link_url: 'google.com',
-          org_link_text: 'google.com',
-          about_us: 'Lorem IpsOn',
-          issues: 'wood',
-          support_us: null,
-        },
-        {
-          users_id: 2,
-          org_name: 'Panda Lovers',
-          org_link_url: 'google.com',
-          org_link_text: 'google.com',
-          about_us: 'Lorem IpsOn',
-          issues: 'sleep',
-          support_us: null,
-        },
-        {
-          users_id: 3,
-          org_name: 'Giraffe 2 Tall',
-          org_link_url: 'google.com',
-          org_link_text: 'google.com',
-          about_us: 'Lorem IpsOn',
-          issues: 'too tall',
-          support_us: null,
-        },
-      ]));
+    .then(() => knex('conservationists').insert([
+      {
+        user_id: 1,
+        name: 'Beaver Town',
+        link_url: 'google.com',
+        link_text: 'google.com',
+        about_us: 'Lorem IpsOn',
+        issues: 'wood',
+        support_us: null,
+      },
+      {
+        user_id: 2,
+        name: 'Panda Lovers',
+        link_url: 'google.com',
+        link_text: 'google.com',
+        about_us: 'Lorem IpsOn',
+        issues: 'sleep',
+        support_us: null,
+      },
+      {
+        user_id: 3,
+        name: 'Giraffe 2 Tall',
+        link_url: 'google.com',
+        link_text: 'google.com',
+        about_us: 'Lorem IpsOn',
+        issues: 'too tall',
+        support_us: null,
+      },
+    ]));
 };

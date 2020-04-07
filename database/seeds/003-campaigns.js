@@ -2,40 +2,38 @@ exports.seed = function (knex, Promise) {
   // Deletes ALL existing entries
   return knex('campaigns')
     .del()
-    .then(() =>
-      // Inserts seed entries
-      knex('campaigns').insert([
-        {
-          users_id: 1,
-          camp_img:
+    .then(() => knex('campaigns').insert([
+      {
+        user_id: 1,
+        image:
             'https://i.ebayimg.com/images/g/Op4AAOSwxklcg4uw/s-l400.jpg',
-          camp_name: 'Save the Eggs',
-          camp_desc: 'Melon in hay rake. Veterinarian at Seeder eggs with watermelon ostriches. Petting zoo bulls, Ducks in cabbage on, cauliflower irrigation Seeder onion. Post pounder calf, hay or duck is, tool shed horse. Grapes at yams mushrooms organic berries gobble. Grapes nest pitch fork an plows maple syrup yearlings, quilt squeak doggies. Apples ducks straw, quail a ostriches donkey, hay hook cucumbers. Kidney beans ostric.',
-          camp_cta: 'https://www.turtleibrary/donate.now.com',
-        },
-        {
-          users_id: 1,
-          camp_img:
+        name: 'Save the Eggs',
+        description: 'Melon in hay rake. Veterinarian at Seeder eggs with watermelon ostriches. Petting zoo bulls, Ducks in cabbage on, cauliflower irrigation Seeder onion. Post pounder calf, hay or duck is, tool shed horse. Grapes at yams mushrooms organic berries gobble. Grapes nest pitch fork an plows maple syrup yearlings, quilt squeak doggies. Apples ducks straw, quail a ostriches donkey, hay hook cucumbers. Kidney beans ostric.',
+        call_to_action: 'https://www.turtleibrary/donate.now.com',
+      },
+      {
+        user_id: 1,
+        image:
             'https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Beaver_Yearling_Grooming_Alhambra_Creek_2008.jpg/1920px-Beaver_Yearling_Grooming_Alhambra_Creek_2008.jpg',
-          camp_name: 'Save the Beavers',
-          camp_desc: 'Are porky pig beef, sheep rose garden sage, in pitch fork sunflower cowpies mice. Onion organic oranges and purr ducks canning owls at a squeal. Straw augers beef kettle our crickets. Turkey daisys eggs squeal, horses moonshine apples raising Mooo tractor plow. . Apples ducks straw, quail.',
-          camp_cta: 'https://www.nwf.org/Educational-Resources/Wildlife-Guide/Mammals/American-Beaver',
-        },
-        {
-          users_id: 2,
-          camp_img:
+        name: 'Save the Beavers',
+        description: 'Are porky pig beef, sheep rose garden sage, in pitch fork sunflower cowpies mice. Onion organic oranges and purr ducks canning owls at a squeal. Straw augers beef kettle our crickets. Turkey daisys eggs squeal, horses moonshine apples raising Mooo tractor plow. . Apples ducks straw, quail.',
+        call_to_action: 'https://www.nwf.org/Educational-Resources/Wildlife-Guide/Mammals/American-Beaver',
+      },
+      {
+        user_id: 2,
+        image:
             'https://d27ucmmhxk51xv.cloudfront.net/media/english/illustration/panda.jpg',
-          camp_name: 'Pillows 4 Pandas',
-          camp_desc: 'Pets in. John Deere bees, parsley sweet corn at, porky pig shovels. Post pounder calf, hay or duck is, tool shed horse. Forage Harvester rakes peacocks, squeal garden woof. Peacocks baa ostriches owls. Hoot squeal moose quack, crows doggies frogs crickets chirp. Onion organic oranges and purr ducks canning owls at a squeal. Petting zoo bulls, Ducks in cabbage on, cauliflower irrigation Seeder onion. Ewes mushrooms zucchini in forage Harvester at sheep with tractor. Onion organic.',
-          camp_cta: 'https://live.adyen.com/hpp/pay.shtml',
-        },
-        {
-          users_id: 3,
-          camp_img:
+        name: 'Pillows 4 Pandas',
+        description: 'Pets in. John Deere bees, parsley sweet corn at, porky pig shovels. Post pounder calf, hay or duck is, tool shed horse. Forage Harvester rakes peacocks, squeal garden woof. Peacocks baa ostriches owls. Hoot squeal moose quack, crows doggies frogs crickets chirp. Onion organic oranges and purr ducks canning owls at a squeal. Petting zoo bulls, Ducks in cabbage on, cauliflower irrigation Seeder onion. Ewes mushrooms zucchini in forage Harvester at sheep with tractor. Onion organic.',
+        call_to_action: 'https://live.adyen.com/hpp/pay.shtml',
+      },
+      {
+        user_id: 3,
+        image:
             'https://i.ebayimg.com/images/g/EPsAAOSwDmBY3~D1/s-l400.jpg',
-          camp_name: 'Plant more trees in park',
-          camp_desc: 'Mushrooms zucchini in forage Harvester at sheep with tractor. Post pounder calf, hay or duck is, tool shed horse. Prairie dogs raccoons robins rats. Gourds utters at welding equipment a oink oink haybine. Cauliflower a seeds quail. Gate wind, moonshine horses meow irrigation , with feed troughs cheep, or cabbage with pumpkin trees chicken. Mouse soybeans sweet corn hogs llamas or oink oink wind. John Deere bees, parsley sweet corn.',
-          camp_cta: 'https://giraffeconservation.org/donate/',
-        },
-      ]));
+        name: 'Plant more trees in park',
+        description: 'Mushrooms zucchini in forage Harvester at sheep with tractor. Post pounder calf, hay or duck is, tool shed horse. Prairie dogs raccoons robins rats. Gourds utters at welding equipment a oink oink haybine. Cauliflower a seeds quail. Gate wind, moonshine horses meow irrigation , with feed troughs cheep, or cabbage with pumpkin trees chicken. Mouse soybeans sweet corn hogs llamas or oink oink wind. John Deere bees, parsley sweet corn.',
+        call_to_action: 'https://giraffeconservation.org/donate/',
+      },
+    ]));
 };
