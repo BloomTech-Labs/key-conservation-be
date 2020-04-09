@@ -14,7 +14,9 @@ router.get('/:id', async (req, res) => {
       res.status(404).json({ message: 'Submission not found in the database' });
     }
   } catch (error) {
-    res.status(500).json({ error, message: 'Unable to make request to server' });
+    res
+      .status(500)
+      .json({ error, message: 'Unable to make request to server' });
   }
 });
 
@@ -24,7 +26,9 @@ router.post('/', async (req, res) => {
     decision: 'PENDING',
   };
   try {
-    const [applicationSubmission] = await ApplicationSubmission.insert(postSubmission);
+    const [applicationSubmission] = await ApplicationSubmission.insert(
+      postSubmission
+    );
     res.status(201).json({ applicationSubmission });
   } catch (error) {
     res.status(500).json({ error, message: 'Unable to add submission' });

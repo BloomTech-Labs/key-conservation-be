@@ -53,7 +53,7 @@ function find() {
       'cons.issues',
       'cons.support_us',
       'sup.name as sup_name',
-      db.raw('array_to_json(array_agg(skills.skill)) as skills'),
+      db.raw('array_to_json(array_agg(skills.skill)) as skills')
     )
     .groupBy('users.id', 'cons.id');
 }
@@ -72,9 +72,7 @@ function findUser(id) {
 }
 
 async function findById(id) {
-  let user = await db('users')
-    .where({ id })
-    .first();
+  let user = await db('users').where({ id }).first();
 
   if (user.roles === 'conservationist') {
     user = await db('users')
@@ -97,7 +95,7 @@ async function findById(id) {
         'cons.point_of_contact_email',
         'cons.latitude',
         'cons.longitude',
-        db.raw('array_to_json(array_agg(skills.skill)) as skills'),
+        db.raw('array_to_json(array_agg(skills.skill)) as skills')
       )
       .groupBy('users.id', 'cons.id')
       .first();
@@ -119,9 +117,7 @@ async function findById(id) {
 
 async function findBySub(sub) {
   // This is used only to verify user information at login. It does not collect campaign information.
-  let user = await db('users')
-    .where({ sub })
-    .first();
+  let user = await db('users').where({ sub }).first();
 
   const { id } = user;
 
@@ -142,7 +138,7 @@ async function findBySub(sub) {
         'cons.support_us',
         'cons.longitude',
         'cons.latitude',
-        db.raw('array_to_json(array_agg(skills.skill)) as skills'),
+        db.raw('array_to_json(array_agg(skills.skill)) as skills')
       )
       .groupBy('users.id', 'cons.id')
       .first();
@@ -169,10 +165,11 @@ async function findUserStatus(sub) {
     .where({ sub })
     .first()
     .then(
-      (usr) => usr && {
-        ...usr,
-        name: usr.sup_name || usr.org_name || 'User',
-      },
+      (usr) =>
+        usr && {
+          ...usr,
+          name: usr.sup_name || usr.org_name || 'User',
+        }
     );
 
   const response = {};
@@ -187,10 +184,7 @@ async function findUserStatus(sub) {
 
 // adds user to conservationists table in add user function
 async function addCons(cons) {
-  const newConservationist = await db('conservationists').insert(
-    cons,
-    'id',
-  );
+  const newConservationist = await db('conservationists').insert(cons, 'id');
   return newConservationist;
 }
 
@@ -235,7 +229,7 @@ async function add(user) {
         };
         console.log(
           'constructued conservationist profile',
-          conservationistsData,
+          conservationistsData
         );
         addCons(conservationistsData);
       }
@@ -256,9 +250,7 @@ async function add(user) {
 
 async function updateUsersTable(user, id) {
   const userUpdate = pick(user, userColumns);
-  await db('users')
-    .where('id', id)
-    .update(userUpdate);
+  await db('users').where('id', id).update(userUpdate);
 }
 
 async function updateConservationistsTable(user, id) {
@@ -270,9 +262,7 @@ async function updateConservationistsTable(user, id) {
 
 async function updateSupportersTable(user, id) {
   const supporterUpdate = pick(user, supporterColumns);
-  await db('supporters')
-    .where('user_id', id)
-    .update(supporterUpdate);
+  await db('supporters').where('user_id', id).update(supporterUpdate);
 }
 
 async function updateSkillsTable(user, id) {
@@ -334,7 +324,7 @@ const getNameAndAvatarByIds = async (ids) => {
         'users.roles',
         'users.profile_image',
         'cons.name as org_name',
-        'sup.name as sup_name',
+        'sup.name as sup_name'
       );
 
     return users.map((user) => ({

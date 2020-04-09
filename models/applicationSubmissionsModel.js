@@ -28,9 +28,7 @@ async function findAllByCampaignId(campaign_id) {
 }
 
 async function insert(submission) {
-  return db('application_submissions')
-    .insert(submission)
-    .returning('*');
+  return db('application_submissions').insert(submission).returning('*');
 }
 
 async function update(id, decision) {

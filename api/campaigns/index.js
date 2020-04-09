@@ -24,23 +24,29 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', (req, res) => {
   const { id } = req.params;
-  Campaigns.findCampaign(id).then((result) => {
-    if (result) {
-      return Campaigns.findById(id);
-    }
-    res.status(400).json({ msg: 'Campaign was not found in the database' });
-  }).then(async (campaign) => {
-    // If this campaign belongs to a deactivated account, then
-    // only an admin should be able to see it
-
-    if (campaign.is_deactivated) {
-      const user = await Users.findBySub(req.user.sub);
-      if (!user.admin) {
-        return res.status(401).json({ msg: 'This campaign may only be viewed by an administrator' });
+  Campaigns.findCampaign(id)
+    .then((result) => {
+      if (result) {
+        return Campaigns.findById(id);
       }
-    }
-    return res.status(200).json({ campaign, msg: 'The campaign was found' });
-  })
+      res.status(400).json({ msg: 'Campaign was not found in the database' });
+    })
+    .then(async (campaign) => {
+      // If this campaign belongs to a deactivated account, then
+      // only an admin should be able to see it
+
+      if (campaign.is_deactivated) {
+        const user = await Users.findBySub(req.user.sub);
+        if (!user.admin) {
+          return res
+            .status(401)
+            .json({
+              msg: 'This campaign may only be viewed by an administrator',
+            });
+        }
+      }
+      return res.status(200).json({ campaign, msg: 'The campaign was found' });
+    })
     .catch((err) => {
       log.error(err);
       res.status(500).json({ err, msg: 'Unable to make request to server' });
@@ -59,7 +65,9 @@ router.get('/camp/:id', (req, res) => {
           return Users.findBySub(req.user.sub);
         }
       } else {
-        return res.status(404).json({ msg: 'Did not find the campaign by this user id' });
+        return res
+          .status(404)
+          .json({ msg: 'Did not find the campaign by this user id' });
       }
     })
     .then((user) => {
@@ -67,11 +75,14 @@ router.get('/camp/:id', (req, res) => {
         return res.status(401).json({
           msg: "This user's campaigns may only be viewed by an administrator",
         });
-      } return Campaigns.findCampByUserId(id);
+      }
+      return Campaigns.findCampByUserId(id);
     })
     .then((campaign) => {
       if (campaign) {
-        return res.status(200).json({ campaign, msg: 'The campaigns were found for this org' });
+        return res
+          .status(200)
+          .json({ campaign, msg: 'The campaigns were found for this org' });
       }
     })
     .catch((err) => res.status(500).json({ msg: err.message }));
@@ -95,6 +106,7 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
     ...pick(req.body, campaign_props),
     image: location,
   };
+  console.log(postCampaign);
 
   try {
     const newCampaigns = await Campaigns.insert(postCampaign);
@@ -136,18 +148,24 @@ router.put('/:id', S3Upload.upload.single('photo'), async (req, res) => {
     const user = await Users.findBySub(req.user.sub);
 
     if (campaign.user_id !== user.id && !user.admin) {
-      return res.status(401).json({ msg: 'Unauthorized: You may not modify this campaign' });
+      return res
+        .status(401)
+        .json({ msg: 'Unauthorized: You may not modify this campaign' });
     }
 
     const editCampaign = await Campaigns.update(newCampaigns, id);
     if (editCampaign) {
-      res.status(200).json({ msg: 'Successfully updated campaign', editCampaign });
+      res
+        .status(200)
+        .json({ msg: 'Successfully updated campaign', editCampaign });
     } else {
       res.status(404).json({ msg: 'The campaign would not be updated' });
     }
   } catch (err) {
     log.error(err);
-    res.status(500).json({ err, msg: 'Unable to update campaign to the server' });
+    res
+      .status(500)
+      .json({ err, msg: 'Unable to update campaign to the server' });
   }
 });
 
@@ -171,7 +189,9 @@ router.delete('/:id', async (req, res) => {
           await Users.update(updates, targetUsr.id);
         }
       } else {
-        return res.status(401).json({ msg: 'Unauthorized: You may not delete this campaign' });
+        return res
+          .status(401)
+          .json({ msg: 'Unauthorized: You may not delete this campaign' });
       }
     }
 
