@@ -1,8 +1,5 @@
 require('dotenv').config();
 
-// Postgres imports
-const pg = require('pg');
-
 const localPgConnection = {
   host: 'localhost',
   user: 'postgres',

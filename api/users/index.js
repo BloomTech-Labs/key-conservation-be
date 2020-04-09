@@ -161,11 +161,11 @@ router.put(
     try {
       const reqUsr = await Users.findBySub(req.user.sub);
 
-    if (Number(reqUsr.id) !== Number(id) && !reqUsr.admin) {
-      return res.status(401).json({ message: 'You may not modify this profile!' });
-    }
+      if (Number(reqUsr.id) !== Number(id) && !reqUsr.admin) {
+        return res.status(401).json({ message: 'You may not modify this profile!' });
+      }
 
-    const user = await Users.update(newUser, id);
+      const user = await Users.update(newUser, id);
 
       if (user) {
         res.status(200).json({ message: 'Successfully updated user', user });
@@ -178,7 +178,7 @@ router.put(
         .status(500)
         .json({ err, message: 'Unable to update user on the database' });
     }
-  }
+  },
 );
 
 router.post('/deactivate/:id', restricted, async (req, res) => {
@@ -209,7 +209,7 @@ router.post('/deactivate/:id', restricted, async (req, res) => {
     // Archive all reports relating to this user
     await Reports.updateWhere(
       { reported_user: req.params.id },
-      { is_archived: true }
+      { is_archived: true },
     );
 
     // Respond with 200 OK
@@ -304,7 +304,7 @@ router.post(
         .status(500)
         .json({ err, msg: 'Unable to add connection to database' });
     }
-  }
+  },
 );
 
 router.delete('/connect/:id', async (req, res) => {
@@ -330,7 +330,7 @@ router.delete('/connect/:id', async (req, res) => {
 router.get('/connect/:userId', async (req, res) => {
   try {
     const userConnections = await Connections.getConnectionsByUserId(
-      req.params.userId
+      req.params.userId,
     );
 
     res.status(200).json(userConnections);
@@ -355,13 +355,13 @@ router.put('/connect/:connectionId', async (req, res) => {
 
   const updated = await Connections.respondToConnectionRequest(
     req.params.connectionId,
-    req.body.status
+    req.body.status,
   );
 
   try {
     if (updated === 1) {
       const newConnectionStatus = await Connections.getConnectionById(
-        req.params.connectionId
+        req.params.connectionId,
       );
       res.status(201).json({
         msg: `The status of connection with id ${req.params.connectionId} was changed to ${newConnectionStatus.status}`,

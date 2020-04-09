@@ -27,7 +27,7 @@ router.post('/', async (req, res) => {
   };
   try {
     const [applicationSubmission] = await ApplicationSubmission.insert(
-      postSubmission
+      postSubmission,
     );
     res.status(201).json({ applicationSubmission });
   } catch (error) {
