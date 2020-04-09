@@ -7,7 +7,7 @@ const localPgConnection = {
   host: 'localhost',
   user: 'postgres',
   password: 'key',
-  database: 'keylocal'
+  database: 'keylocal',
 };
 
 // Production database connection
@@ -25,16 +25,16 @@ module.exports = {
     connection: dbConnection,
     migrations: {
       directory: './database/migrations',
-      tablename: 'knex_migrations'
+      tablename: 'knex_migrations',
     },
     seeds: {
-      directory: './database/seeds'
+      directory: './database/seeds',
     },
     pool: {
       min: 2,
-      max: 10
+      max: 10,
     },
-    useNullAsDefault: true
+    useNullAsDefault: true,
   },
 
   testing: {
@@ -43,13 +43,11 @@ module.exports = {
     useNullAsDefault: true,
     migrations: {
       directory: './database/migrations',
-      tablename: 'knex_migrations'
+      tablename: 'knex_migrations',
     },
     seeds: {
-      directory: './database/seeds'
+      directory: './database/seeds',
     },
-    useNullAsDefault: true,
-    ssl: true
   },
 
   production: {
@@ -57,16 +55,15 @@ module.exports = {
     connection: dbConnection,
     pool: {
       min: 2,
-      max: 10
+      max: 10,
     },
     migrations: {
       directory: './database/migrations',
-      tableName: 'knex_migrations'
+      tableName: 'knex_migrations',
     },
     seeds: {
-      directory: './database/seeds'
+      directory: './database/seeds',
     },
     useNullAsDefault: true,
-    ssl: true
-  }
+  },
 };

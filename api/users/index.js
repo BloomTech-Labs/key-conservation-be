@@ -7,11 +7,11 @@ const Users = require('../../models/usersModel');
 const Reports = require('../../models/reportModel');
 const Connections = require('../../models/connectionsModel');
 
-const mw = require('../../middleware/s3Upload');
+const S3Upload = require('../../middleware/s3Upload');
 const restricted = require('../../middleware/authJwt.js');
 const {
   checkConnection,
-  checkUniqueIds
+  checkUniqueIds,
 } = require('../../middleware/connections');
 
 router.get('/', restricted, async (req, res) => {
@@ -21,7 +21,7 @@ router.get('/', restricted, async (req, res) => {
     if (users) {
       const reqUsr = Users.findBySub(req.user.sub);
 
-      if (!reqUsr.admin) users = users.filter(usr => !usr.is_deactivated);
+      if (!reqUsr.admin) users = users.filter((usr) => !usr.is_deactivated);
 
       res.status(200).json({ users, message: 'The users were found' });
     } else {
@@ -38,9 +38,6 @@ router.get('/:id', restricted, async (req, res) => {
 
   try {
     const user = await Users.findById(id);
-
-    console.log('succeeded')
-
     if (!user) {
       return res
         .status(404)
@@ -55,7 +52,7 @@ router.get('/:id', restricted, async (req, res) => {
           return res.status(401).json({
             message:
               'Your account has been deactivated. If you believe this is a mistake, please contact support via our website',
-            logout: true
+            logout: true,
           });
         }
         return res
@@ -66,7 +63,7 @@ router.get('/:id', restricted, async (req, res) => {
 
     return res.status(200).json({ user, message: 'The user was found' });
   } catch (err) {
-    console.log(err)
+    log.error(err);
     return res.status(500).json({ message: err.message, err });
   }
 });
@@ -83,7 +80,7 @@ router.get('/sub/:sub', restricted, async (req, res) => {
           return res.status(401).json({
             message:
               'Your account has been deactivated. If you believe this is a mistake, please contact support via our website',
-            logout: true
+            logout: true,
           });
         }
         return res
@@ -107,81 +104,83 @@ router.get('/subcheck/:sub', async (request, response) => {
   const subID = request.params.sub;
 
   Users.findUserStatus(subID)
-    .then(check => {
+    .then((check) => {
       log.info(check, 'This is yes/no from server about if user is on DB');
-      // console.log(check);
       if (check.deactivated) {
         return response.status(401).json({
           message:
             'Your account has been deactivated. If you believe this is a mistake, please contact support via our website',
-          logout: true
+          logout: true,
         });
       }
       return response
         .status(200)
         .json({ check, message: 'Verification check for users on the DB' });
     })
-    .catch(error => {
+    .catch((error) => {
       log.error(error);
       response.status(500).json({
         error,
-        message: 'Could not communicate with server to check for Users.'
+        message: 'Could not communicate with server to check for Users.',
       });
     });
 });
 
-router.post('/', mw.upload.single('photo'), async (req, res) => {
-
-  const user = {
+router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
+  let user = {
     ...req.body,
-    profile_image: req.file ? req.file.location : undefined
+    profile_image: req.file ? req.file.location : undefined,
   };
 
   try {
-    const newUser = await Users.add(user);
-
-    console.log('added');
-    if (newUser) {
-      res.status(201).json({ newUser, message: 'User added to database' });
+    user = await Users.add(user);
+    if (user) {
+      res.status(201).json({ user, message: 'User added to database' });
     }
   } catch (err) {
-    console.log(err);
     res.status(500).json({ err, message: 'Unable to add user' });
   }
 });
 
-router.put('/:id', restricted, mw.upload.single('photo'), async (req, res) => {
-  const { id } = req.params;
+router.put(
+  '/:id',
+  restricted,
+  S3Upload.upload.single('photo'),
+  async (req, res) => {
+    const { id } = req.params;
 
-  const newUser = {
-    ...req.body,
-    profile_image: req.file ? req.file.location : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
-  };
+    const newUser = {
+      ...req.body,
+      profile_image: req.file
+        ? req.file.location
+        : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+    };
 
-  console.log(newUser);
+    console.log(newUser);
 
-  try {
-    const reqUsr = await Users.findBySub(req.user.sub);
+    try {
+      const reqUsr = await Users.findBySub(req.user.sub);
 
-    if (Number(reqUsr.id) !== Number(id) && !reqUsr.admin) {
-      return res
-        .status(401)
-        .json({ message: 'You may not modify this profile!' });
+      if (Number(reqUsr.id) !== Number(id) && !reqUsr.admin) {
+        return res
+          .status(401)
+          .json({ message: 'You may not modify this profile!' });
+      }
+      const user = await Users.update(newUser, id);
+
+      if (user) {
+        res.status(200).json({ message: 'Successfully updated user', user });
+      } else {
+        res.status(404).json({ message: 'The user would not be updated' });
+      }
+    } catch (err) {
+      log.error(err);
+      res
+        .status(500)
+        .json({ err, message: 'Unable to update user on the database' });
     }
-    const editUser = await Users.update(newUser, id);
-
-    if (editUser) {
-      res.status(200).json({ message: 'Successfully updated user', editUser });
-    } else {
-      res.status(404).json({ message: 'The user would not be updated' });
-    }
-  } catch (err) {
-    console.log(err);
-    res
-      .status(500)
-      .json({ err, message: 'Unable to update user on the database' });
   }
-});
+);
 
 router.post('/deactivate/:id', restricted, async (req, res) => {
   try {
@@ -203,10 +202,8 @@ router.post('/deactivate/:id', restricted, async (req, res) => {
     // Update target user data to reflect deactivation
     const updates = {
       is_deactivated: true,
-      strikes
+      strikes,
     };
-
-    console.log(updates);
 
     await Users.update(updates, req.params.id);
 
@@ -221,11 +218,12 @@ router.post('/deactivate/:id', restricted, async (req, res) => {
   } catch (err) {
     return res.status(500).json({
       error: err.message,
-      message: 'Failed to deactivate user. Please try again'
+      message: 'Failed to deactivate user. Please try again',
     });
   }
 });
 
+// TODO lots of duplicate code + not RESTful routes
 router.post('/reactivate/:id', restricted, async (req, res) => {
   try {
     // Make sure user making request has admin priveleges
@@ -239,7 +237,7 @@ router.post('/reactivate/:id', restricted, async (req, res) => {
 
     // Update target user data to reflect deactivation
     const updates = {
-      is_deactivated: false
+      is_deactivated: false,
     };
 
     await Users.update(updates, req.params.id);
@@ -249,7 +247,7 @@ router.post('/reactivate/:id', restricted, async (req, res) => {
   } catch (err) {
     return res.status(500).json({
       error: err.message,
-      message: 'An internal server error occurred'
+      message: 'An internal server error occurred',
     });
   }
 });
@@ -275,14 +273,14 @@ router.post(
 
       if (!req.params.id) {
         res.status(400).json({
-          msg: 'You must pass in the connected_id in the request url'
+          msg: 'You must pass in the connected_id in the request url',
         });
       }
 
       const connectionData = {
         connector_id: usr.id,
         connected_id: req.params.id,
-        status
+        status,
       };
 
       const duplicate = await Connections.alreadyExists(connectionData);
@@ -298,11 +296,11 @@ router.post(
       if (newConnection) {
         res.status(201).json({
           newConnection,
-          msg: 'New connection was added to the database'
+          msg: 'New connection was added to the database',
         });
       }
     } catch (err) {
-      console.log(err);
+      log.error(err);
       res
         .status(500)
         .json({ err, msg: 'Unable to add connection to database' });
@@ -338,7 +336,7 @@ router.get('/connect/:userId', async (req, res) => {
 
     res.status(200).json(userConnections);
   } catch (err) {
-    console.log(err);
+    log.error(err);
     res.status(500).json({ msg: 'Error connecting to database' });
   }
 });
@@ -352,7 +350,7 @@ router.put('/connect/:connectionId', async (req, res) => {
   if (!req.body) {
     res.status(401).json({
       msg:
-        'Please include the status (accepted or rejected) in the request body'
+        'Please include the status (accepted or rejected) in the request body',
     });
   }
 
@@ -361,14 +359,13 @@ router.put('/connect/:connectionId', async (req, res) => {
     req.body.status
   );
 
-
   try {
     if (updated === 1) {
       const newConnectionStatus = await Connections.getConnectionById(
         req.params.connectionId
       );
       res.status(201).json({
-        msg: `The status of connection with id ${req.params.connectionId} was changed to ${newConnectionStatus.status}`
+        msg: `The status of connection with id ${req.params.connectionId} was changed to ${newConnectionStatus.status}`,
       });
     } else {
       res.status(404).json({ msg: 'No connection found with that id' });
@@ -377,6 +374,5 @@ router.put('/connect/:connectionId', async (req, res) => {
     res.status(500).json({ msg: 'Database error' });
   }
 });
-
 
 module.exports = router;

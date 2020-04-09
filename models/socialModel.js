@@ -1,16 +1,16 @@
 const db = require('../database/dbConfig');
 
 function findUserBookmarks(id) {
-  return db('bookmarks').where({ users_id: id });
+  return db('bookmarks').where({ user_id: id });
 }
 
 function insertBookmark(bookmark) {
   return db('bookmarks').insert(bookmark);
 }
 
-function removeBookmark(campId, userId) {
+function removeBookmark(campaign_id, user_id) {
   return db('bookmarks')
-    .where({ camp_id: campId, users_id: userId })
+    .where({ campaign_id, user_id })
     .del();
 }
 
