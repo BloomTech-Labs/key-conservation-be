@@ -161,12 +161,11 @@ router.put(
     try {
       const reqUsr = await Users.findBySub(req.user.sub);
 
-      if (Number(reqUsr.id) !== Number(id) && !reqUsr.admin) {
-        return res
-          .status(401)
-          .json({ message: 'You may not modify this profile!' });
-      }
-      const user = await Users.update(newUser, id);
+    if (Number(reqUsr.id) !== Number(id) && !reqUsr.admin) {
+      return res.status(401).json({ message: 'You may not modify this profile!' });
+    }
+
+    const user = await Users.update(newUser, id);
 
       if (user) {
         res.status(200).json({ message: 'Successfully updated user', user });

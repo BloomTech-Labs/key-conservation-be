@@ -1,18 +1,30 @@
 const db = require('../database/dbConfig');
 
 async function findById(id) {
-  return db('application_submissions').where({ id }).first();
+  return db('application_submissions')
+    .select('*')
+    .where({ id })
+    .first();
+}
+
+async function findAllByIds(ids) {
+  return db('application_submissions')
+    .select('id')
+    .whereIn('id', ids);
 }
 
 async function findAllByCampaignId(campaign_id) {
   return db('skilled_impact_requests')
-    .where({ campaign_id })
     .join(
       'application_submissions',
       'skilled_impact_requests.id',
-      'application_submissions.skilled_impact_request_id'
+      'application_submissions.skilled_impact_request_id',
     )
-    .select('skilled_impact_requests.campaign_id', 'application_submissions.*');
+    .select(
+      'skilled_impact_requests.campaign_id',
+      'application_submissions.*',
+    )
+    .where({ campaign_id });
 }
 
 async function insert(submission) {
@@ -21,35 +33,23 @@ async function insert(submission) {
 
 async function update(id, decision) {
   return db('application_submissions')
-    .where({ id })
     .update({ decision })
+    .where({ id })
     .returning('*');
 }
 
-async function acceptAndDenyAllOthers(id, skilled_impact_request_id) {
-  await db.transaction((transaction) => {
-    db('application_submissions')
-      .where({ id })
-      .update({ decision: 'ACCEPTED' })
-      .transacting(transaction)
-      .then(async () => {
-        await db('application_submissions')
-          .where({ skilled_impact_request_id })
-          .where('id', '<>', id)
-          .update({ decision: 'DENIED' })
-          .transacting(transaction);
-      })
-      .then(transaction.commit)
-      .catch(transaction.rollback);
-  });
-
-  return findById(id);
+async function updateAll(ids, decision) {
+  return db('application_submissions')
+    .update({ decision })
+    .whereIn('id', ids)
+    .returning('*');
 }
 
 module.exports = {
   findById,
+  findAllByIds,
   findAllByCampaignId,
   insert,
   update,
-  acceptAndDenyAllOthers,
+  updateAll,
 };

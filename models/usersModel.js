@@ -289,12 +289,8 @@ async function update(user, id) {
   const existingUser = await findById(id);
   const isEmpty = (obj) => Object.getOwnPropertyNames(obj).length === 0;
   const triggerUsers = !isEmpty(pick(user, userColumns));
-  const triggerConservationists =
-    !isEmpty(pick(user, conservationistColumns)) &&
-    existingUser.roles === 'conservationist';
-  const triggerSupporters =
-    !isEmpty(pick(user, supporterColumns)) &&
-    existingUser.roles === 'supporter';
+  const triggerConservationists = !isEmpty(pick(user, conservationistColumns)) && existingUser.roles === 'conservationist';
+  const triggerSupporters = !isEmpty(pick(user, supporterColumns)) && existingUser.roles === 'supporter';
   const triggerSkills = user.skills && Array.isArray(user.skills);
 
   if (triggerUsers) {

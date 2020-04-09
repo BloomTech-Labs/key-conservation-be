@@ -35,36 +35,26 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
-  const { id } = req.params;
+router.put('/', async (req, res) => {
+  const { ids } = req.body;
   const { decision } = req.body;
 
   try {
-    let applicationSubmission = await ApplicationSubmission.findById(id);
-    if (applicationSubmission) {
-      if (decision === 'ACCEPTED') {
-        const { skilled_impact_request_id } = applicationSubmission;
-        applicationSubmission = await ApplicationSubmission.acceptAndDenyAllOthers(
-          id,
-          skilled_impact_request_id
-        );
-      } else {
-        applicationSubmission = await ApplicationSubmission.update(
-          id,
-          decision
-        );
-      }
-      res
-        .status(200)
-        .json({
-          applicationSubmission,
-          message: 'Submission updated in database',
-        });
+    // check if all of submissions exist first
+    const idsFoundJSON = await ApplicationSubmission.findAllByIds(ids);
+    const idsFound = idsFoundJSON.map((idJSON) => idJSON.id);
+    if (idsFound.length === ids.length) {
+      const applicationSubmissions = await ApplicationSubmission.updateAll(ids, decision);
+      res.status(200).json({ applicationSubmissions, message: 'Submissions updated in database' });
     } else {
-      res.status(404).json({ message: 'Submission not found in database' });
+      // if any submissions are not present in database, then don't update anything
+      const idsNotFound = ids.filter((id) => !idsFound.includes(id));
+      res.status(400).json({
+        message: `No submissions were updated. These id's sent were not found in database: ${idsNotFound}`,
+      });
     }
   } catch (error) {
-    res.status(500).json({ error, message: 'Unable to update submission' });
+    res.status(500).json({ error, message: 'Unable to update submissions' });
   }
 });
 
