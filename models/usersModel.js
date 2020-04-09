@@ -53,7 +53,7 @@ function find() {
       'cons.issues',
       'cons.support_us',
       'sup.name as sup_name',
-      db.raw('array_to_json(array_agg(skills.skill)) as skills')
+      db.raw('array_to_json(array_agg(skills.skill)) as skills'),
     )
     .groupBy('users.id', 'cons.id');
 }
@@ -95,7 +95,7 @@ async function findById(id) {
         'cons.point_of_contact_email',
         'cons.latitude',
         'cons.longitude',
-        db.raw('array_to_json(array_agg(skills.skill)) as skills')
+        db.raw('array_to_json(array_agg(skills.skill)) as skills'),
       )
       .groupBy('users.id', 'cons.id')
       .first();
@@ -138,7 +138,7 @@ async function findBySub(sub) {
         'cons.support_us',
         'cons.longitude',
         'cons.latitude',
-        db.raw('array_to_json(array_agg(skills.skill)) as skills')
+        db.raw('array_to_json(array_agg(skills.skill)) as skills'),
       )
       .groupBy('users.id', 'cons.id')
       .first();
@@ -165,11 +165,10 @@ async function findUserStatus(sub) {
     .where({ sub })
     .first()
     .then(
-      (usr) =>
-        usr && {
-          ...usr,
-          name: usr.sup_name || usr.org_name || 'User',
-        }
+      (usr) => usr && {
+        ...usr,
+        name: usr.sup_name || usr.org_name || 'User',
+      },
     );
 
   const response = {};
@@ -229,7 +228,7 @@ async function add(user) {
         };
         console.log(
           'constructued conservationist profile',
-          conservationistsData
+          conservationistsData,
         );
         addCons(conservationistsData);
       }
@@ -324,7 +323,7 @@ const getNameAndAvatarByIds = async (ids) => {
         'users.roles',
         'users.profile_image',
         'cons.name as org_name',
-        'sup.name as sup_name'
+        'sup.name as sup_name',
       );
 
     return users.map((user) => ({
