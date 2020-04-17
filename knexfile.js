@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+const log = require('./logger');
+
 const localPgConnection = {
   host: 'localhost',
   user: 'postgres',
@@ -10,7 +12,7 @@ const localPgConnection = {
 // Production database connection
 const dbConnection = process.env.DATABASE_URL || localPgConnection;
 
-console.log(process.env.DATABASE_URL);
+log.verbose(`Using Postgres URL ${process.env.DATABASE_URL}`);
 
 // Postgres configurations
 // Command for running postgres locally:

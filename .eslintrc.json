@@ -18,7 +18,7 @@
     "rules": {
         "camelcase": "warn",
         "consistent-return": "off",
-        "max-len": [ "warn", { "code": 120 }],
+        "max-len": "off",
         "no-param-reassign": "warn",
         "no-unused-vars": [ "error", { "argsIgnorePattern": "Promise|err" }]
     }

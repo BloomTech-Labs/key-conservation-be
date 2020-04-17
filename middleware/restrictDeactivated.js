@@ -1,4 +1,5 @@
 const Users = require('../models/usersModel');
+const log = require('../logger');
 
 // This middleware will check a secured endpoint to see
 // if the user making the request has been deactivated.
@@ -10,7 +11,7 @@ const restrictDeactivated = async (req, res, next) => {
   const usr = await Users.findBySub(req.user.sub);
 
   if (usr.is_deactivated) {
-    console.log('deactivated user');
+    log.warn(`Rejecting request from deactivated user ${usr.id}`);
     return res.status(401).json({ msg: 'Your account has been deactivated. If you believe this is a mistake, please contact support via our website', logout: true });
   }
 

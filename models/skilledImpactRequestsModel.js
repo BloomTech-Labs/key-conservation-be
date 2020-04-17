@@ -1,10 +1,10 @@
 const db = require('../database/dbConfig');
-
 const pick = require('../util/pick.js');
+const log = require('../logger');
 
-async function findSkilledImpactRequests(campaign_id) {
+async function find(campaignId) {
   return db('project_goals')
-    .where({ campaign_id })
+    .where({ campaign_id: campaignId })
     .fullOuterJoin('skilled_impact_requests', 'skilled_impact_requests.id', 'project_goals.skilled_impact_request_id')
     .select(
       '*',
@@ -33,13 +33,13 @@ async function findSkilledImpactRequests(campaign_id) {
     });
 }
 
-async function insertSkilledImpactRequests(skilledRequests, campaign_id) {
+async function insert(skilledRequests, campaignId) {
   const skillProps = ['skill', 'point_of_contact', 'welcome_message', 'our_contribution'];
   const projectGoals2DArr = [];
   const skilledRequestArr = skilledRequests.map((skilledRequest) => {
     const skilledRequestWithCampaignId = {
       ...pick(skilledRequest, skillProps),
-      campaign_id,
+      campaign_id: campaignId,
     };
     projectGoals2DArr.push(skilledRequest.project_goals);
     return skilledRequestWithCampaignId;
@@ -50,24 +50,21 @@ async function insertSkilledImpactRequests(skilledRequests, campaign_id) {
         .insert(skilledRequestArr)
         .transacting(transaction)
         .returning('id');
-      const projectGoalsArr = [].concat(...projectGoals2DArr.map((data, index) => {
-        data = data.map((row) => {
-          row.skilled_impact_request_id = idArr[index];
-          return row;
-        });
-        return data;
-      }));
+      const projectGoalsArr = projectGoals2DArr.map((data, index) => data.map((row) => ({
+        ...row,
+        skilled_impact_request_id: idArr[index],
+      })));
       await db('project_goals').transacting(transaction).insert(projectGoalsArr);
-      console.log('Inserted skilled impact requests and project goals ');
+      log.info(`Inserted skiled impact requests and project goals for campaign ${campaignId}`);
       await transaction.commit();
     } catch (err) {
-      console.log('Error inserting skilled impact requests and project goals.', err);
+      log.error(`Error inserting skilled impact requests and project goals: ${err}`);
       await transaction.rollback();
     }
   });
 }
 
 module.exports = {
-  findSkilledImpactRequests,
-  insertSkilledImpactRequests,
+  find,
+  insert,
 };

@@ -85,9 +85,9 @@ router.get('/', async (req, res) => {
       reports: await Promise.all(
         reports.map(async (report) => {
           // Get data on the reported item
-          const reported_account = namesAndAvatars.find((d) => d.id === report.reported_user);
+          const reportedAccount = namesAndAvatars.find((d) => d.id === report.reported_user);
 
-          const unique_reports = await getSimilarReportCount(report);
+          const uniqueReports = await getSimilarReportCount(report);
 
           // TODO rename shorthand
           return {
@@ -96,9 +96,9 @@ router.get('/', async (req, res) => {
             report_desc: report.report_desc,
             reported_at: report.reported_at,
             table_name: report.table_name,
-            unique_reports, // How many unique reports have been made about this?
-            image: reported_account.avatar, // Image of reported account/post goes here
-            name: reported_account.name, // Name of the reported account/post
+            unique_reports: uniqueReports, // How many unique reports have been made about this?
+            image: reportedAccount.avatar, // Image of reported account/post goes here
+            name: reportedAccount.name, // Name of the reported account/post
           };
         }),
       ),
@@ -145,28 +145,28 @@ router.get('/:id', async (req, res) => {
 
     response.other_reports = await Promise.all(
       otherReports.map(async (report) => {
-        const reported_by = users.find((u) => u.id === report.reported_by);
+        const reportedBy = users.find((u) => u.id === report.reported_by);
 
         return {
           ...report,
           unique_reports: await getSimilarReportCount(report),
           reported_by: {
-            id: reported_by.id,
-            name: reported_by.name,
+            id: reportedBy.id,
+            name: reportedBy.name,
           },
         };
       }),
     );
 
-    const unique_reports = await getSimilarReportCount(response);
+    const uniqueReports = await getSimilarReportCount(response);
 
-    response.unique_reports = unique_reports;
+    response.unique_reports = uniqueReports;
 
-    const reported_by = await Users.findById(response.reported_by);
+    const reportedBy = await Users.findById(response.reported_by);
 
     response.reported_by = {
-      id: reported_by.id,
-      name: reported_by.name || reported_by.name || 'User',
+      id: reportedBy.id,
+      name: reportedBy.name || 'User',
     };
 
     return res.status(200).json(response);
@@ -228,12 +228,12 @@ router.post('/', async (req, res) => {
         // Campaign Updates
 
         // Get campaign update
-        const [campaign_update] = await db('campaign_updates').where({
+        const [campaignUpdate] = await db('campaign_updates').where({
           id: req.body.postId,
         });
         // Get campaign from campaign update
         const [campaign] = await db('campaigns').where({
-          id: campaign_update.id,
+          id: campaignUpdate.id,
         });
         // Get 'user_id' from campaign
         reportedUserId = campaign.user_id;

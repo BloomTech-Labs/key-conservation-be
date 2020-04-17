@@ -100,17 +100,18 @@ router.get('/:id/submissions', async (req, res) => {
 
 router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   const { location } = req.file;
-  const campaign_props = ['user_id', 'name', 'description', 'call_to_action', 'urgency'];
+  const { skilledImpactRequests } = req.body;
+  const campaignProps = ['user_id', 'name', 'description', 'call_to_action', 'urgency'];
 
   const postCampaign = {
-    ...pick(req.body, campaign_props),
+    ...pick(req.body, campaignProps),
     image: location,
   };
-  console.log(postCampaign);
+  log.verbose('New campaign in POST /campaigns', postCampaign);
 
   try {
     const newCampaigns = await Campaigns.insert(postCampaign);
-    const newSkilledImpactRequests = await SkilledImpactRequests.insertSkilledImpactRequests(req.body.skilled_impact_requests, newCampaigns.id);
+    const newSkilledImpactRequests = await SkilledImpactRequests.insert(skilledImpactRequests, newCampaigns.id);
     if (newCampaigns) {
       log.info('inserted campaign ', newCampaigns, ' and skilled impact requests ', newSkilledImpactRequests);
       res.status(201).json({ newCampaigns, msg: 'Campaign added to database' });

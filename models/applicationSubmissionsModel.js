@@ -13,7 +13,7 @@ async function findAllByIds(ids) {
     .whereIn('id', ids);
 }
 
-async function findAllByCampaignId(campaign_id) {
+async function findAllByCampaignId(id) {
   return db('skilled_impact_requests')
     .join(
       'application_submissions',
@@ -24,7 +24,7 @@ async function findAllByCampaignId(campaign_id) {
       'skilled_impact_requests.campaign_id',
       'application_submissions.*',
     )
-    .where({ campaign_id });
+    .where({ campaign_id: id });
 }
 
 async function insert(submission) {

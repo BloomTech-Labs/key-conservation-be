@@ -8,9 +8,9 @@ function insertBookmark(bookmark) {
   return db('bookmarks').insert(bookmark);
 }
 
-function removeBookmark(campaign_id, user_id) {
+function removeBookmark(campaignId, userId) {
   return db('bookmarks')
-    .where({ campaign_id, user_id })
+    .where({ campaign_id: campaignId, user_id: userId })
     .del();
 }
 
