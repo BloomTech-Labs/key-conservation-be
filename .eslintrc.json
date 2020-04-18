@@ -19,6 +19,7 @@
         "camelcase": "warn",
         "consistent-return": "off",
         "max-len": "off",
+        "no-console": "error",
         "no-param-reassign": "warn",
         "no-unused-vars": [ "error", { "argsIgnorePattern": "Promise|err" }]
     }
