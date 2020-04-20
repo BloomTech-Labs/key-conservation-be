@@ -33,4 +33,15 @@ router.delete('/bookmark/:id/:user', async (req, res) => {
   }
 });
 
+router.get('/bookmark/:user', async (req, res) => {
+  try {
+    const bookmarks = await Social.findUserBookmarks(req.params.user);
+    const savedCampaigns = await Promise.all(bookmarks.map((b) => Campaigns.findCampaign(b.campaign_id)));
+    res.status(200).json(savedCampaigns);
+  } catch (err) {
+    log.error(err);
+    res.status(500).json({ err, msg: 'Unable to fetch bookmarks' });
+  }
+});
+
 module.exports = router;
