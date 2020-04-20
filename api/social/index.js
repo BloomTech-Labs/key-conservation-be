@@ -4,6 +4,7 @@ const log = require('../../logger');
 const router = express.Router();
 
 const Social = require('../../models/socialModel');
+const Campaigns = require('../../models/campaignModel');
 
 router.post('/bookmark/:id', async (req, res) => {
   try {
