@@ -12,8 +12,7 @@ exports.seed = function (knex, Promise) {
       },
       {
         user_id: 1,
-        image:
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Beaver_Yearling_Grooming_Alhambra_Creek_2008.jpg/1920px-Beaver_Yearling_Grooming_Alhambra_Creek_2008.jpg',
+        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Beaver_Yearling_Grooming_Alhambra_Creek_2008.jpg/1920px-Beaver_Yearling_Grooming_Alhambra_Creek_2008.jpg',
         name: 'Save the Beavers',
         description: 'Are porky pig beef, sheep rose garden sage, in pitch fork sunflower cowpies mice. Onion organic oranges and purr ducks canning owls at a squeal. Straw augers beef kettle our crickets. Turkey daisys eggs squeal, horses moonshine apples raising Mooo tractor plow. . Apples ducks straw, quail.',
         call_to_action: 'https://www.nwf.org/Educational-Resources/Wildlife-Guide/Mammals/American-Beaver',

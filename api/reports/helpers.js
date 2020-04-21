@@ -3,8 +3,8 @@ const Reports = require('../../models/reportModel');
 module.exports = {
   // This is something I had to do due to the existing
   // unnecessary variation of primary key names
-  assignIdTag: (table_name) => {
-    switch (table_name) {
+  assignIdTag: (tableName) => {
+    switch (tableName) {
       case 'comments': {
         return 'comment_id';
       }

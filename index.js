@@ -1,11 +1,12 @@
 require('dotenv').config();
 
 const express = require('express');
-
-const server = express();
-
 const helmet = require('helmet');
 const cors = require('cors');
+
+const log = require('./logger');
+
+const server = express();
 
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
@@ -19,5 +20,5 @@ module.exports = server;
 
 const port = process.env.PORT || 8000;
 server.listen(port, () => {
-  console.log(`listening on port ${port}`);
+  log.info(`Listening on port ${port}`);
 });

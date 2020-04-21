@@ -1,6 +1,7 @@
 const aws = require('aws-sdk');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
+const log = require('../logger');
 
 
 // This creates an authenticated S3 instance
@@ -21,7 +22,7 @@ const upload = multer({
     bucket: process.env.S3_BUCKET_NAME,
     acl: 'public-read',
     key: (req, file, next) => {
-      console.log(file, 'Multer File ===========');
+      log.verbose(`Multer File: ${file}`);
       // This names the file. This example prepends the
       // UNIX timestamp to original name of the file,
       // which helps with duplicate file names

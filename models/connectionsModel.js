@@ -28,20 +28,17 @@ async function getConnectionsByUserId(id) {
   const namesAndAvatars = await Users.getNameAndAvatarByIds(ids);
 
   return conns.map(conn => {
-    const connected_data = namesAndAvatars.find(d => d.id === conn.connected_id);
-    const connector_data = namesAndAvatars.find(d => d.id === conn.connector_id);
-
-    console.log(connected_data);
-    console.log(connector_data);
+    const connectedData = namesAndAvatars.find(d => d.id === conn.connected_id);
+    const connectorData = namesAndAvatars.find(d => d.id === conn.connector_id);
 
     return {
       ...conn,
-      connected_name: connected_data.name,
-      connected_avatar: connected_data.avatar,
-      connected_role: connected_data.role,
-      connector_name: connector_data.name,
-      connector_avatar: connector_data.avatar,
-      connector_role: connector_data.role,
+      connected_name: connectedData.name,
+      connected_avatar: connectedData.avatar,
+      connected_role: connectedData.role,
+      connector_name: connectorData.name,
+      connector_avatar: connectorData.avatar,
+      connector_role: connectorData.role,
     };
   });
 }

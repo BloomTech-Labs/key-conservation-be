@@ -3,9 +3,10 @@ const db = require('../database/dbConfig');
 const CampaignUpdate = require('./updateModel.js');
 const CampaignComments = require('./commentsModel.js');
 const SkilledImpactRequests = require('./skilledImpactRequestsModel.js');
+const log = require('../logger');
 
 function find() {
-  console.log('getting camapaigns');
+  log.verbose('Getting all campaigns from database');
   return db('campaigns')
     .join('users', 'users.id', 'campaigns.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
@@ -29,7 +30,7 @@ function find() {
       )
       // TODO fold this into the query
       .then((comments) => campaigns.map((cam) => {
-        console.log(campaigns);
+        log.verbose(`Found campaigns: ${campaigns}`);
         return ({
           ...cam,
           comments: comments
@@ -42,7 +43,6 @@ function find() {
       })))
     .then((campaigns) => db('users').then((users) => campaigns.filter((camp) => {
       const [user] = users.filter((u) => u.id === camp.user_id);
-      // console.log(campaigns)
       return !user.is_deactivated;
     })))
     .catch((err) => {
@@ -72,7 +72,7 @@ async function findById(id) {
     .first();
   campaign.updates = await CampaignUpdate.findUpdatesByCamp(id);
   campaign.comments = await CampaignComments.findCampaignComments(id);
-  campaign.skilled_impact_requests = await SkilledImpactRequests.findSkilledImpactRequests(id);
+  campaign.skilled_impact_requests = await SkilledImpactRequests.find(id);
   return campaign;
 }
 
@@ -90,9 +90,9 @@ function findUser(id) {
     }));
 }
 
-async function findCampByUserId(user_id) {
+async function findCampByUserId(userId) {
   const campaigns = await db('campaigns')
-    .where('campaigns.user_id', user_id)
+    .where('campaigns.user_id', userId)
     .join('users', 'users.id', 'campaigns.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
     .select(
@@ -101,16 +101,16 @@ async function findCampByUserId(user_id) {
       'users.location',
       'campaigns.*',
     );
-  const withUpdates = campaigns.map(async (camp) => {
-    camp.updates = await CampaignUpdate.findUpdatesByCamp(camp.id);
-    camp.comments = await CampaignComments.findCampaignComments(camp.id);
-    return camp;
-  });
+  const withUpdates = campaigns.map(async (campaign) => ({
+    ...campaign,
+    updates: await CampaignUpdate.findUpdatesByCamp(campaign.id),
+    comments: await CampaignComments.findCampaignComments(campaign.id),
+  }));
   return Promise.all(withUpdates);
 }
 
 async function insert(campaign) {
-  console.log(campaign);
+  log.verbose(`Inserting new campaign ${campaign}`);
   try {
     const [id] = await db('campaigns')
       .insert(campaign)
@@ -119,7 +119,7 @@ async function insert(campaign) {
       return findById(id);
     }
   } catch (e) {
-    console.log(e);
+    log.error(`Error inserting campaign: ${e}`);
   }
 }
 
