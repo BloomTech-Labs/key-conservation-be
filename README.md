@@ -20,14 +20,54 @@ Current version: 4.2.0. This app is in Beta for iOS and Android.
 (https://key-conservation.herokuapp.com/) (Production Server)<br>
 (https://key-conservation-staging.herokuapp.com/) (Staging Server)<br>
 
-## Getting started
+## Build Instructions
+Feel free to use `yarn ...` instead of `npm run ...`, but make sure not to commit the `yarn.lock`.
 
-To get the server running locally:
+1. Clone the repository: `git clone https://github.com/Lambda-School-Labs/key-conservation-be`.
+2. Navigate to the directory: `cd key-conservation-be`.
+3. Install PostgreSQL. See [installation instructions below](#installing-postgres).
+4. Install the necessary dependencies: `npm install`. For Windows users, see [specific build instructions below](#windows-build-instructions).
+5. Create a new `.env` file using `.env.example` as a template: `cp .env.example .env`.
+6. Fill out the `.env`. See the [example file below](#sample-env).
+7. Run the containerized service(s) (e.g. Postgres): `docker-compose up -d`.
+8. Initialize the database: `npm run db:migrate`.
+9. Start the Node app: `npm run server`.
 
-- Clone this repo
-- **npm i** to install all required dependencies
-- **npm run server** to start the local server
-- **npm run test** to start server using testing environment
+#### Installing Postgres
+MacOS and Linux users can install Postgres via [Homebrew](https://brew.sh), and Linux users can use `apt`. Windows users will need to download the Postgres 11.5 installer from [here](https://www.postgresql.org/download/windows/), run the installer, and add the Postgres bin to the PATH environment variable.
+
+#### Windows Build Instructions
+1. Run the Windows Powershell as administrator.
+2. Install build tools to compile [native Node modules](https://www.npmjs.com/package/windows-build-tools#examples-of-modules-supported): `npm install -g windows-build-tools`.
+3. Rerun `npm install` in a separate command prompt window.
+
+#### Sample `.env`
+```
+AIRTABLE_KEY=
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_USER=keycons_dev
+DATABASE_PASS=password
+DATABASE_NAME=key-conservation
+S3_ACCESS_KEY_ID=
+S3_BUCKET_NAME=
+S3_BUCKET_REGION=
+S3_SECRET_ACCESS_KEY=
+SWT_SECRET=secret
+```
+**Note**: For Windows users, `localhost` won't work&mdash;you'll need to set `DATABASE_HOST` to [the Docker Machine's IP address](https://docs.docker.com/machine/reference/ip/).
+
+#### Useful Commands
++ `docker-compose up -d` to configure and run any required services
++ `npm install` to install the necessary dependencies
++ `npm run server` to run the Node app with [Nodemon](https://nodemon.io/)
++ `npm run lint` to lint the Node app with [ESLint](https://eslint.org/) (without `--fix`)
++ `npm run lint:fix` to handle the simple linter issues automatically
++ `npm run test` to run the test suite with [Jest](https://jestjs.io/)
++ `npm run db:migrate` to run any new database migrations
++ `docker exec -it pg.keycons.local psql -U [DATABASE_USER] -d [DATABASE_NAME]` to access Postgres.
+
+Take a look at [`package.json`](https://github.com/Lambda-School-Labs/key-conservation-be/blob/master/package.json) for the actual commands.
 
 ## Endpoints
 
