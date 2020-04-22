@@ -4,7 +4,7 @@ const Campaign = require('./campaignModel.js');
 const CampaignUpdate = require('./updateModel.js');
 const Bookmarks = require('./socialModel');
 const Skills = require('./skillsEnum');
-const pick = require('../../../util/pick');
+const pick = require('../../util/pick');
 
 // Columns of the user model that are stored in the users table
 const userColumns = [

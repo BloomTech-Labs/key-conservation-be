@@ -10,7 +10,7 @@ const ApplicationSubmissions = require('../../database/models/applicationSubmiss
 const SkilledImpactRequests = require('../../database/models/skilledImpactRequestsModel');
 const S3Upload = require('../../middleware/s3Upload');
 
-const pick = require('../../../util/pick.js');
+const pick = require('../../util/pick.js');
 
 router.get('/', async (req, res) => {
   try {
