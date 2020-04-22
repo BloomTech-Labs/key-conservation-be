@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const dbConnection = {
+const dbConnection = process.env.DATABASE_URL || {
   host: process.env.DATABASE_HOST,
   port: process.env.DATABASE_PORT,
   user: process.env.DATABASE_USER,
@@ -13,11 +13,11 @@ module.exports = {
     client: 'pg',
     connection: dbConnection,
     migrations: {
-      directory: './database/migrations',
+      directory: './app/database/migrations',
       tablename: 'knex_migrations',
     },
     seeds: {
-      directory: './database/seeds',
+      directory: './app/database/seeds',
     },
     pool: {
       min: 2,
@@ -30,11 +30,11 @@ module.exports = {
     client: 'pg',
     connection: dbConnection,
     migrations: {
-      directory: './database/migrations',
+      directory: './app/database/migrations',
       tableName: 'knex_migrations',
     },
     seeds: {
-      directory: './database/seeds',
+      directory: './app/database/seeds',
     },
     useNullAsDefault: true,
     ssl: true,

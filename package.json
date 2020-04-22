@@ -8,7 +8,8 @@
     "server": "nodemon index.js",
     "test": "jest",
     "lint": "./node_modules/.bin/eslint ./ --ext .js",
-    "lint:fix": "./node_modules/.bin/eslint ./ --ext .js --fix"
+    "lint:fix": "./node_modules/.bin/eslint ./ --ext .js --fix",
+    "db:migrate": "knex migrate:latest"
   },
   "repository": {
     "type": "git",

@@ -1,0 +1,14 @@
+version: '3.1'
+
+services:
+
+  rds.acmucsd.local:
+    container_name: pg.keycons.local
+    image: postgres:11.5
+    restart: always
+    ports:
+      - '${DATABASE_PORT}:5432'
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASS}
