@@ -3,7 +3,6 @@ const multer = require('multer');
 const multerS3 = require('multer-s3');
 const log = require('../logger');
 
-
 // This creates an authenticated S3 instance
 const s3 = new aws.S3({
   apiVersion: '2006-03-01',
