@@ -223,13 +223,6 @@ async function add(user) {
           longitude: user.longitude,
           latitude: user.latitude,
         };
-<<<<<<< HEAD:models/usersModel.js
-        console.log(
-          'constructued conservationist profile',
-          conservationistsData,
-        );
-=======
->>>>>>> 271522e9fa3ebd624d22776ba290f19dbf7f3682:app/database/models/usersModel.js
         addCons(conservationistsData);
       }
       if (user.roles === 'supporter') {
