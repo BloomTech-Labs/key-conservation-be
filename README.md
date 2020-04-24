@@ -89,10 +89,10 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
   "sub": STRING,
   "email": STRING,
   "profile_image": STRING,
-  "created_at": TIMESTAMP,
+  "created_at": TIMESTAMPTZ,
   "location": STRING,
-  "mini-bio": STRING,
-  "species-and-habitats": STRING,
+  "mini_bio": STRING,
+  "species_and_habitats": STRING,
   "twitter": STRING,
   "facebook": STRING,
   "instagram": STRING,
@@ -101,7 +101,9 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
   "admin": BOOLEAN,
   "is_deactivated": BOOLEAN,
   "deactivated_at": TIMESTAMP,
-  "strikes": INTEGER
+  "strikes": INTEGER,
+  "full_text_weighted": TSVECTOR,
+  "accepting_help_requests": BOOLEAN
 }
 ```
 
@@ -119,7 +121,13 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
   "call_to_action": STRING,
   "about_us": STRING,
   "issues": STRING,
-  "support_us": STRING
+  "support_us": STRING,
+  "city": STRING,
+  "country": STRING,
+  "point_of_contact_name": STRING,
+  "point_of_contact_email": STRING,
+  "longitude": DOUBLE,
+  "latitude": DOUBLE
 }
 ```
 
@@ -143,12 +151,12 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 {
   "id": INTEGER,
   "user_id": FOREIGN KEY - "id" in USERS table,
-  "created_at": TIMESTAMP,
+  "created_at": TIMESTAMPTZ,
   "image": STRING,
   "name": STRING,
   "description": STRING,
   "call_to_action": STRING,
-  "is_archived": BOOLEAN
+  "urgency": STRING
 }
 ```
 
@@ -160,10 +168,11 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 {
   "id": INTEGER,
   "user_id": FOREIGN KEY - "id" in USERS table,
-  "created_at": TIMESTAMP,
+  "campaign_id": FOREIGN KEY - "id" in CAMPAIGNS table,
+  "created_at": TIMESTAMPTZ,
   "image": STRING,
   "description": STRING,
-  "is_archived": BOOLEAN
+  "camp_name": STRING
 }
 ```
 
@@ -175,9 +184,64 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 {
   "id": INTEGER,
   "user_id": FOREIGN KEY - "id" in USERS table,
-  "created_at": TIMESTAMP,
-  "campaign_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
-  "body": TEXT
+  "campaign_id": FOREIGN KEY - "id" in CAMPAIGNS table,
+  "created_at": TIMESTAMPTZ,
+  "body": STRING
+}
+```
+
+#### SKILLED_IMPACT_REQUESTS
+
+---
+
+```
+{
+  "id": INTEGER,
+  "campaign_id": FOREIGN KEY - "id" in CAMPAIGNS table,
+  "skill": ENUM_SKILLS,
+  "point_of_contact": STRING,
+  "welcome_message": STRING,
+  "our_contribution": STRING
+}
+```
+
+#### APPLICATION_SUBMISSIONS
+
+---
+
+```
+{
+  "id": INTEGER,
+  "skilled_impact_request_id": FOREIGN KEY - "id" in SKILLED_IMPACT_REQUESTS table,
+  "user_id": FOREIGN KEY - "id" in USERS table,
+  "decision": ENUM_DECISIONS,
+  "why_project": STRING,
+  "relevant_experience": STRING
+}
+```
+
+#### SKILLS
+
+---
+
+```
+{
+  "id": INTEGER,
+  "user_id": FOREIGN KEY - "id" in USERS table,
+  "skill": ENUM_SKILLS
+}
+```
+
+#### PROJECT_GOALS
+
+---
+
+```
+{
+  "id": INTEGER,
+  "goal_title": STRING,
+  "description": STRING,
+  "skilled_impact_request_id": FOREIGN KEY - "id" in SKILLED_IMPACT_REQUESTS table
 }
 ```
 
@@ -189,7 +253,7 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
 {
   "id": INTEGER,
   "user_id": FOREIGN KEY - "id" in USERS table,
-  "campaign_id": FOREIGN KEY - "camp_id" in CAMPAIGNS table,
+  "campaign_id": FOREIGN KEY - "id" in CAMPAIGNS table,
 }
 ```
 
@@ -204,7 +268,7 @@ The airtable key is stored in the config vars in heroku. To keep it secret in th
   "post_id": INTEGER,
   "table_name": STRING,
   "description": STRING,
-  "reported_at": TIMESTAMP,
+  "reported_at": TIMESTAMPTZ,
   "is_archived": BOOLEAN
 }
 ```
