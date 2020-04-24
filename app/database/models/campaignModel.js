@@ -5,7 +5,7 @@ const Comments = require('./commentsModel.js');
 const SkilledImpactRequests = require('./skilledImpactRequestsModel.js');
 const log = require('../../logger');
 
-async function find() {
+async function findAll() {
   try {
     const campaigns = await db('campaigns')
       .join('users', 'users.id', 'campaigns.user_id')
@@ -25,12 +25,6 @@ async function find() {
   } catch (err) {
     throw new Error(err.message);
   }
-}
-
-function findCampaign(id) {
-  return db('campaigns')
-    .where({ id })
-    .first();
 }
 
 async function findById(id) {
@@ -107,5 +101,5 @@ async function remove(id) {
 }
 
 module.exports = {
-  find, findCampaign, findById, findCampByUserId, insert, remove, update,
+  findAll, findById, findCampByUserId, insert, remove, update,
 };

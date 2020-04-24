@@ -14,7 +14,7 @@ const pick = require('../../util/pick.js');
 
 router.get('/', async (req, res) => {
   try {
-    const campaigns = await Campaigns.find();
+    const campaigns = await Campaigns.findAll();
     res.status(200).json({ campaigns, msg: 'The campaigns were found' });
   } catch (err) {
     log.error(err);
