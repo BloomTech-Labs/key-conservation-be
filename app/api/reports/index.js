@@ -8,7 +8,7 @@ const log = require('../../logger');
 const Reports = require('../../database/models/reportModel');
 const Users = require('../../database/models/usersModel');
 
-const checkFields = require('../../util/checkFields');
+const checkFields = require('../../../util/checkFields');
 
 const { getSimilarReportCount, assignIdTag } = require('./helpers');
 
