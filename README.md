@@ -31,7 +31,8 @@ Feel free to use `yarn ...` instead of `npm run ...`, but make sure not to commi
 6. Fill out the `.env`. See the [example file below](#sample-env).
 7. Run the containerized service(s) (e.g. Postgres): `docker-compose up -d`.
 8. Initialize the database: `npm run db:migrate`.
-9. Start the Node app: `npm run server`.
+9. Seed the database: `npm run db:seed`.
+10. Start the Node app: `npm run server`.
 
 #### Installing Postgres
 MacOS and Linux users can install Postgres via [Homebrew](https://brew.sh), and Linux users can use `apt`. Windows users will need to download the Postgres 11.5 installer from [here](https://www.postgresql.org/download/windows/), run the installer, and add the Postgres bin to the PATH environment variable.
@@ -65,6 +66,7 @@ SWT_SECRET=secret
 + `npm run lint:fix` to handle the simple linter issues automatically
 + `npm run test` to run the test suite with [Jest](https://jestjs.io/)
 + `npm run db:migrate` to run any new database migrations
++ `npm run db:seed` to add some fake data to the database
 + `docker exec -it pg.keycons.local psql -U [DATABASE_USER] -d [DATABASE_NAME]` to access Postgres.
 
 Take a look at [`package.json`](https://github.com/Lambda-School-Labs/key-conservation-be/blob/master/package.json) for the actual commands.
