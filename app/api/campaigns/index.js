@@ -26,9 +26,8 @@ router.get('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    let campaign = await Campaigns.findCampaign(id);
+    const campaign = await Campaigns.findById(id);
     if (!campaign) return res.status(400).json({ msg: 'Campaign was not found in the database' });
-    campaign = await Campaigns.findById(id);
     if (campaign.is_deactivated) {
       const user = await Users.findBySub(req.user.sub);
       if (!user || !user.admin) {

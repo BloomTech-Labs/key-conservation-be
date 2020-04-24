@@ -50,14 +50,13 @@ router.get('/camp/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const campaign = Campaigns.findCampaign(id);
+    const campaign = Campaigns.findById(id);
     if (!campaign) return res.status(400).json({ msg: 'This campaign does not exist' });
     if (campaign.is_deactivated) {
       const user = await Users.findBySub(req.user.id);
       if (!user || !user.admin) return res.status(401).json({ msg: 'This post may only be viewed by an administrator' });
     }
-
-    const updates = await CampaignUpdate.findUpdatesByCamp(id);
+    const { updates } = campaign;
     if (updates.length === 0) return res.status(400).json({ msg: 'This campaign does not have an update yet' });
     return res.status(200).json({ updates, msg: 'The updates were found for this campaign' });
   } catch (err) {

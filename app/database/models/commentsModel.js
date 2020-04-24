@@ -11,20 +11,23 @@ function findById(id) {
 }
 
 async function findCampaignComments(id) {
-  const comments = await db('comments')
+  return db('comments')
     .join('users', 'users.id', 'comments.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
     .leftJoin('supporters as sup', 'sup.user_id', 'users.id')
-    .where({ 'comments.campaign_id': id, 'users.is_deactivated': false })
+    .where({
+      'comments.campaign_id': id,
+      'users.is_deactivated': false,
+    })
     .orderBy('comments.created_at', 'asc')
     .select(
       'comments.*',
       'users.profile_image',
       'cons.name as org_name',
       'sup.name as sup_name',
+      db.raw('coalesce(cons.name, sup.name, \'User\') as name'),
       'users.is_deactivated',
     );
-  return comments.map((c) => ({ ...c, name: c.org_name || c.sup_name || 'User' }));
 }
 
 async function insert(comment) {

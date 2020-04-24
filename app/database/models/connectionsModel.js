@@ -5,6 +5,8 @@ async function getConnectionsByUserId(id) {
   const connections = await db('connections')
     .where({ connector_id: id })
     .orWhere({ connected_id: id });
+
+  // removes duplicate IDs (e.g. a 'connector' in one row is 'connected' in others)
   const ids = Array.from(new Set(connections.flatMap((c) => [c.connector_id, c.connected_id])));
   const namesAndAvatars = await Users.getNameAndAvatarByIds(ids);
 

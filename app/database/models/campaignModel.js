@@ -18,7 +18,7 @@ async function find() {
         'cons.name as org_name',
       )
       .where({ 'users.is_deactivated': false });
-    return await Promise.all(campaigns.map(async (c) => {
+    return Promise.all(campaigns.map(async (c) => {
       c.comments = await Comments.findCampaignComments(c.id);
       return c;
     }));
@@ -47,6 +47,7 @@ async function findById(id) {
       'campaigns.*',
     )
     .first();
+  if (!campaign) return campaign;
   campaign.updates = await CampaignUpdate.findUpdatesByCamp(id);
   campaign.comments = await Comments.findCampaignComments(id);
   campaign.skilled_impact_requests = await SkilledImpactRequests.find(id);
