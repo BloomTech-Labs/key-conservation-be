@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 const db = require('../dbConfig.js');
-const Campaign = require('./campaignModel.js');
+const Campaigns = require('./campaignModel.js');
 const CampaignUpdate = require('./updateModel.js');
 const Bookmarks = require('./socialModel');
 const Skills = require('./skillsEnum');
@@ -62,9 +62,9 @@ function findUser(id) {
   return db('users')
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
     .leftJoin('supporters as sup', 'sup.user_id', 'users.id')
-    .where({ id })
-    .first()
     .select('*', 'sup.name as sup_name', 'cons.name as cons_name')
+    .where({ 'users.id': id })
+    .first()
     .then((usr) => ({
       ...usr,
       name: usr.cons_name || usr.sup_name || 'User',
@@ -100,7 +100,7 @@ async function findById(id) {
       .groupBy('users.id', 'cons.id')
       .first();
     user.bookmarks = await Bookmarks.findUserBookmarks(id);
-    const campaigns = await Campaign.findCampByUserId(id);
+    const campaigns = await Campaigns.findCampByUserId(id);
     const campaignUpdates = await CampaignUpdate.findUpdatesByUser(id);
     user.campaigns = campaigns.concat(campaignUpdates);
   } else if (user.roles === 'supporter') {
@@ -316,14 +316,19 @@ const getNameAndAvatarByIds = async (ids) => {
         'users.profile_image',
         'cons.name as org_name',
         'sup.name as sup_name',
-      );
-
-    return users.map((user) => ({
-      id: user.id,
-      name: user.org_name || user.sup_name || 'User',
-      avatar: user.profile_image,
-      role: user.roles,
-    }));
+      )
+      .map((user) => ({
+        id: user.id,
+        name: user.org_name || user.sup_name || 'User',
+        avatar: user.profile_image,
+        role: user.roles,
+      }));
+    const usersById = {};
+    for (let i = 0; i < users.length; i += 1) {
+      const u = users[i];
+      usersById[u.id] = u;
+    }
+    return usersById;
   } catch (err) {
     throw new Error(err);
   }

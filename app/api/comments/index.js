@@ -17,9 +17,7 @@ router.post('/:id', async (req, res) => {
   }
 
   const user = await Users.findBySub(req.user.sub);
-
-  const campaign = await Campaigns.findCampaign(id);
-
+  const campaign = await Campaigns.findById(id);
   if (!campaign) return res.status(404).json({ msg: 'A campaign with that ID could not be found!' });
 
   const newComment = {

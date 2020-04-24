@@ -14,7 +14,7 @@ function find() {
       'campaigns.name',
       'campaign_updates.*',
     )
-    .then((updates) => updates.filter((u) => !u.is_deactivated));
+    .where({ 'users.is_deactivated': false });
 }
 
 function findById(id) {
@@ -35,13 +35,7 @@ function findById(id) {
     .first();
 }
 
-function findCamp(id) {
-  return db('campaigns')
-    .where({ id })
-    .first();
-}
-
-function findUpdatesByCamp(id) {
+async function findUpdatesByCamp(id) {
   return db('campaign_updates')
     .join('campaigns', 'campaigns.id', 'campaign_updates.campaign_id')
     .join('users', 'users.id', 'campaign_updates.user_id')
@@ -56,13 +50,12 @@ function findUpdatesByCamp(id) {
     );
 }
 
-// TODO duplicate code with this and findUpdatesByCamp
-function findUpdatesByUser(userId) {
+async function findUpdatesByUser(id) {
   return db('campaign_updates')
     .join('campaigns', 'campaigns.id', 'campaign_updates.campaign_id')
     .join('users', 'users.id', 'campaign_updates.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
-    .where('campaign_updates.user_id', userId)
+    .where('campaign_updates.user_id', id)
     .select(
       'cons.name as org_name',
       'users.profile_image',
@@ -103,7 +96,6 @@ async function remove(id) {
 module.exports = {
   find,
   findById,
-  findCamp,
   findUpdatesByCamp,
   findUpdatesByUser,
   insert,
