@@ -14,7 +14,7 @@ function find() {
       'campaigns.name',
       'campaign_updates.*',
     )
-    .then((updates) => updates.filter((u) => !u.is_deactivated));
+    .where({ 'users.is_deactivated': false });
 }
 
 function findById(id) {
