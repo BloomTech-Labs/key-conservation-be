@@ -316,14 +316,19 @@ const getNameAndAvatarByIds = async (ids) => {
         'users.profile_image',
         'cons.name as org_name',
         'sup.name as sup_name',
-      );
-
-    return users.map((user) => ({
-      id: user.id,
-      name: user.org_name || user.sup_name || 'User',
-      avatar: user.profile_image,
-      role: user.roles,
-    }));
+      )
+      .map((user) => ({
+        id: user.id,
+        name: user.org_name || user.sup_name || 'User',
+        avatar: user.profile_image,
+        role: user.roles,
+      }));
+    const usersById = {};
+    for (let i = 0; i < users.length; i += 1) {
+      const u = users[i];
+      usersById[u.id] = u;
+    }
+    return usersById;
   } catch (err) {
     throw new Error(err);
   }
