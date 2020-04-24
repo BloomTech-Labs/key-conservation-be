@@ -9,7 +9,7 @@ exports.seed = (knex, Promise) => knex(TABLE_NAME).del().then(() => knex(TABLE_N
     camp_name: 'Save the Beavers',
   },
   {
-    id: 1,
+    id: 2,
     campaign_id: 4,
     user_id: 3,
     image: 'https://keyconservation.s3.us-west-1.amazonaws.com/files/1585501450042_photo.jpg',

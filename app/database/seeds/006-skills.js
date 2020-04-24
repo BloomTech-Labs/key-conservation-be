@@ -6,32 +6,32 @@ exports.seed = (knex, Promise) => knex(TABLE_NAME).del().then(() => knex(TABLE_N
     skill: 'ARCHITECTURE',
   },
   {
-    id: 1,
+    id: 2,
     user_id: 1,
     skill: 'DRONE',
   },
   {
-    id: 1,
+    id: 3,
     user_id: 1,
     skill: 'FUNDRAISING',
   },
   {
-    id: 1,
+    id: 4,
     user_id: 2,
     skill: 'LEGAL',
   },
   {
-    id: 1,
+    id: 5,
     user_id: 2,
     skill: 'FUNDRAISING',
   },
   {
-    id: 1,
+    id: 6,
     user_id: 3,
     skill: 'PHOTOGRAPHY',
   },
   {
-    id: 1,
+    id: 7,
     user_id: 4,
     skill: 'RESEARCH',
   },
