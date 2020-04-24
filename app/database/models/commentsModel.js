@@ -12,12 +12,13 @@ function findById(id) {
     .first();
 }
 
-function findCampaignComments(id) {
+async function findCampaignComments(id) {
   return db('comments')
     .join('users', 'users.id', 'comments.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
     .leftJoin('supporters as sup', 'sup.user_id', 'users.id')
-    .where({ 'comments.campaign_id': id })
+    .where({ 'comments.campaign_id': id, 'users.is_deactivated': false })
+    .orderBy('comments.created_at', 'asc')
     .select(
       'comments.*',
       'users.profile_image',
@@ -25,10 +26,7 @@ function findCampaignComments(id) {
       'sup.name as sup_name',
       'users.is_deactivated',
     )
-    .then((res) => res
-      .map((com) => ({ ...com, name: com.org_name || com.sup_name || 'User' }))
-      .filter((c) => !c.is_deactivated)
-      .sort((a, b) => b.created_at - a.created_at));
+    .then((res) => res.map((com) => ({ ...com, name: com.org_name || com.sup_name || 'User' })));
 }
 
 function insert(comment) {
