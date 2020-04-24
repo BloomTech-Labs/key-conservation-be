@@ -53,39 +53,23 @@ router.get('/:id', (req, res) => {
     });
 });
 
-router.get('/camp/:id', (req, res) => {
+router.get('/camp/:id', async(req, res) => {
   const { id } = req.params;
 
-  // TODO Campaigns.findUser is a duplicate of Users.findUser so use that instead
-  Campaigns.findUser(id)
-    .then((result) => {
-      log.info(result);
-      if (result) {
-        if (result.is_deactivated) {
-          return Users.findBySub(req.user.sub);
-        }
-      } else {
-        return res
-          .status(404)
-          .json({ msg: 'Did not find the campaign by this user id' });
+  try {
+    const result = await Users.findUser(id);
+    if (!result) return res.status(404).json({ msg: 'Did not find the campaign by this user id' });
+    if (result.is_deactivated) {
+      const user = await Users.findBySub(req.user.sub);
+      if (!user || !user.admin) {
+        return res.status(401).json({ msg: "This user's campaigns may only be viewed by an administrator" });
       }
-    })
-    .then((user) => {
-      if (user && !user.admin) {
-        return res.status(401).json({
-          msg: "This user's campaigns may only be viewed by an administrator",
-        });
-      }
-      return Campaigns.findCampByUserId(id);
-    })
-    .then((campaign) => {
-      if (campaign) {
-        return res
-          .status(200)
-          .json({ campaign, msg: 'The campaigns were found for this org' });
-      }
-    })
-    .catch((err) => res.status(500).json({ msg: err.message }));
+    }
+    const campaign = await Campaigns.findCampByUserId(id);
+    return res.status(200).json({ campaign, msg: 'The campaigns were found for this org' });
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
 });
 
 router.get('/:id/submissions', async (req, res) => {
