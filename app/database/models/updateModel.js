@@ -35,13 +35,7 @@ function findById(id) {
     .first();
 }
 
-function findCamp(id) {
-  return db('campaigns')
-    .where({ id })
-    .first();
-}
-
-function findUpdatesByCamp(id) {
+async function findUpdatesByCamp(id) {
   return db('campaign_updates')
     .join('campaigns', 'campaigns.id', 'campaign_updates.campaign_id')
     .join('users', 'users.id', 'campaign_updates.user_id')
@@ -103,7 +97,6 @@ async function remove(id) {
 module.exports = {
   find,
   findById,
-  findCamp,
   findUpdatesByCamp,
   findUpdatesByUser,
   insert,
