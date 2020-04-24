@@ -62,9 +62,9 @@ function findUser(id) {
   return db('users')
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
     .leftJoin('supporters as sup', 'sup.user_id', 'users.id')
-    .where({ id })
-    .first()
     .select('*', 'sup.name as sup_name', 'cons.name as cons_name')
+    .where({ 'users.id': id })
+    .first()
     .then((usr) => ({
       ...usr,
       name: usr.cons_name || usr.sup_name || 'User',

@@ -50,13 +50,12 @@ async function findUpdatesByCamp(id) {
     );
 }
 
-// TODO duplicate code with this and findUpdatesByCamp
-function findUpdatesByUser(userId) {
+async function findUpdatesByUser(id) {
   return db('campaign_updates')
     .join('campaigns', 'campaigns.id', 'campaign_updates.campaign_id')
     .join('users', 'users.id', 'campaign_updates.user_id')
     .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
-    .where('campaign_updates.user_id', userId)
+    .where('campaign_updates.user_id', id)
     .select(
       'cons.name as org_name',
       'users.profile_image',

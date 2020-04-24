@@ -9,4 +9,5 @@ mapRouter.get('/', (req, res) => {
     .then((orgs) => res.status(200).json(orgs))
     .catch((err) => res.status(500).json(err.message));
 });
+
 module.exports = mapRouter;
