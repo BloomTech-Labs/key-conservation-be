@@ -16,7 +16,6 @@ jobs:
             - node_modules
       - run:
           command: npm run lint
-
   deploy_staging:
     machine:
       enabled: true
@@ -24,7 +23,6 @@ jobs:
       - checkout
       - run:
           command: git push -f https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_STAGING_APP.git master
-
   deploy_production:
     machine:
       enabled: true
@@ -38,6 +36,7 @@ workflows:
   test_and_deploy:
     jobs:
       - lint:
+          # since deploy_production is triggered by tags and depends on lint, lint must also be triggered on tags
           filters:
             tags:
               only: /.*/
@@ -53,5 +52,6 @@ workflows:
           filters:
             tags:
               only: /.*/
+            # deploy_production can only be triggered by a tag, not by a regular commit
             branches:
               ignore: /.*/
