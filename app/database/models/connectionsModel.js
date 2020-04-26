@@ -1,35 +1,18 @@
-/* eslint-disable arrow-parens */
-/* eslint-disable no-console */
 const db = require('../dbConfig.js');
 const Users = require('./usersModel.js');
 
-function getConnections() {
-  return db('connections');
-}
-
 async function getConnectionsByUserId(id) {
-  const conns = await db('connections')
+  const connections = await db('connections')
     .where({ connector_id: id })
     .orWhere({ connected_id: id });
 
-  const ids = [];
-
-  // eslint-disable-next-line no-restricted-syntax
-  for (const conn of conns) {
-    if (!ids.includes(conn.connector_id)) {
-      ids.push(conn.connector_id);
-    }
-    if (!ids.includes(conn.connected_id)) {
-      ids.push(conn.connected_id);
-    }
-  }
-  // TODO possible fix
-  // const ids = Array.from(new Set(conns.flatMap((c) => [c.connector_id, c.connected_id])));
+  // removes duplicate IDs (e.g. a 'connector' in one row is 'connected' in others)
+  const ids = Array.from(new Set(connections.flatMap((c) => [c.connector_id, c.connected_id])));
   const namesAndAvatars = await Users.getNameAndAvatarByIds(ids);
 
-  return conns.map(conn => {
-    const connectedData = namesAndAvatars.find(d => d.id === conn.connected_id);
-    const connectorData = namesAndAvatars.find(d => d.id === conn.connector_id);
+  return connections.map((conn) => {
+    const connectedData = namesAndAvatars[conn.connected_id];
+    const connectorData = namesAndAvatars[conn.connector_id];
 
     return {
       ...conn,
@@ -61,7 +44,7 @@ function addConnection(data) {
   return db('connections')
     .insert(data)
     .returning('id')
-    .then(res => {
+    .then((res) => {
       const [id] = res;
       return getConnectionById(id);
     });
@@ -73,8 +56,8 @@ function respondToConnectionRequest(id, status) {
     .update({ status });
 }
 
-function alreadyExists(connection) {
-  return db('connections')
+async function alreadyExists(connection) {
+  const conn = await db('connections')
     .where({
       connected_id: connection.connected_id,
       connector_id: connection.connector_id,
@@ -82,16 +65,11 @@ function alreadyExists(connection) {
     .orWhere({
       connected_id: connection.connector_id,
       connector_id: connection.connected_id,
-    })
-    .then(res => {
-      if (res.length) {
-        return true;
-      } return false;
     });
+  return conn.length > 0;
 }
 
 module.exports = {
-  getConnections,
   getConnectionsByUserId,
   deleteConnection,
   getConnectionById,

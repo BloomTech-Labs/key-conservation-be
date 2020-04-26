@@ -46,29 +46,22 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.get('/camp/:id', (req, res) => {
+router.get('/camp/:id', async (req, res) => {
   const { id } = req.params;
 
-  CampaignUpdate.findCamp(id)
-    .then((result) => {
-      if (result) {
-        return result.is_deactivated ? Users.findBySub(req.user.id) : null;
-      }
-      return res.status(400).json({ msg: 'This campaign does not exist' });
-    })
-    .then((user) => {
-      if (user && !user.admin) {
-        return res.status(401).json({ msg: 'This post may only be viewed by an administrator' });
-      }
-      return CampaignUpdate.findUpdatesByCamp(id);
-    })
-    .then((updates) => {
-      if (updates[0]) {
-        return res.status(200).json({ updates, msg: 'The updates were found for this campaign' });
-      }
-      return res.status(400).json({ msg: 'This campaign does not have an update yet' });
-    })
-    .catch((err) => res.status(500).json({ err, msg: 'Unable to make request to server' }));
+  try {
+    const campaign = Campaigns.findById(id);
+    if (!campaign) return res.status(400).json({ msg: 'This campaign does not exist' });
+    if (campaign.is_deactivated) {
+      const user = await Users.findBySub(req.user.id);
+      if (!user || !user.admin) return res.status(401).json({ msg: 'This post may only be viewed by an administrator' });
+    }
+    const { updates } = campaign;
+    if (updates.length === 0) return res.status(400).json({ msg: 'This campaign does not have an update yet' });
+    return res.status(200).json({ updates, msg: 'The updates were found for this campaign' });
+  } catch (err) {
+    return res.status(500).json({ err, msg: 'Unable to make request to server' });
+  }
 });
 
 router.post('/', S3Upload.upload.single('photo'), async (req, res) => {

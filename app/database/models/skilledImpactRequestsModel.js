@@ -1,5 +1,5 @@
 const db = require('../dbConfig');
-const pick = require('../../util/pick.js');
+const pick = require('../../../util/pick.js');
 const log = require('../../logger');
 
 async function find(campaignId) {
