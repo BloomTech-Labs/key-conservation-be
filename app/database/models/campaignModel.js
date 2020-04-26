@@ -114,11 +114,11 @@ async function findCampaignsBySkill(skill) {
     .join(
       'campaigns',
       'skilled_impact_requests.campaign_id',
-      'campaigns.id'
+      'campaigns.id',
     )
     .select(
       'campaigns.*',
-      'skilled_impact_requests.skill'
+      'skilled_impact_requests.skill',
     )
     .where({ skill });
 }

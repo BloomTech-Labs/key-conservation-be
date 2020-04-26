@@ -102,7 +102,7 @@ router.get('/skills/:skill', async (req, res) => {
   const { skill } = req.params;
   try {
     const campaigns = await Campaigns.findCampaignsBySkill(skill);
-    if(campaigns) {
+    if (campaigns) {
       res.status(200).json({ campaigns, error: null });
     } else {
       res.status(404).json({ message: 'Campaigns not found in the database' });
