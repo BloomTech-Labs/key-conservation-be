@@ -115,5 +115,5 @@ async function remove(id) {
 }
 
 module.exports = {
-  findAll, findCampaign, findById, findUser, findCampByUserId, findCampaignsBySkill, insert, remove, update,
+  findAll, findById, findCampByUserId, findCampaignsBySkill, insert, remove, update,
 };
