@@ -30,7 +30,7 @@ router.get('/', restricted, async (req, res) => {
   }
 });
 
-router.get('/:id', restricted, async (req, res) => {
+router.get('/:id'/*, restricted*/, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -53,7 +53,7 @@ router.get('/:id', restricted, async (req, res) => {
         return res.status(401).json({ message: 'This account has been deactivated' });
       }
     }
-
+    user["average_rating"] = user.total_stars/user.total_reviews;
     return res.status(200).json({ user, message: 'The user was found' });
   } catch (err) {
     log.error(err);
@@ -78,6 +78,10 @@ router.get('/sub/:sub', restricted, async (req, res) => {
         }
         return res.status(401).json({ message: 'This account has been deactivated' });
       }
+      
+      user.average_rating = user.total_stars/user.total_reviews;
+      delete user.total_stars;
+      delete user.total_reviews;
       return res.status(200).json({ user, message: 'The user was found' });
     }
     return res.status(404).json({ message: 'User not found in the database' });

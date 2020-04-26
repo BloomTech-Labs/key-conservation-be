@@ -46,6 +46,13 @@ router.get('/', restricted, async (req, res) => {
   `, { requestedSkills: skills });
 
   const users = (await query).rows;
+  
+  var i;
+  for(i = 0; i < users.length; i++){
+    users[i].average_rating = users[i].total_stars/users[i].total_reviews;
+    delete users[i].total_reviews;
+    delete users[i].total_stars;
+  }
 
   res.status(200).send(users);
 });
