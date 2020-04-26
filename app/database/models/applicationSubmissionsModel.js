@@ -18,18 +18,18 @@ async function findCampaignsByUserSubmissions(userId) {
     .join(
       'application_submissions',
       'skilled_impact_requests.id',
-      'application_submissions.skilled_impact_request_id'
+      'application_submissions.skilled_impact_request_id',
     )
     .join(
       'campaigns',
       'skilled_impact_requests.campaign_id',
-      'campaigns.id'
-      )
+      'campaigns.id',
+    )
     .select(
       'campaigns.*',
-      'application_submissions.*'
+      'application_submissions.*',
     )
-    .where({ "application_submissions.user_id": userId });
+    .where({ 'application_submissions.user_id': userId });
 }
 
 async function findAllByCampaignId(id) {
