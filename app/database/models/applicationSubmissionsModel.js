@@ -13,10 +13,23 @@ async function findAllByIds(ids) {
     .whereIn('id', ids);
 }
 
-async function findAllByUserId(userId) {
-  return db('application_submissions')
-    .select('*')
-    .where({ user_id: userId });
+async function findCampaignsByUserSubmissions(userId) {
+  return db('skilled_impact_requests')
+    .join(
+      'application_submissions',
+      'skilled_impact_requests.id',
+      'application_submissions.skilled_impact_request_id'
+    )
+    .join(
+      'campaigns',
+      'skilled_impact_requests.campaign_id',
+      'campaigns.id'
+      )
+    .select(
+      'campaigns.*',
+      'application_submissions.*'
+    )
+    .where({ "application_submissions.user_id": userId });
 }
 
 async function findAllByCampaignId(id) {
@@ -54,7 +67,7 @@ async function updateAll(ids, decision) {
 module.exports = {
   findById,
   findAllByIds,
-  findAllByUserId,
+  findCampaignsByUserSubmissions,
   findAllByCampaignId,
   insert,
   update,

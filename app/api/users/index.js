@@ -130,9 +130,9 @@ router.get('/subcheck/:sub', async (request, response) => {
 router.get('/:id/submissions', async (req, res) => {
   const userId = req.params.id;
   try {
-    const applicationSubmissions = await ApplicationSubmission.findAllByUserId(userId);
-    if (applicationSubmissions) {
-      res.status(200).json({ applicationSubmissions, error: null });
+    const campaignsAndSubmissions = await ApplicationSubmission.findCampaignsByUserSubmissions(userId);
+    if (campaignsAndSubmissions) {
+      res.status(200).json({ campaignsAndSubmissions, error: null });
     } else {
       res.status(404).json({ message: 'Submissions not found in the database' });
     }
