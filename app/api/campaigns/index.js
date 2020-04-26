@@ -98,6 +98,20 @@ router.get('/:id/submissions', async (req, res) => {
   }
 });
 
+router.get('/skills/:skill', async (req, res) => {
+  const { skill } = req.params;
+  try {
+    const campaigns = await Campaigns.findCampaignsBySkill(skill);
+    if(campaigns) {
+      res.status(200).json({ campaigns, error: null });
+    } else {
+      res.status(404).json({ message: 'Campaigns not found in the database' });
+    }
+  } catch (error) {
+    res.status(500).json({ error, message: 'Unable to make request to server' });
+  }
+});
+
 router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   const { location } = req.file;
   const { skilledImpactRequests } = req.body;

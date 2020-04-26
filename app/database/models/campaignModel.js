@@ -109,6 +109,20 @@ async function findCampByUserId(userId) {
   return Promise.all(withUpdates);
 }
 
+async function findCampaignsBySkill(skill) {
+  return db('skilled_impact_requests')
+    .join(
+      'campaigns',
+      'skilled_impact_requests.campaign_id',
+      'campaigns.id'
+    )
+    .select(
+      'campaigns.*',
+      'skilled_impact_requests.skill'
+    )
+    .where({ skill });
+}
+
 async function insert(campaign) {
   log.verbose(`Inserting new campaign ${campaign}`);
   try {
@@ -143,5 +157,5 @@ async function remove(id) {
 }
 
 module.exports = {
-  find, findCampaign, findById, findUser, findCampByUserId, insert, remove, update,
+  find, findCampaign, findById, findUser, findCampByUserId, findCampaignsBySkill, insert, remove, update,
 };
