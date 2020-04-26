@@ -6,9 +6,11 @@
   "scripts": {
     "start": "node index.js",
     "server": "nodemon index.js",
-    "test": "jest --watch --verbose",
+    "test": "jest",
     "lint": "./node_modules/.bin/eslint ./ --ext .js",
-    "lint:fix": "./node_modules/.bin/eslint ./ --ext .js --fix"
+    "lint:fix": "./node_modules/.bin/eslint ./ --ext .js --fix",
+    "db:migrate": "knex migrate:latest",
+    "db:seed": "knex seed:run"
   },
   "repository": {
     "type": "git",
