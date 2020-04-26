@@ -1,9 +1,7 @@
 const supertest = require('supertest');
-const crypto = require('crypto');
 const server = require('../app');
 const db = require('../app/database/dbConfig');
-
-const getRandomString = () => crypto.randomBytes(20).toString('hex');
+const generateRandomSub = require('../util/generateRandomSub');
 
 beforeAll(() => {
   db('users').truncate();
@@ -48,7 +46,7 @@ describe('social routes', () => {
 describe('it registers a new user', () => {
   it('adds a user', async () => {
     const newConservationist = {
-      sub: getRandomString(),
+      sub: generateRandomSub(),
       username: 'testuser',
       email: 'test@user.com',
       roles: 'conservationist',
