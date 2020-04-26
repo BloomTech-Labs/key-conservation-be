@@ -13,6 +13,12 @@ async function findAllByIds(ids) {
     .whereIn('id', ids);
 }
 
+async function findAllByUserId(userId) {
+  return db('application_submissions')
+    .select('*')
+    .where({ user_id: userId });
+}
+
 async function findAllByCampaignId(id) {
   return db('skilled_impact_requests')
     .join(
@@ -48,6 +54,7 @@ async function updateAll(ids, decision) {
 module.exports = {
   findById,
   findAllByIds,
+  findAllByUserId,
   findAllByCampaignId,
   insert,
   update,

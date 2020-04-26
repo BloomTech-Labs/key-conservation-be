@@ -6,6 +6,7 @@ const router = express.Router();
 const Users = require('../../database/models/usersModel');
 const Reports = require('../../database/models/reportModel');
 const Connections = require('../../database/models/connectionsModel');
+const ApplicationSubmission = require('../../database/models/applicationSubmissionsModel');
 
 const S3Upload = require('../../middleware/s3Upload');
 const restricted = require('../../middleware/authJwt.js');
@@ -125,6 +126,23 @@ router.get('/subcheck/:sub', async (request, response) => {
       });
     });
 });
+
+router.get('/:id/submissions', async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const applicationSubmissions = await ApplicationSubmission.findAllByUserId(userId);
+    if (applicationSubmissions) {
+      res.status(200).json({ applicationSubmissions, error: null });
+    } else {
+      res.status(404).json({ message: 'Submissions not found in the database' });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error, message: 'Unable to make request to server' });
+  }
+});
+
 
 router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   let user = {
