@@ -9,7 +9,7 @@ const Campaigns = require('../../database/models/campaignModel');
 const ApplicationSubmissions = require('../../database/models/applicationSubmissionsModel');
 const SkilledImpactRequests = require('../../database/models/skilledImpactRequestsModel');
 const S3Upload = require('../../middleware/s3Upload');
-
+const SkillsEnum = require('../../database/models/skillsEnum');
 const pick = require('../../../util/pick.js');
 
 router.get('/', async (req, res) => {
@@ -71,7 +71,13 @@ router.get('/:id/submissions', async (req, res) => {
 });
 
 router.get('/skills/:skill', async (req, res) => {
-  const { skill } = req.params;
+  let { skill } = req.params;
+  
+  skill = skill.toUpperCase().replace(' ', '_');
+  if(!Object.keys(SkillsEnum).includes(skill)) {
+    res.status(400).json({ message: 'Invalid skill entered' });
+  }
+
   try {
     const campaigns = await Campaigns.findCampaignsBySkill(skill);
     if (campaigns) {
