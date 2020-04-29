@@ -76,8 +76,6 @@ router.get('/', async (req, res) => {
 
     const namesAndAvatars = await Users.getNameAndAvatarByIds(ids);
 
-    console.log(namesAndAvatars);
-
     // Slice our response to desired section
     response = {
       // How many pages of data are available?
