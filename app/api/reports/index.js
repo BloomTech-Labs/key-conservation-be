@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 const express = require('express');
 
 const router = express.Router();
@@ -10,7 +11,7 @@ const Users = require('../../database/models/usersModel');
 
 const checkFields = require('../../../util/checkFields');
 
-const { getSimilarReportCount, assignIdTag } = require('./helpers');
+const { getSimilarReportCount } = require('./helpers');
 
 // Retrieve all reports
 router.get('/', async (req, res) => {
@@ -75,6 +76,8 @@ router.get('/', async (req, res) => {
 
     const namesAndAvatars = await Users.getNameAndAvatarByIds(ids);
 
+    console.log(namesAndAvatars);
+
     // Slice our response to desired section
     response = {
       // How many pages of data are available?
@@ -85,7 +88,7 @@ router.get('/', async (req, res) => {
       reports: await Promise.all(
         reports.map(async (report) => {
           // Get data on the reported item
-          const reportedAccount = namesAndAvatars.find((d) => d.id === report.reported_user);
+          const reportedAccount = namesAndAvatars[report.reported_user];
 
           const uniqueReports = await getSimilarReportCount(report);
 
@@ -197,7 +200,7 @@ router.post('/', async (req, res) => {
 
     // Make sure that item of provided id exists in provided table
     const [item] = await db(req.body.postType).where({
-      [assignIdTag(req.body.postType)]: req.body.postId,
+      id: req.body.postId,
     });
 
     if (!item) {
