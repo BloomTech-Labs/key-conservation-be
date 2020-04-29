@@ -96,7 +96,7 @@ router.get('/', async (req, res) => {
           return {
             id: report.id,
             reported_by: report.reported_by,
-            report_desc: report.report_desc,
+            description: report.description,
             reported_at: report.reported_at,
             table_name: report.table_name,
             unique_reports: uniqueReports, // How many unique reports have been made about this?
@@ -276,7 +276,7 @@ router.post('/', async (req, res) => {
       reported_by: userId,
       post_id: req.body.postId,
       table_name: req.body.postType,
-      report_desc: req.body.desc || '',
+      description: req.body.desc || '',
       reported_user: reportedUserId,
     };
 
