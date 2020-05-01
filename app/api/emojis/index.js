@@ -19,8 +19,13 @@ router.get('/:id', (req, res) => {
   return Emojis.findByPost(req.body.tableName, req.body.postId);
 });
 
+// Get Emoji reactions by post ID, by emoji (Who reacted with this emoji)
+// TODO: Implement
+
 // Add emoji reaction to post
 router.post('/:id', async (req, res) => {
+  // TODO: Handle dupes
+
   const requiredFields = ['tableName', 'postId', 'emoji'];
 
   const error = checkFields(requiredFields, req.body);
@@ -44,6 +49,11 @@ router.post('/:id', async (req, res) => {
           'Failed to add reaction. Make sure tableName and postId are valid.',
       });
   }
+});
+
+// Remove emoji reaction from post by ID
+router.delete('/:id', (req, res) => {
+  // TODO: Implement
 });
 
 module.exports = router;
