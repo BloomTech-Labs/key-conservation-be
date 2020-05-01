@@ -16,13 +16,43 @@ router.put('/', async (req, res) => {
 
   if (error) return res.status(400).json({ message: error });
 
-  const emojis = await Emojis.findByPost(req.body.tableName, req.body.postId);
+  try {
+    const emojis = await Emojis.findByPost(req.body.tableName, req.body.postId);
 
-  return res.status(200).json(emojis);
+    return res.status(200).json(emojis);
+  } catch (err) {
+    logger.error(JSON.stringify(err));
+    return res.status(500).json({ message: err.message });
+  }
 });
 
 // Get Emoji reactions by post ID, by emoji (Who reacted with this emoji)
-// TODO: Implement
+router.put('/:emoji', async (req, res) => {
+  const { emoji } = req.params;
+
+  const requiredFields = ['tableName', 'postId'];
+
+  const error = checkFields(requiredFields, req.body);
+
+  if (error) return res.status(400).json({ message: error });
+
+  try {
+    const userIds = await Emojis.findUserIdsByReaction(
+      req.body.tableName,
+      req.body.postId,
+      emoji,
+    );
+
+    const users = await Users.getNameAndAvatarByIds(
+      userIds.map((usr) => usr.user_id),
+    );
+
+    return res.status(200).json(users);
+  } catch (err) {
+    logger.error(JSON.stringify(err));
+    return res.status(500).json({ message: err.message });
+  }
+});
 
 // Add emoji reaction to post
 router.post('/', async (req, res) => {

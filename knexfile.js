@@ -1,7 +1,7 @@
 require('dotenv').config();
-const pg = require('pg');
+// const pg = require('pg');
 
-pg.defaults.ssl = true;
+// pg.defaults.ssl = true;
 
 const dbConnection = process.env.DATABASE_URL || {
   host: process.env.DATABASE_HOST,

@@ -1,9 +1,22 @@
 const db = require('../dbConfig.js');
 
-const findByPost = (tableName, postId) =>
-  db('emojis')
-    .select('emoji', 'id', 'user_id')
-    .where({ post_id: postId, table_name: tableName });
+const findByPost = (tableName, postId) => db('emojis')
+  .select('emoji', 'id', 'user_id')
+  .where({ post_id: postId, table_name: tableName });
+
+const findUserIdsByReaction = async (tableName, postId, emoji) => {
+  const [targetPost] = await db(tableName).where({ id: postId });
+
+  if (!targetPost) {
+    throw new Error(
+      `A post with that ID in table ${tableName} could not be found`,
+    );
+  }
+
+  return db('emojis')
+    .select('user_id')
+    .where({ table_name: tableName, post_id: postId, emoji });
+};
 
 const insert = async (tableName, postId, emoji, userId) => {
   // This is to make sure this exists
@@ -11,7 +24,7 @@ const insert = async (tableName, postId, emoji, userId) => {
 
   if (!targetPost) {
     throw new Error(
-      `A post with that ID in table ${tableName} could not be found`
+      `A post with that ID in table ${tableName} could not be found`,
     );
   }
 
@@ -25,16 +38,14 @@ const insert = async (tableName, postId, emoji, userId) => {
     .returning(['emoji', 'user_id', 'id']);
 };
 
-const remove = (reactionId) => {
-  return db('emojis').where({ id: reactionId }).del();
-};
+const remove = (reactionId) => db('emojis').where({ id: reactionId }).del();
 
 const removeByUserId = async (tableName, postId, userId) => {
   const [targetPost] = await db(tableName).where({ id: postId });
 
   if (!targetPost) {
     throw new Error(
-      `A post with that ID in table ${tableName} could not be found`
+      `A post with that ID in table ${tableName} could not be found`,
     );
   }
 
@@ -49,6 +60,7 @@ const removeByUserId = async (tableName, postId, userId) => {
 
 module.exports = {
   findByPost,
+  findUserIdsByReaction,
   insert,
   remove,
   removeByUserId,
