@@ -13,8 +13,20 @@ const SkillsEnum = require('../../database/models/skillsEnum');
 const pick = require('../../../util/pick.js');
 
 router.get('/', async (req, res) => {
+  let { skill } = req.query;
+
+  // verify skill if passed in
+  if (skill) {
+    skill = skill.toUpperCase().replace(' ', '_');
+    if (!Object.keys(SkillsEnum).includes(skill)) {
+      res.status(400).json({ message: 'Invalid skill entered' });
+    }
+  }
+
+  const filters = { skill };
+
   try {
-    const campaigns = await Campaigns.findAll();
+    const campaigns = await Campaigns.findAll(filters);
     res.status(200).json({ campaigns, msg: 'The campaigns were found' });
   } catch (err) {
     log.error(err);
@@ -65,26 +77,6 @@ router.get('/:id/submissions', async (req, res) => {
   try {
     const applicationSubmissions = await ApplicationSubmissions.findAllByCampaignId(id);
     res.status(200).json({ applicationSubmissions, error: null });
-  } catch (error) {
-    res.status(500).json({ error, message: 'Unable to make request to server' });
-  }
-});
-
-router.get('/skills/:skill', async (req, res) => {
-  let { skill } = req.params;
-  
-  skill = skill.toUpperCase().replace(' ', '_');
-  if(!Object.keys(SkillsEnum).includes(skill)) {
-    res.status(400).json({ message: 'Invalid skill entered' });
-  }
-
-  try {
-    const campaigns = await Campaigns.findCampaignsBySkill(skill);
-    if (campaigns) {
-      res.status(200).json({ campaigns, error: null });
-    } else {
-      res.status(404).json({ message: 'Campaigns not found in the database' });
-    }
   } catch (error) {
     res.status(500).json({ error, message: 'Unable to make request to server' });
   }

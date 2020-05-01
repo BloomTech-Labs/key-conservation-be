@@ -5,9 +5,10 @@ const Comments = require('./commentsModel.js');
 const SkilledImpactRequests = require('./skilledImpactRequestsModel.js');
 const log = require('../../logger');
 
-async function findAll() {
+async function findAll(filters) {
+  const { skill } = filters;
   try {
-    const campaigns = await db('campaigns')
+    let campaigns = db('campaigns')
       .join('users', 'users.id', 'campaigns.user_id')
       .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
       .select(
@@ -18,6 +19,23 @@ async function findAll() {
         'cons.name as org_name',
       )
       .where({ 'users.is_deactivated': false });
+
+    if (skill) {
+      campaigns = campaigns
+        .join(
+          'skilled_impact_requests',
+          'skilled_impact_requests.campaign_id',
+          'campaigns.id',
+        )
+        .select(
+          'skilled_impact_requests.skill',
+          'skilled_impact_requests.id as skilled_imact_request_id',
+        )
+        .where('skilled_impact_requests.skill', skill);
+    }
+
+    campaigns = await campaigns;
+
     return Promise.all(campaigns.map(async (c) => {
       c.comments = await Comments.findCampaignComments(c.id);
       return c;
@@ -67,20 +85,6 @@ async function findCampByUserId(userId) {
   return Promise.all(withUpdates);
 }
 
-async function findCampaignsBySkill(skill) {
-  return db('skilled_impact_requests')
-    .join(
-      'campaigns',
-      'skilled_impact_requests.campaign_id',
-      'campaigns.id',
-    )
-    .select(
-      'campaigns.*',
-      'skilled_impact_requests.skill',
-    )
-    .where({ skill });
-}
-
 async function insert(campaign) {
   log.verbose(`Inserting new campaign ${campaign}`);
   try {
@@ -115,5 +119,5 @@ async function remove(id) {
 }
 
 module.exports = {
-  findAll, findById, findCampByUserId, findCampaignsBySkill, insert, remove, update,
+  findAll, findById, findCampByUserId, insert, remove, update,
 };
