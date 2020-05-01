@@ -9,14 +9,16 @@ const checkFields = require('../../../util/checkFields');
 const router = express.Router();
 
 // Get Emojis by post id
-router.get('/', (req, res) => {
+router.put('/', async (req, res) => {
   const requiredFields = ['tableName', 'postId'];
 
   const error = checkFields(requiredFields, req.body);
 
   if (error) return res.status(400).json({ message: error });
 
-  return Emojis.findByPost(req.body.tableName, req.body.postId);
+  const emojis = await Emojis.findByPost(req.body.tableName, req.body.postId);
+
+  return res.status(200).json(emojis);
 });
 
 // Get Emoji reactions by post ID, by emoji (Who reacted with this emoji)
@@ -37,23 +39,35 @@ router.post('/', async (req, res) => {
 
     const user = await Users.findBySub(sub);
 
-    await Emojis.insert(req.body.tableName, req.body.postId, req.body.emoji, user.id);
+    await Emojis.insert(
+      req.body.tableName,
+      req.body.postId,
+      req.body.emoji,
+      user.id
+    );
 
     return res.sendStatus(200);
   } catch (err) {
     logger.error(err);
-    return res
-      .status(500)
-      .json({
-        message:
-          'Failed to add reaction. Make sure tableName and postId are valid.',
-      });
+    return res.status(500).json({
+      message:
+        'Failed to add reaction. Make sure tableName and postId are valid.',
+    });
   }
 });
 
 // Remove emoji reaction from post by ID
-router.delete('/', (req, res) => {
-  // TODO: Implement
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await Emojis.remove(id);
+
+    return res.sendStatus(200);
+  } catch (err) {
+    logger.error(JSON.stringify(err));
+    return res.status(500).json({ message: err.message });
+  }
 });
 
 module.exports = router;

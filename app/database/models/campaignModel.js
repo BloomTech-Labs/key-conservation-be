@@ -18,10 +18,15 @@ async function findAll() {
         'cons.name as org_name',
       )
       .where({ 'users.is_deactivated': false });
-    return Promise.all(campaigns.map(async (c) => {
-      c.comments = await Comments.findCampaignComments(c.id);
-      return c;
-    }));
+    return Promise.all(
+      campaigns.map(async (c) => {
+        const comments = await Comments.findCampaignComments(c.id);
+        return {
+          ...c,
+          comments,
+        };
+      }),
+    );
   } catch (err) {
     throw new Error(err.message);
   }
@@ -70,9 +75,7 @@ async function findCampByUserId(userId) {
 async function insert(campaign) {
   log.verbose(`Inserting new campaign ${campaign}`);
   try {
-    const [id] = await db('campaigns')
-      .insert(campaign)
-      .returning('id');
+    const [id] = await db('campaigns').insert(campaign).returning('id');
     if (id) {
       return findById(id);
     }
@@ -82,18 +85,14 @@ async function insert(campaign) {
 }
 
 async function update(campaign, id) {
-  const editedCamp = await db('campaigns')
-    .where({ id })
-    .update(campaign);
+  const editedCamp = await db('campaigns').where({ id }).update(campaign);
   if (editedCamp) {
     return findById(id);
   }
 }
 
 async function remove(id) {
-  const deleted = await db('campaigns')
-    .where({ id })
-    .del();
+  const deleted = await db('campaigns').where({ id }).del();
   if (deleted) {
     return id;
   }
@@ -101,5 +100,10 @@ async function remove(id) {
 }
 
 module.exports = {
-  findAll, findById, findCampByUserId, insert, remove, update,
+  findAll,
+  findById,
+  findCampByUserId,
+  insert,
+  remove,
+  update,
 };

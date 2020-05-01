@@ -1,6 +1,9 @@
 const db = require('../dbConfig.js');
 
-const findByPost = (tableName, postId) => db('emojis').where({ post_id: postId, table_name: tableName });
+const findByPost = (tableName, postId) =>
+  db('emojis')
+    .select('emoji', 'id', 'user_id')
+    .where({ post_id: postId, table_name: tableName });
 
 const insert = async (tableName, postId, emoji, userId) => {
   // This is to make sure this exists
@@ -8,7 +11,7 @@ const insert = async (tableName, postId, emoji, userId) => {
 
   if (!targetPost) {
     throw new Error(
-      `A post with that ID in table ${tableName} could not be found`,
+      `A post with that ID in table ${tableName} could not be found`
     );
   }
 
@@ -20,7 +23,12 @@ const insert = async (tableName, postId, emoji, userId) => {
   });
 };
 
+const remove = (reactionId) => {
+  return db('emojis').where({ id: reactionId }).del();
+};
+
 module.exports = {
   findByPost,
   insert,
+  remove
 };
