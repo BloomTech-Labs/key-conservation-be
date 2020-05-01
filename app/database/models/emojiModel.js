@@ -29,8 +29,27 @@ const remove = (reactionId) => {
   return db('emojis').where({ id: reactionId }).del();
 };
 
+const removeByUserId = async (tableName, postId, userId) => {
+  const [targetPost] = await db(tableName).where({ id: postId });
+
+  if (!targetPost) {
+    throw new Error(
+      `A post with that ID in table ${tableName} could not be found`
+    );
+  }
+
+  return db('emojis')
+    .where({
+      table_name: tableName,
+      user_id: userId,
+      post_id: postId,
+    })
+    .del();
+};
+
 module.exports = {
   findByPost,
   insert,
   remove,
+  removeByUserId,
 };

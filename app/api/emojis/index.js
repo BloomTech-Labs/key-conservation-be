@@ -26,20 +26,19 @@ router.put('/', async (req, res) => {
 
 // Add emoji reaction to post
 router.post('/', async (req, res) => {
-  // TODO: Handle dupes
-
   const requiredFields = ['tableName', 'postId', 'emoji'];
 
   const error = checkFields(requiredFields, req.body);
 
   if (error) return res.status(400).json({ message: error });
 
-  logger.info('posted');
-
   try {
     const { sub } = req.user;
 
     const user = await Users.findBySub(sub);
+
+    // Remove all previous reactions, if any
+    await Emojis.removeByUserId(req.body.tableName, req.body.postId, user.id);
 
     const reaction = await Emojis.insert(
       req.body.tableName,
@@ -64,8 +63,6 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
     await Emojis.remove(id);
-
-    logger.info('removed');
 
     return res.sendStatus(200);
   } catch (err) {
