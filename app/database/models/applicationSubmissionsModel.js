@@ -13,21 +13,30 @@ async function findAllByIds(ids) {
     .whereIn('id', ids);
 }
 
-async function findCampaignsByUserSubmissions(userId) {
-  return db('skilled_impact_requests')
+async function findSubmissionsByUser(userId) {
+  return db('application_submissions')
     .join(
-      'application_submissions',
+      'skilled_impact_requests',
       'skilled_impact_requests.id',
       'application_submissions.skilled_impact_request_id',
     )
     .join(
       'campaigns',
-      'skilled_impact_requests.campaign_id',
       'campaigns.id',
+      'skilled_impact_requests.campaign_id',
+    )
+    .join(
+      'users',
+      'users.id',
+      'campaigns.user_id'
     )
     .select(
-      'campaigns.*',
+      'campaigns.name',
+      'campaigns.created_at',
       'application_submissions.*',
+      'skilled_impact_requests.id',
+      'skilled_impact_requests.skill',
+      'users.profile_image'
     )
     .where({ 'application_submissions.user_id': userId });
 }
@@ -67,7 +76,7 @@ async function updateAll(ids, decision) {
 module.exports = {
   findById,
   findAllByIds,
-  findCampaignsByUserSubmissions,
+  findSubmissionsByUser,
   findAllByCampaignId,
   insert,
   update,
