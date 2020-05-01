@@ -34,19 +34,21 @@ router.post('/', async (req, res) => {
 
   if (error) return res.status(400).json({ message: error });
 
+  logger.info('posted');
+
   try {
     const { sub } = req.user;
 
     const user = await Users.findBySub(sub);
 
-    await Emojis.insert(
+    const reaction = await Emojis.insert(
       req.body.tableName,
       req.body.postId,
       req.body.emoji,
-      user.id
+      user.id,
     );
 
-    return res.sendStatus(200);
+    return res.status(201).json(reaction);
   } catch (err) {
     logger.error(err);
     return res.status(500).json({
@@ -62,6 +64,8 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
     await Emojis.remove(id);
+
+    logger.info('removed');
 
     return res.sendStatus(200);
   } catch (err) {

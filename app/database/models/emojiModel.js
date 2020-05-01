@@ -15,12 +15,14 @@ const insert = async (tableName, postId, emoji, userId) => {
     );
   }
 
-  return db('emojis').insert({
-    table_name: tableName,
-    post_id: postId,
-    user_id: userId,
-    emoji,
-  });
+  return db('emojis')
+    .insert({
+      table_name: tableName,
+      post_id: postId,
+      user_id: userId,
+      emoji,
+    })
+    .returning(['emoji', 'user_id', 'id']);
 };
 
 const remove = (reactionId) => {
@@ -30,5 +32,5 @@ const remove = (reactionId) => {
 module.exports = {
   findByPost,
   insert,
-  remove
+  remove,
 };
