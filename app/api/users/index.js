@@ -146,6 +146,7 @@ router.get('/:id/submissions', async (req, res) => {
             relevant_experience: submission.relevant_experience
           },
           campaign: {
+            id: submission.campaign_id,
             name: submission.name,
             created_at: submission.created_at,
           },

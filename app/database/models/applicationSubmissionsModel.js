@@ -36,6 +36,7 @@ async function findSubmissionsByUser(userId) {
       'application_submissions.*',
       'skilled_impact_requests.id',
       'skilled_impact_requests.skill',
+      'skilled_impact_requests.campaign_id',
       'users.profile_image'
     )
     .where({ 'application_submissions.user_id': userId });
