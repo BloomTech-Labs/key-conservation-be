@@ -9,7 +9,7 @@ const checkFields = require('../../../util/checkFields');
 const router = express.Router();
 
 // Get Emojis by post id
-router.get('/:id', (req, res) => {
+router.get('/', (req, res) => {
   const requiredFields = ['tableName', 'postId'];
 
   const error = checkFields(requiredFields, req.body);
@@ -23,7 +23,7 @@ router.get('/:id', (req, res) => {
 // TODO: Implement
 
 // Add emoji reaction to post
-router.post('/:id', async (req, res) => {
+router.post('/', async (req, res) => {
   // TODO: Handle dupes
 
   const requiredFields = ['tableName', 'postId', 'emoji'];
@@ -52,7 +52,7 @@ router.post('/:id', async (req, res) => {
 });
 
 // Remove emoji reaction from post by ID
-router.delete('/:id', (req, res) => {
+router.delete('/', (req, res) => {
   // TODO: Implement
 });
 
