@@ -28,7 +28,7 @@ async function findSubmissionsByUser(userId) {
     .join(
       'users',
       'users.id',
-      'campaigns.user_id'
+      'campaigns.user_id',
     )
     .select(
       'campaigns.name',
@@ -37,7 +37,7 @@ async function findSubmissionsByUser(userId) {
       'skilled_impact_requests.id',
       'skilled_impact_requests.skill',
       'skilled_impact_requests.campaign_id',
-      'users.profile_image'
+      'users.profile_image',
     )
     .where({ 'application_submissions.user_id': userId });
 }

@@ -132,27 +132,25 @@ router.get('/:id/submissions', async (req, res) => {
   try {
     let submissions = await ApplicationSubmission.findSubmissionsByUser(userId);
     if (submissions) {
-      submissions = submissions.map(submission => {
-        return {
-          submission: {
-            id: submission.id,
-            skilled_impact_request: {
-              id: submission.skilled_impact_request_id,
-              skill: submission.skill,
-            },
-            decision: submission.decision,
-            user_id: submission.user_id, 
-            why_project: submission.why_project,
-            relevant_experience: submission.relevant_experience
+      submissions = submissions.map((submission) => ({
+        submission: {
+          id: submission.id,
+          skilled_impact_request: {
+            id: submission.skilled_impact_request_id,
+            skill: submission.skill,
           },
-          campaign: {
-            id: submission.campaign_id,
-            name: submission.name,
-            created_at: submission.created_at,
-          },
-          profile_image: submission.profile_image
-        }
-      })
+          decision: submission.decision,
+          user_id: submission.user_id,
+          why_project: submission.why_project,
+          relevant_experience: submission.relevant_experience,
+        },
+        campaign: {
+          id: submission.campaign_id,
+          name: submission.name,
+          created_at: submission.created_at,
+        },
+        profile_image: submission.profile_image,
+      }));
       res.status(200).json({ submissions, error: null });
     } else {
       res.status(404).json({ message: 'Submissions not found in the database' });
