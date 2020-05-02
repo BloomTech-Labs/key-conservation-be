@@ -9,12 +9,24 @@ const Campaigns = require('../../database/models/campaignModel');
 const ApplicationSubmissions = require('../../database/models/applicationSubmissionsModel');
 const SkilledImpactRequests = require('../../database/models/skilledImpactRequestsModel');
 const S3Upload = require('../../middleware/s3Upload');
-
+const SkillsEnum = require('../../database/models/skillsEnum');
 const pick = require('../../../util/pick.js');
 
 router.get('/', async (req, res) => {
+  let { skill } = req.query;
+
+  // verify skill if passed in
+  if (skill) {
+    skill = skill.toUpperCase().replace(' ', '_');
+    if (!Object.keys(SkillsEnum).includes(skill)) {
+      res.status(400).json({ message: 'Invalid skill entered' });
+    }
+  }
+
+  const filters = { skill };
+
   try {
-    const campaigns = await Campaigns.findAll();
+    const campaigns = await Campaigns.findAll(filters);
     res.status(200).json({ campaigns, msg: 'The campaigns were found' });
   } catch (err) {
     log.error(err);
