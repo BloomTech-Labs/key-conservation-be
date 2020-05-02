@@ -37,11 +37,11 @@ async function findAll(filters) {
     campaigns = await campaigns;
 
     return Promise.all(campaigns.map(async (c) => {
-        const comments = await Comments.findCampaignComments(c.id);
-        return {
-          ...c,
-          comments,
-        };
+      const comments = await Comments.findCampaignComments(c.id);
+      return {
+        ...c,
+        comments,
+      };
     }));
   } catch (err) {
     throw new Error(err.message);
