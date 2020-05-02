@@ -6,6 +6,7 @@ const router = express.Router();
 const Users = require('../../database/models/usersModel');
 const Reports = require('../../database/models/reportModel');
 const Connections = require('../../database/models/connectionsModel');
+const ApplicationSubmission = require('../../database/models/applicationSubmissionsModel');
 
 const S3Upload = require('../../middleware/s3Upload');
 const restricted = require('../../middleware/authJwt.js');
@@ -125,6 +126,42 @@ router.get('/subcheck/:sub', async (request, response) => {
       });
     });
 });
+
+router.get('/:id/submissions', async (req, res) => {
+  const userId = req.params.id;
+  try {
+    let submissions = await ApplicationSubmission.findSubmissionsByUser(userId);
+    if (submissions) {
+      submissions = submissions.map((submission) => ({
+        submission: {
+          id: submission.id,
+          skilled_impact_request: {
+            id: submission.skilled_impact_request_id,
+            skill: submission.skill,
+          },
+          decision: submission.decision,
+          user_id: submission.user_id,
+          why_project: submission.why_project,
+          relevant_experience: submission.relevant_experience,
+        },
+        campaign: {
+          id: submission.campaign_id,
+          name: submission.name,
+          created_at: submission.created_at,
+        },
+        profile_image: submission.profile_image,
+      }));
+      res.status(200).json({ submissions, error: null });
+    } else {
+      res.status(404).json({ message: 'Submissions not found in the database' });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error, message: 'Unable to make request to server' });
+  }
+});
+
 
 router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   let user = {
