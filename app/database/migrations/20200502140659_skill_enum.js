@@ -57,7 +57,11 @@ exports.up = function (knex) {
     .then(() => knex('skill_enum').insert(skills.map((skill) => ({ skill }))))
     .then(() => knex.schema.alterTable('skills', (tbl) => {
       tbl.string('skill').notNullable().references('skill_enum.skill').alter();
-    }));
+    }))
+    .then(() => knex.schema.alterTable('skilled_impact_requests', (tbl) => {
+      tbl.string('skill').notNullable().references('skill_enum.skill').alter();
+    }))
+    .then(() => knex.raw('DROP TYPE enum_skills'));
 };
 
 exports.down = function () {
