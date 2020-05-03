@@ -50,7 +50,7 @@ router.get('/camp/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const campaign = Campaigns.findById(id);
+    const campaign = await Campaigns.findById(id);
     if (!campaign) return res.status(400).json({ msg: 'This campaign does not exist' });
     if (campaign.is_deactivated) {
       const user = await Users.findBySub(req.user.id);
