@@ -1,6 +1,6 @@
 const db = require('../dbConfig');
 
-const CampaignUpdate = require('./updateModel.js');
+const CampaignPosts = require('./campaignPostsModel');
 const Comments = require('./commentsModel.js');
 const SkilledImpactRequests = require('./skilledImpactRequestsModel.js');
 const log = require('../../logger');
@@ -37,6 +37,9 @@ async function findAll(filters) {
     campaigns = await campaigns;
 
     return Promise.all(campaigns.map(async (c) => {
+      const { image, description } = await CampaignPosts.findOriginalCampaignPostByCampaignId(c.id);
+      c.image = image;
+      c.description = description;
       c.comments = await Comments.findCampaignComments(c.id);
       return c;
     }));
@@ -60,13 +63,16 @@ async function findById(id) {
     )
     .first();
   if (!campaign) return campaign;
-  campaign.updates = await CampaignUpdate.findUpdatesByCamp(id);
+  const { image, description } = await CampaignPosts.findOriginalCampaignPostByCampaignId(id);
+  campaign.image = image;
+  campaign.description = description;
+  campaign.updates = await CampaignPosts.findAllCampaignUpdatesByCampaignId(id);
   campaign.comments = await Comments.findCampaignComments(id);
   campaign.skilled_impact_requests = await SkilledImpactRequests.find(id);
   return campaign;
 }
 
-async function findCampByUserId(userId) {
+async function findCampaignByUserId(userId) {
   const campaigns = await db('campaigns')
     .where('campaigns.user_id', userId)
     .join('users', 'users.id', 'campaigns.user_id')
@@ -77,11 +83,16 @@ async function findCampByUserId(userId) {
       'users.location',
       'campaigns.*',
     );
-  const withUpdates = campaigns.map(async (campaign) => ({
-    ...campaign,
-    updates: await CampaignUpdate.findUpdatesByCamp(campaign.id),
-    comments: await Comments.findCampaignComments(campaign.id),
-  }));
+  const withUpdates = campaigns.map(async (campaign) => {
+    const { image, description } = await CampaignPosts.findOriginalCampaignPostByCampaignId(campaign.id);
+    return {
+      ...campaign,
+      image,
+      description,
+      updates: await CampaignPosts.findAllCampaignUpdatesByCampaignId(campaign.id),
+      comments: await Comments.findCampaignComments(campaign.id),
+    };
+  });
   return Promise.all(withUpdates);
 }
 
@@ -119,5 +130,5 @@ async function remove(id) {
 }
 
 module.exports = {
-  findAll, findById, findCampByUserId, insert, remove, update,
+  findAll, findById, findCampaignByUserId, insert, remove, update,
 };

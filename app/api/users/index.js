@@ -10,10 +10,7 @@ const ApplicationSubmission = require('../../database/models/applicationSubmissi
 
 const S3Upload = require('../../middleware/s3Upload');
 const restricted = require('../../middleware/authJwt.js');
-const {
-  checkConnection,
-  checkUniqueIds,
-} = require('../../middleware/connections');
+const { checkConnection, checkUniqueIds } = require('../../middleware/connections');
 
 router.get('/', restricted, async (req, res) => {
   try {

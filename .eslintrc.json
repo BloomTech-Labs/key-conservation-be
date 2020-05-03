@@ -21,6 +21,7 @@
         "max-len": "off",
         "no-console": "error",
         "no-param-reassign": "warn",
-        "no-unused-vars": [ "error", { "argsIgnorePattern": "Promise|err" }]
+        "no-unused-vars": [ "error", { "argsIgnorePattern": "Promise|err" }],
+        "object-curly-newline": [ "error", { "consistent": true }]
     }
 }
