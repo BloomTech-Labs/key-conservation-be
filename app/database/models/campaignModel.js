@@ -19,10 +19,10 @@ async function findAll() {
       )
       .where({ 'users.is_deactivated': false });
     return Promise.all(campaigns.map(async (c) => {
-      c.comments = await Comments.findCampaignComments(c.id);
       const { image, description } = await CampaignPosts.findOriginalCampaignPostByCampaignId(c.id);
       c.image = image;
       c.description = description;
+      c.comments = await Comments.findCampaignComments(c.id);
       return c;
     }));
   } catch (err) {

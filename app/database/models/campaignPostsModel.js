@@ -27,7 +27,8 @@ async function findById(id) {
 async function findOriginalCampaignPostByCampaignId(campaignId) {
   return db('campaign_posts')
     .where({ campaign_id: campaignId })
-    .where('is_update', false);
+    .where('is_update', false)
+    .first();
 }
 
 async function findAllCampaignUpdates() {

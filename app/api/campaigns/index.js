@@ -11,6 +11,8 @@ const ApplicationSubmissions = require('../../database/models/applicationSubmiss
 const SkilledImpactRequests = require('../../database/models/skilledImpactRequestsModel');
 const S3Upload = require('../../middleware/s3Upload');
 
+const pick = require('../../../util/pick');
+
 router.get('/', async (req, res) => {
   try {
     const campaigns = await Campaigns.findAll();
@@ -99,10 +101,11 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
 
 router.put('/:id', S3Upload.upload.single('photo'), async (req, res) => {
   const { id } = req.params;
-  const { description } = req.body;
 
-  const newCampaigns = req.body;
-  const newCampaignPost = req.file ? { description, image: req.file.location } : { description };
+  const newCampaigns = pick(req.body, ['user_id', 'name', 'call_to_action', 'urgency']);
+  const newCampaignPost = {};
+  if (req.file) newCampaignPost.image = req.file.location;
+  if (req.body.description) newCampaignPost.description = req.body.description;
 
   try {
     const campaign = await Campaigns.findById(id);
@@ -115,7 +118,8 @@ router.put('/:id', S3Upload.upload.single('photo'), async (req, res) => {
       return res.status(401).json({ msg: 'Unauthorized: You may not modify this campaign' });
     }
     const updatedCampaign = await Campaigns.update(newCampaigns, id);
-    const updatedCampaignPost = await CampaignPosts.updateOriginalPostByCampaignId(id, newCampaignPost);
+    const updatedCampaignPost = req.file || req.body.description
+      ? await CampaignPosts.updateOriginalPostByCampaignId(id, newCampaignPost) : {};
     const editCampaign = { ...updatedCampaign, ...updatedCampaignPost };
     res.status(200).json({ msg: 'Successfully updated campaign', editCampaign });
   } catch (err) {
