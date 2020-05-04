@@ -1,7 +1,7 @@
 const TABLE_NAME = 'skilled_impact_requests';
 exports.seed = (knex, Promise) => knex(TABLE_NAME).del().then(() => knex(TABLE_NAME).insert([
   {
-    id: 1,
+    // id: 1,
     campaign_id: 2,
     skill: 'ARCHITECTURE',
     point_of_contact: 'Frank LLoyd Wright (frankll@wright.com)',
@@ -9,7 +9,7 @@ exports.seed = (knex, Promise) => knex(TABLE_NAME).del().then(() => knex(TABLE_N
     our_contribution: 'We\'ll send you some preliminary designs by end of day!',
   },
   {
-    id: 2,
+    // id: 2,
     campaign_id: 3,
     skill: 'PHOTOGRAPHY',
     point_of_contact: 'Joel Sternfeld',
@@ -17,7 +17,7 @@ exports.seed = (knex, Promise) => knex(TABLE_NAME).del().then(() => knex(TABLE_N
     our_contribution: 'We can reimburse you for costs, e.g. film rolls.',
   },
   {
-    id: 3,
+    // id: 3,
     campaign_id: 4,
     skill: 'DRONE',
     point_of_contact: 'Johnny Appleseed',
