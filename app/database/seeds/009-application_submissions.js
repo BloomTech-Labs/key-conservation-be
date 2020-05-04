@@ -1,7 +1,7 @@
 const TABLE_NAME = 'application_submissions';
 exports.seed = (knex, Promise) => knex(TABLE_NAME).del().then(() => knex(TABLE_NAME).insert([
   {
-    id: 1,
+    // id: 1,
     skilled_impact_request_id: 2,
     user_id: 3,
     decision: 'PENDING',
@@ -9,7 +9,7 @@ exports.seed = (knex, Promise) => knex(TABLE_NAME).del().then(() => knex(TABLE_N
     relevant_experience: 'I took an online course.',
   },
   {
-    id: 2,
+    // id: 2,
     skilled_impact_request_id: 2,
     user_id: 4,
     decision: 'PENDING',
@@ -17,7 +17,7 @@ exports.seed = (knex, Promise) => knex(TABLE_NAME).del().then(() => knex(TABLE_N
     relevant_experience: 'I have published a book on animal photography.',
   },
   {
-    id: 3,
+    // id: 3,
     skilled_impact_request_id: 3,
     user_id: 1,
     decision: 'PENDING',
