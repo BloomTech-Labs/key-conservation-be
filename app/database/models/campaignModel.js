@@ -102,9 +102,7 @@ async function insert(campaign) {
     const [id] = await db('campaigns')
       .insert(campaign)
       .returning('id');
-    if (id) {
-      return findById(id);
-    }
+    return id;
   } catch (e) {
     log.error(`Error inserting campaign: ${e}`);
   }

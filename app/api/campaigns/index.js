@@ -91,13 +91,12 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   const postCampaign = { user_id, name, call_to_action, urgency };
 
   try {
-    const newCampaigns = await Campaigns.insert(postCampaign);
-    const originalPost = await CampaignPosts.insert({
-      campaign_id: newCampaigns.id, image, description, is_update: false,
-    });
-    const newSkilledImpactRequests = await SkilledImpactRequests.insert(skilledImpactRequests, newCampaigns.id);
-    if (newCampaigns) {
-      log.info(`inserted campaign ${name}`, newCampaigns, originalPost, newSkilledImpactRequests);
+    const campaignId = await Campaigns.insert(postCampaign);
+    if (campaignId) {
+      await CampaignPosts.insert({ campaign_id: campaignId, image, description, is_update: false });
+      if (skilledImpactRequests) await SkilledImpactRequests.insert(skilledImpactRequests, campaignId);
+      const newCampaigns = await Campaigns.findById(campaignId);
+      log.info(`inserted campaign ${name}`, newCampaigns);
       res.status(201).json({ newCampaigns, msg: 'Campaign added to database' });
     } else if (!image || !name || !description || !call_to_action) {
       log.info('no data');
