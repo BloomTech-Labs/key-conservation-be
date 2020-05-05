@@ -10,7 +10,7 @@ const Users = require('../../database/models/usersModel');
 
 const checkFields = require('../../../util/checkFields');
 
-const { getSimilarReportCount, assignIdTag } = require('./helpers');
+const { getSimilarReportCount } = require('./helpers');
 
 // Retrieve all reports
 router.get('/', async (req, res) => {
@@ -85,7 +85,7 @@ router.get('/', async (req, res) => {
       reports: await Promise.all(
         reports.map(async (report) => {
           // Get data on the reported item
-          const reportedAccount = namesAndAvatars.find((d) => d.id === report.reported_user);
+          const reportedAccount = namesAndAvatars[report.reported_user];
 
           const uniqueReports = await getSimilarReportCount(report);
 
@@ -93,7 +93,7 @@ router.get('/', async (req, res) => {
           return {
             id: report.id,
             reported_by: report.reported_by,
-            report_desc: report.report_desc,
+            description: report.description,
             reported_at: report.reported_at,
             table_name: report.table_name,
             unique_reports: uniqueReports, // How many unique reports have been made about this?
@@ -197,7 +197,7 @@ router.post('/', async (req, res) => {
 
     // Make sure that item of provided id exists in provided table
     const [item] = await db(req.body.postType).where({
-      [assignIdTag(req.body.postType)]: req.body.postId,
+      id: req.body.postId,
     });
 
     if (!item) {
@@ -273,7 +273,7 @@ router.post('/', async (req, res) => {
       reported_by: userId,
       post_id: req.body.postId,
       table_name: req.body.postType,
-      report_desc: req.body.desc || '',
+      description: req.body.desc || '',
       reported_user: reportedUserId,
     };
 

@@ -1,26 +1,51 @@
 const db = require('../dbConfig');
 
-const CampaignUpdate = require('./updateModel.js');
+const CampaignPosts = require('./campaignPostsModel');
 const Comments = require('./commentsModel.js');
 const SkilledImpactRequests = require('./skilledImpactRequestsModel.js');
 const log = require('../../logger');
 
-async function findAll() {
+async function findAll(filters) {
+  const { skill } = filters;
   try {
-    const campaigns = await db('campaigns')
+    let campaigns = db('campaigns')
       .join('users', 'users.id', 'campaigns.user_id')
       .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
       .select(
         'users.profile_image',
         'users.location',
         'campaigns.*',
+        'campaigns.id as campaign_id',
         'campaigns.name as camp_name',
         'cons.name as org_name',
       )
       .where({ 'users.is_deactivated': false });
+
+    if (skill) {
+      campaigns = campaigns
+        .join(
+          'skilled_impact_requests',
+          'skilled_impact_requests.campaign_id',
+          'campaigns.id',
+        )
+        .select(
+          'skilled_impact_requests.skill',
+          'skilled_impact_requests.id as skilled_imact_request_id',
+        )
+        .where('skilled_impact_requests.skill', skill);
+    }
+
+    campaigns = await campaigns;
+
     return Promise.all(campaigns.map(async (c) => {
-      c.comments = await Comments.findCampaignComments(c.id);
-      return c;
+      const { image, description } = await CampaignPosts.findOriginalCampaignPostByCampaignId(c.id);
+      const comments = await Comments.findCampaignComments(c.id);
+      return {
+        ...c,
+        image,
+        description,
+        comments,
+      };
     }));
   } catch (err) {
     throw new Error(err.message);
@@ -42,13 +67,16 @@ async function findById(id) {
     )
     .first();
   if (!campaign) return campaign;
-  campaign.updates = await CampaignUpdate.findUpdatesByCamp(id);
+  const { image, description } = await CampaignPosts.findOriginalCampaignPostByCampaignId(id);
+  campaign.image = image;
+  campaign.description = description;
+  campaign.updates = await CampaignPosts.findAllCampaignUpdatesByCampaignId(id);
   campaign.comments = await Comments.findCampaignComments(id);
   campaign.skilled_impact_requests = await SkilledImpactRequests.find(id);
   return campaign;
 }
 
-async function findCampByUserId(userId) {
+async function findCampaignByUserId(userId) {
   const campaigns = await db('campaigns')
     .where('campaigns.user_id', userId)
     .join('users', 'users.id', 'campaigns.user_id')
@@ -59,11 +87,16 @@ async function findCampByUserId(userId) {
       'users.location',
       'campaigns.*',
     );
-  const withUpdates = campaigns.map(async (campaign) => ({
-    ...campaign,
-    updates: await CampaignUpdate.findUpdatesByCamp(campaign.id),
-    comments: await Comments.findCampaignComments(campaign.id),
-  }));
+  const withUpdates = campaigns.map(async (campaign) => {
+    const { image, description } = await CampaignPosts.findOriginalCampaignPostByCampaignId(campaign.id);
+    return {
+      ...campaign,
+      image,
+      description,
+      updates: await CampaignPosts.findAllCampaignUpdatesByCampaignId(campaign.id),
+      comments: await Comments.findCampaignComments(campaign.id),
+    };
+  });
   return Promise.all(withUpdates);
 }
 
@@ -73,27 +106,21 @@ async function insert(campaign) {
     const [id] = await db('campaigns')
       .insert(campaign)
       .returning('id');
-    if (id) {
-      return findById(id);
-    }
+    return id;
   } catch (e) {
     log.error(`Error inserting campaign: ${e}`);
   }
 }
 
 async function update(campaign, id) {
-  const editedCamp = await db('campaigns')
-    .where({ id })
-    .update(campaign);
+  const editedCamp = await db('campaigns').where({ id }).update(campaign);
   if (editedCamp) {
     return findById(id);
   }
 }
 
 async function remove(id) {
-  const deleted = await db('campaigns')
-    .where({ id })
-    .del();
+  const deleted = await db('campaigns').where({ id }).del();
   if (deleted) {
     return id;
   }
@@ -101,5 +128,5 @@ async function remove(id) {
 }
 
 module.exports = {
-  findAll, findById, findCampByUserId, insert, remove, update,
+  findAll, findById, findCampaignByUserId, insert, remove, update,
 };

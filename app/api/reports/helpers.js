@@ -1,24 +1,6 @@
 const Reports = require('../../database/models/reportModel');
 
 module.exports = {
-  // This is something I had to do due to the existing
-  // unnecessary variation of primary key names
-  assignIdTag: (tableName) => {
-    switch (tableName) {
-      case 'comments': {
-        return 'comment_id';
-      }
-      case 'campaigns': {
-        return 'campaign_id';
-      }
-      case 'campaign_updates': {
-        return 'update_id';
-      }
-      default: {
-        return 'id';
-      }
-    }
-  },
   getSimilarReportCount: async (report) => {
     // How many times has this item been reported?
     const duplicates = await Reports.findWhere({
