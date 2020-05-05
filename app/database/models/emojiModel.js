@@ -2,7 +2,7 @@ const db = require('../dbConfig.js');
 
 const findByCampaignPost = (id) => db('emojis').pluck('emoji').where({ table_name: 'campaign_posts', post_id: id });
 
-const findUserReactionsByCampaignPost = (id, sub) => db('emojis').pluck('emoji').where({ table_name: 'campaign_posts', post_id: id, user_id: sub });
+const findUserReactionByCampaignPost = (id, sub) => db('emojis').pluck('emoji').where({ table_name: 'campaign_posts', post_id: id, user_id: sub });
 
 const findByPost = (tableName, postId) => db('emojis')
   .select('emoji', 'id', 'user_id')
@@ -39,7 +39,7 @@ const removeUserReactionFromPost = (id, userId) => db('emojis').where({ id, user
 
 module.exports = {
   findByCampaignPost,
-  findUserReactionsByCampaignPost,
+  findUserReactionByCampaignPost,
   findByPost,
   addUserReactionToPost,
   removeUserReactionFromPost,

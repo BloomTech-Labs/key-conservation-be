@@ -237,7 +237,7 @@ router.get('/:id/reactions', async (req, res) => {
     const { id: userId } = await Users.findBySub(sub);
 
     const reactions = await Emojis.findByCampaignPost(id);
-    const userReaction = await Emojis.findUserReactionsByCampaignPost(id, userId);
+    const [userReaction] = await Emojis.findUserReactionByCampaignPost(id, userId);
 
     return res.status(200).json({
       reactions,
