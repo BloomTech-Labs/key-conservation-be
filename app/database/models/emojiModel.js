@@ -35,7 +35,7 @@ const addUserReactionToPost = async (id, userId, emoji) => {
   });
 };
 
-const removeUserReactionFromPost = (id, userId) => db('emojis').where({ id, user_id: userId }).del();
+const removeUserReactionFromPost = (id, userId) => db('emojis').where({ table_name: 'campaign_posts', post_id: id, user_id: userId }).del();
 
 module.exports = {
   findByCampaignPost,
