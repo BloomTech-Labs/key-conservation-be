@@ -262,7 +262,6 @@ router.put('/:id/reactions', async (req, res) => {
     const { id: userId } = await Users.findBySub(sub);
 
     if (!emoji) {
-      console.log('Removing reaction')
       await Emojis.removeUserReactionFromPost(id, userId);
     } else if (emoji && emoji.trim() && emoji.trim().length <= 3) {
       await Emojis.addUserReactionToPost(id, userId, emoji);
