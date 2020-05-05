@@ -1,12 +1,8 @@
 const db = require('../dbConfig.js');
 
-const findByCampaignPost = (id) => db('emojis').pluck('emoji').where({ table_name: 'campaign_posts', post_id: id });
+const findByCampaignPost = (id) => db('emojis').pluck('emoji').where({ is_comment: false, post_id: id });
 
-const findUserReactionByCampaignPost = (id, sub) => db('emojis').pluck('emoji').where({ table_name: 'campaign_posts', post_id: id, user_id: sub });
-
-const findByPost = (tableName, postId) => db('emojis')
-  .select('emoji', 'id', 'user_id')
-  .where({ post_id: postId, table_name: tableName });
+const findUserReactionByCampaignPost = (id, sub) => db('emojis').pluck('emoji').where({ is_comment: false, post_id: id, user_id: sub });
 
 // *** A version of this is to be implemented in the near future ***
 // const findUserIdsByReaction = async (tableName, postId, emoji) => {
@@ -25,22 +21,21 @@ const findByPost = (tableName, postId) => db('emojis')
 
 const addUserReactionToPost = async (id, userId, emoji) => {
   // If a user already had a reaction on this post, remove it
-  await db('emojis').where({ table_name: 'campaign_posts', post_id: id, user_id: userId }).del();
+  await db('emojis').where({ is_comment: false, post_id: id, user_id: userId }).del();
 
   return db('emojis').insert({
-    table_name: 'campaign_posts',
+    is_comment: false,
     post_id: id,
     user_id: userId,
     emoji,
   });
 };
 
-const removeUserReactionFromPost = (id, userId) => db('emojis').where({ table_name: 'campaign_posts', post_id: id, user_id: userId }).del();
+const removeUserReactionFromPost = (id, userId) => db('emojis').where({ is_comment: false, post_id: id, user_id: userId }).del();
 
 module.exports = {
   findByCampaignPost,
   findUserReactionByCampaignPost,
-  findByPost,
   addUserReactionToPost,
   removeUserReactionFromPost,
 };

@@ -2,7 +2,7 @@ exports.up = function (knex) {
   return knex.schema.createTable('emojis', (table) => {
     table.increments('id');
     // Which table can this post be found in?
-    table.string('table_name').notNullable();
+    table.bool('is_comment').notNullable();
     // ID of post
     table.integer('post_id').notNullable();
     // User ID (Person who reacted)
