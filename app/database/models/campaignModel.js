@@ -39,10 +39,13 @@ async function findAll(filters) {
 
     return Promise.all(campaigns.map(async (c) => {
       const { image, description } = await CampaignPosts.findOriginalCampaignPostByCampaignId(c.id);
-      c.image = image;
-      c.description = description;
-      c.comments = await Comments.findCampaignComments(c.id);
-      return c;
+      const comments = await Comments.findCampaignComments(c.id);
+      return {
+        ...c,
+        image,
+        description,
+        comments,
+      };
     }));
   } catch (err) {
     throw new Error(err.message);
@@ -110,18 +113,14 @@ async function insert(campaign) {
 }
 
 async function update(campaign, id) {
-  const editedCamp = await db('campaigns')
-    .where({ id })
-    .update(campaign);
+  const editedCamp = await db('campaigns').where({ id }).update(campaign);
   if (editedCamp) {
     return findById(id);
   }
 }
 
 async function remove(id) {
-  const deleted = await db('campaigns')
-    .where({ id })
-    .del();
+  const deleted = await db('campaigns').where({ id }).del();
   if (deleted) {
     return id;
   }
