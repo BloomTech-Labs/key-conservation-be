@@ -7,6 +7,7 @@ const Reports = require('../../database/models/reportModel');
 const Users = require('../../database/models/usersModel');
 const Campaigns = require('../../database/models/campaignModel');
 const CampaignPosts = require('../../database/models/campaignPostsModel');
+const Emojis = require('../../database/models/emojiModel');
 const ApplicationSubmissions = require('../../database/models/applicationSubmissionsModel');
 const SkilledImpactRequests = require('../../database/models/skilledImpactRequestsModel');
 const S3Upload = require('../../middleware/s3Upload');
@@ -40,11 +41,17 @@ router.get('/:id', async (req, res) => {
 
   try {
     const campaign = await Campaigns.findById(id);
-    if (!campaign) return res.status(400).json({ msg: 'Campaign was not found in the database' });
+    if (!campaign) {
+      return res
+        .status(400)
+        .json({ msg: 'Campaign was not found in the database' });
+    }
     if (campaign.is_deactivated) {
       const user = await Users.findBySub(req.user.sub);
       if (!user || !user.admin) {
-        return res.status(401).json({ msg: 'This campaign may only be viewed by an administrator' });
+        return res.status(401).json({
+          msg: 'This campaign may only be viewed by an administrator',
+        });
       }
     }
     return res.status(200).json({ campaign, msg: 'The campaign was found' });
@@ -59,15 +66,23 @@ router.get('/camp/:id', async (req, res) => {
 
   try {
     let user = await Users.findUser(id);
-    if (!user) return res.status(404).json({ msg: 'Did not find the campaign by this user id' });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ msg: 'Did not find the campaign by this user id' });
+    }
     if (user.is_deactivated) {
       user = await Users.findBySub(req.user.sub);
       if (!user || !user.admin) {
-        return res.status(401).json({ msg: "This user's campaigns may only be viewed by an administrator" });
+        return res.status(401).json({
+          msg: "This user's campaigns may only be viewed by an administrator",
+        });
       }
     }
     const campaign = await Campaigns.findCampaignByUserId(id);
-    return res.status(200).json({ campaign, msg: 'The campaigns were found for this org' });
+    return res
+      .status(200)
+      .json({ campaign, msg: 'The campaigns were found for this org' });
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
@@ -76,10 +91,14 @@ router.get('/camp/:id', async (req, res) => {
 router.get('/:id/submissions', async (req, res) => {
   const { id } = req.params;
   try {
-    const applicationSubmissions = await ApplicationSubmissions.findAllByCampaignId(id);
+    const applicationSubmissions = await ApplicationSubmissions.findAllByCampaignId(
+      id,
+    );
     res.status(200).json({ applicationSubmissions, error: null });
   } catch (error) {
-    res.status(500).json({ error, message: 'Unable to make request to server' });
+    res
+      .status(500)
+      .json({ error, message: 'Unable to make request to server' });
   }
 });
 
@@ -88,24 +107,34 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   const { skilledImpactRequests } = req.body;
   const {
     // eslint-disable-next-line camelcase
-    user_id, name, call_to_action, urgency, description,
+    user_id,
+    name,
+    call_to_action,
+    urgency,
+    description,
   } = req.body;
 
   const postCampaign = {
-    user_id, name, call_to_action, urgency,
+    user_id,
+    name,
+    call_to_action,
+    urgency,
   };
 
   try {
     const campaignId = await Campaigns.insert(postCampaign);
     if (campaignId) {
       await CampaignPosts.insert({
-        campaign_id: campaignId, image, description, is_update: false,
+        campaign_id: campaignId,
+        image,
+        description,
+        is_update: false,
       });
       if (skilledImpactRequests) await SkilledImpactRequests.insert(skilledImpactRequests, campaignId);
       const newCampaigns = await Campaigns.findById(campaignId);
       log.info(`inserted campaign ${name}`, newCampaigns);
       res.status(201).json({ newCampaigns, msg: 'Campaign added to database' });
-    // eslint-disable-next-line camelcase
+      // eslint-disable-next-line camelcase
     } else if (!image || !name || !description || !call_to_action) {
       log.info('no data');
       res.status(404).json({
@@ -121,7 +150,12 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
 router.put('/:id', S3Upload.upload.single('photo'), async (req, res) => {
   const { id } = req.params;
 
-  const newCampaigns = pick(req.body, ['user_id', 'name', 'call_to_action', 'urgency']);
+  const newCampaigns = pick(req.body, [
+    'user_id',
+    'name',
+    'call_to_action',
+    'urgency',
+  ]);
   const newCampaignPost = {};
   if (req.file) newCampaignPost.image = req.file.location;
   if (req.body.description) newCampaignPost.description = req.body.description;
@@ -134,16 +168,26 @@ router.put('/:id', S3Upload.upload.single('photo'), async (req, res) => {
       return res.status(404).json({ msg: 'The campaign would not be updated' });
     }
     if (campaign.user_id !== user.id && !user.admin) {
-      return res.status(401).json({ msg: 'Unauthorized: You may not modify this campaign' });
+      return res
+        .status(401)
+        .json({ msg: 'Unauthorized: You may not modify this campaign' });
     }
     const updatedCampaign = await Campaigns.update(newCampaigns, id);
     const updatedCampaignPost = req.file || req.body.description
-      ? await CampaignPosts.updateOriginalPostByCampaignId(id, newCampaignPost) : {};
+      ? await CampaignPosts.updateOriginalPostByCampaignId(
+        id,
+        newCampaignPost,
+      )
+      : {};
     const editCampaign = { ...updatedCampaign, ...updatedCampaignPost };
-    res.status(200).json({ msg: 'Successfully updated campaign', editCampaign });
+    res
+      .status(200)
+      .json({ msg: 'Successfully updated campaign', editCampaign });
   } catch (err) {
     log.error(err);
-    res.status(500).json({ err, msg: 'Unable to update campaign to the server' });
+    res
+      .status(500)
+      .json({ err, msg: 'Unable to update campaign to the server' });
   }
 });
 
@@ -154,7 +198,9 @@ router.delete('/:id', async (req, res) => {
     const user = await Users.findBySub(req.user.sub);
     const campaign = await Campaigns.findById(id);
 
-    if (!campaign) return res.status(404).json({ msg: 'Unable to find campaign ID' });
+    if (!campaign) {
+      return res.status(404).json({ msg: 'Unable to find campaign ID' });
+    }
 
     if (campaign.user_id !== user.id) {
       if (user.admin) {
@@ -164,7 +210,9 @@ router.delete('/:id', async (req, res) => {
           await Users.update({ strikes: targetUsr.strikes + 1 }, targetUsr.id);
         }
       } else {
-        return res.status(401).json({ msg: 'Unauthorized: You may not delete this campaign' });
+        return res
+          .status(401)
+          .json({ msg: 'Unauthorized: You may not delete this campaign' });
       }
     }
 
@@ -176,6 +224,56 @@ router.delete('/:id', async (req, res) => {
     res.status(200).json(campaigns);
   } catch (err) {
     res.status(500).json({ err, msg: 'Unable to delete campaign from server' });
+  }
+});
+
+// Get reactions on a campaign post
+router.get('/:id/reactions', async (req, res) => {
+  const { id } = req.params;
+
+  const { sub } = req.user;
+
+  try {
+    const { id: userId } = await Users.findBySub(sub);
+
+    const reactions = await Emojis.findByCampaignPost(id);
+    const userReaction = await Emojis.findUserReactionsByCampaignPost(id, userId);
+
+    return res.status(200).json({
+      reactions,
+      userReaction,
+    });
+  } catch (err) {
+    log.error(JSON.stringify(err.message));
+    return res.status(500).json({
+      message: `An internal server occurred while fetching reactions for campaign post ID ${id}`,
+    });
+  }
+});
+
+router.put('/:id/reactions', async (req, res) => {
+  const { id } = req.params;
+
+  const { sub } = req.user;
+
+  try {
+    const { emoji } = req.body;
+
+    const { id: userId } = await Users.findBySub(sub);
+    if (!emoji) {
+      await Emojis.removeUserReactionFromPost(id, userId);
+    } else if (emoji && emoji.trim() && emoji.trim().length <= 3) {
+      await Emojis.addUserReactionToPost(id, userId, emoji);
+    } else {
+      return res.status(400).json({ message: 'Invalid Emoji - Input too large' });
+    }
+
+    return res.sendStatus(200);
+  } catch (err) {
+    log.error(JSON.stringify(err.message));
+    return res.status(500).json({
+      message: `An internal server error occurred while updating user reaction on post ID ${id}`,
+    });
   }
 });
 
