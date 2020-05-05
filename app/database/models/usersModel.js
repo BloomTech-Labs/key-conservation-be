@@ -17,6 +17,7 @@ const userColumns = [
   'phone_number',
   'is_deactivated',
   'strikes',
+  'accepting_help_requests',
 ];
 
 // Columns of the user model that are stored in the conservationists table
