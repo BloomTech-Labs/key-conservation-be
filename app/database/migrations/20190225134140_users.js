@@ -21,8 +21,6 @@ exports.up = function (knex, Promise) {
     tbl.string('instagram', 150);
     tbl.string('phone_number', 50);
     tbl.string('roles', 50).notNullable();
-    tbl.integer('total_stars');
-    tbl.integer('total_reviews');
   });
 };
 
