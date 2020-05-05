@@ -1,8 +1,8 @@
 const db = require('../dbConfig.js');
 
-const findByCampaignPost = (id) => db('emojis').pluck('emoji').where({ is_comment: 'false', post_id: id });
+const findByCampaignPost = (id) => db('emojis').pluck('emoji').where({ is_comment: false, post_id: id });
 
-const findUserReactionByCampaignPost = (id, sub) => db('emojis').pluck('emoji').where({ is_comment: 'false', post_id: id, user_id: sub });
+const findUserReactionByCampaignPost = (id, sub) => db('emojis').pluck('emoji').where({ is_comment: false, post_id: id, user_id: sub });
 
 // *** A version of this is to be implemented in the near future ***
 // const findUserIdsByReaction = async (tableName, postId, emoji) => {
