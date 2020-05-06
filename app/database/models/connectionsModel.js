@@ -10,6 +10,7 @@ async function getConnectionsByUserId(id) {
   const ids = Array.from(new Set(connections.flatMap((c) => [c.connector_id, c.connected_id])));
   const namesAndAvatars = await Users.getNameAndAvatarByIds(ids);
 
+
   return connections.map((conn) => {
     const connectedData = namesAndAvatars[conn.connected_id];
     const connectorData = namesAndAvatars[conn.connector_id];
