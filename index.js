@@ -12,10 +12,6 @@ const wss = new WebSocket.Server({
   }),
 });
 
-wss.on('connection', (ws) => {
-  console.log('connected');
-  ws.on('message', (message) => {
-    console.log(`Recieved message => ${message}`);
-  });
-  ws.send('hello!');
+wss.on('connection', () => {
+
 });

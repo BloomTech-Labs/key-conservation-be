@@ -1,9 +1,27 @@
 const db = require('../dbConfig');
 
+async function getMostRecentPosts(startAt = 0, size = 8) {
+  const posts = await db('campaign_posts')
+    .join('campaigns', 'campaign_posts.campaign_id', 'campaigns.id')
+    .join('users', 'campaigns.user_id', 'users.id')
+    .leftJoin('conservationists', 'users.id', 'conservationists.user_id')
+    .whereNot('users.is_deactivated', true)
+    .orderBy('campaign_posts.created_at', 'desc')
+    .select(
+      'campaign_posts.*',
+      'campaigns.name',
+      'users.id as user_id',
+      'users.location',
+      'users.profile_image',
+      'conservationists.name as org_name',
+    )
+    .limit(72);
+
+  return posts.slice(startAt, size);
+}
+
 async function deleteById(id) {
-  return db('campaign_id')
-    .where({ id })
-    .del();
+  return db('campaign_id').where({ id }).del();
 }
 
 async function findById(id) {
@@ -19,7 +37,7 @@ async function findById(id) {
       'users.is_deactivated',
       'users.location',
       'users.profile_image',
-      'conservationists.name as org_name',
+      'conservationists.name as org_name'
     )
     .first();
 }
@@ -45,7 +63,7 @@ async function findAllCampaignUpdates() {
       'users.is_deactivated',
       'users.location',
       'users.profile_image',
-      'conservationists.name as org_name',
+      'conservationists.name as org_name'
     );
 }
 
@@ -61,7 +79,7 @@ async function findAllCampaignUpdatesByCampaignId(campaignId) {
       'campaigns.name as campaign_name',
       'users.profile_image',
       'users.location',
-      'conservationists.name as org_name',
+      'conservationists.name as org_name'
     );
 }
 
@@ -78,7 +96,7 @@ async function findCampaignUpdateById(id) {
       'users.is_deactivated',
       'users.location',
       'users.profile_image',
-      'conservationists.name as org_name',
+      'conservationists.name as org_name'
     )
     .first();
 }
@@ -88,10 +106,7 @@ async function insert(post) {
 }
 
 async function updateById(id, changes) {
-  return db('campaign_posts')
-    .where({ id })
-    .update(changes)
-    .returning('*');
+  return db('campaign_posts').where({ id }).update(changes).returning('*');
 }
 
 async function updateOriginalPostByCampaignId(campaignId, changes) {
@@ -103,6 +118,7 @@ async function updateOriginalPostByCampaignId(campaignId, changes) {
 
 module.exports = {
   deleteById,
+  getMostRecentPosts,
   findById,
   findOriginalCampaignPostByCampaignId,
   findAllCampaignUpdates,
