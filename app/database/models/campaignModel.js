@@ -15,7 +15,6 @@ async function findAll(filters) {
         'users.profile_image',
         'users.location',
         'campaigns.*',
-        'campaigns.id as campaign_id',
         'campaigns.name as camp_name',
         'cons.name as org_name',
       )
