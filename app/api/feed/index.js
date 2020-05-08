@@ -21,4 +21,21 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/post/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const post = await CampaignPosts.findCampaignPostById(id);
+
+    return res.status(200).json(post);
+  } catch (err) {
+    return res
+      .status(500)
+      .json({
+        message: `An internal error occurred while trying to retrieve campaign post ID ${id}`,
+        err: err.message,
+      });
+  }
+});
+
 module.exports = router;

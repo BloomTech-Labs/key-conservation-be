@@ -5,15 +5,30 @@ async function getMostRecentPosts(startAt = 0, size = 8) {
     .join('campaigns', 'campaign_posts.campaign_id', 'campaigns.id')
     .join('users', 'campaigns.user_id', 'users.id')
     .leftJoin('conservationists', 'users.id', 'conservationists.user_id')
+    .innerJoin('comments', 'campaigns.id', 'comments.campaign_id')
     .whereNot('users.is_deactivated', true)
     .orderBy('campaign_posts.created_at', 'desc')
     .select(
       'campaign_posts.*',
       'campaigns.name',
+      'campaigns.urgency',
       'users.id as user_id',
       'users.location',
       'users.profile_image',
       'conservationists.name as org_name',
+      db.raw(
+        // eslint-disable-next-line quotes
+        `ARRAY_AGG(json_build_object('id', comments.id, 'user_id', comments.user_id, 'created_at', comments.created_at, 'body', comments.body)) as comments`,
+      ),
+    )
+    .groupBy(
+      'campaign_posts.id',
+      'campaigns.name',
+      'campaigns.urgency',
+      'users.id',
+      'users.location',
+      'users.profile_image',
+      'conservationists.name'
     )
     .limit(72);
 
@@ -60,7 +75,6 @@ async function findAllCampaignUpdates() {
       'campaign_posts.*',
       'campaigns.name',
       'users.id as users_id',
-      'users.is_deactivated',
       'users.location',
       'users.profile_image',
       'conservationists.name as org_name'
@@ -83,17 +97,17 @@ async function findAllCampaignUpdatesByCampaignId(campaignId) {
     );
 }
 
-async function findCampaignUpdateById(id) {
+function findCampaignPostById(id) {
   return db('campaign_posts')
     .join('campaigns', 'campaign_posts.campaign_id', 'campaigns.id')
     .join('users', 'campaigns.user_id', 'users.id')
     .leftJoin('conservationists', 'users.id', 'conservationists.user_id')
-    .where('campaign_posts.id', id)
+    .where('users.is_deactivated', false)
+    .andWhere('campaign_posts.id', id)
     .select(
       'campaign_posts.*',
       'campaigns.name',
       'users.id as users_id',
-      'users.is_deactivated',
       'users.location',
       'users.profile_image',
       'conservationists.name as org_name'
@@ -119,11 +133,11 @@ async function updateOriginalPostByCampaignId(campaignId, changes) {
 module.exports = {
   deleteById,
   getMostRecentPosts,
+  findCampaignPostById,
   findById,
   findOriginalCampaignPostByCampaignId,
   findAllCampaignUpdates,
   findAllCampaignUpdatesByCampaignId,
-  findCampaignUpdateById,
   insert,
   updateById,
   updateOriginalPostByCampaignId,
