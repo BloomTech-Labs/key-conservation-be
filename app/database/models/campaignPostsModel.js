@@ -1,7 +1,8 @@
 const db = require('../dbConfig');
 
-async function getMostRecentPosts(startAt = 0, size = 8) {
-  const posts = await db('campaign_posts')
+async function getMostRecentPosts(startAt = 0, size = 8, filters = {}) {
+  const { skill } = filters;
+  let posts = db('campaign_posts')
     .join('campaigns', 'campaign_posts.campaign_id', 'campaigns.id')
     .join('users', 'campaigns.user_id', 'users.id')
     .leftJoin('conservationists', 'users.id', 'conservationists.user_id')
@@ -31,6 +32,18 @@ async function getMostRecentPosts(startAt = 0, size = 8) {
       'conservationists.name',
     )
     .limit(72);
+
+  if (skill) {
+    posts = posts.join(
+      'skilled_impact_requests',
+      'skilled_impact_requests.campaign_id',
+      'campaigns.id',
+    ).select(
+      'skilled_impact_requests.skill',
+      'skilled_impact_requests.id as skilled_imact_request_id',
+    ).where('skilled_impact_requests.skill', skill);
+  }
+  posts = await posts;
 
   return posts.slice(startAt, size);
 }
@@ -71,6 +84,7 @@ async function findById(id) {
     .join('users', 'campaigns.user_id', 'users.id')
     .leftJoin('conservationists', 'users.id', 'conservationists.user_id')
     .where('campaign_posts.id', id)
+    .andWhere('users.is_deactivated', false)
     .select(
       'campaign_posts.*',
       'campaigns.name',
@@ -90,23 +104,6 @@ async function findOriginalCampaignPostByCampaignId(campaignId) {
     .first();
 }
 
-async function findAllCampaignUpdates() {
-  return db('campaign_posts')
-    .join('campaigns', 'campaign_posts.campaign_id', 'campaigns.id')
-    .join('users', 'campaigns.user_id', 'users.id')
-    .leftJoin('conservationists', 'users.id', 'conservationists.user_id')
-    .where({ 'users.is_deactivated': false })
-    .where('campaign_posts.is_update', true)
-    .select(
-      'campaign_posts.*',
-      'campaigns.name',
-      'users.id as users_id',
-      'users.location',
-      'users.profile_image',
-      'conservationists.name as org_name',
-    );
-}
-
 async function findAllCampaignUpdatesByCampaignId(campaignId) {
   return db('campaign_posts')
     .join('campaigns', 'campaign_posts.campaign_id', 'campaigns.id')
@@ -123,24 +120,6 @@ async function findAllCampaignUpdatesByCampaignId(campaignId) {
     );
 }
 
-function findCampaignPostById(id) {
-  return db('campaign_posts')
-    .join('campaigns', 'campaign_posts.campaign_id', 'campaigns.id')
-    .join('users', 'campaigns.user_id', 'users.id')
-    .leftJoin('conservationists', 'users.id', 'conservationists.user_id')
-    .where('users.is_deactivated', false)
-    .andWhere('campaign_posts.id', id)
-    .select(
-      'campaign_posts.*',
-      'campaigns.name',
-      'users.id as users_id',
-      'users.location',
-      'users.profile_image',
-      'conservationists.name as org_name',
-    )
-    .first();
-}
-
 async function insert(post) {
   return db('campaign_posts').insert(post);
 }
@@ -149,23 +128,13 @@ async function updateById(id, changes) {
   return db('campaign_posts').where({ id }).update(changes).returning('*');
 }
 
-async function updateOriginalPostByCampaignId(campaignId, changes) {
-  return db('campaign_posts')
-    .where('campaign_id', campaignId)
-    .update(changes)
-    .returning('*');
-}
-
 module.exports = {
   deleteById,
   getMostRecentPosts,
   getPostsByUserId,
-  findCampaignPostById,
   findById,
   findOriginalCampaignPostByCampaignId,
-  findAllCampaignUpdates,
   findAllCampaignUpdatesByCampaignId,
   insert,
   updateById,
-  updateOriginalPostByCampaignId,
 };

@@ -98,7 +98,9 @@ async function findById(id) {
       )
       .groupBy('users.id', 'cons.id')
       .first();
+
     user.bookmarks = await Bookmarks.findUserBookmarks(id);
+
     user.campaigns = await CampaignPosts.getPostsByUserId(id);
   } else if (user.roles === 'supporter') {
     user = await db('users')
