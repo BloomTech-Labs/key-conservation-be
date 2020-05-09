@@ -9,7 +9,6 @@ const Users = require('../../database/models/usersModel');
 const Reports = require('../../database/models/reportModel');
 
 const S3Upload = require('../../middleware/s3Upload');
-const pick = require('../../../util/pick');
 
 router.get('/', async (req, res) => {
   try {
@@ -64,25 +63,6 @@ router.get('/camp/:id', async (req, res) => {
   }
 });
 
-router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
-  const newCampaignUpdate = pick(req.body, ['campaign_id', 'description']);
-  newCampaignUpdate.is_update = true;
-  if (req.file) {
-    newCampaignUpdate.image = req.file.location;
-  }
-
-  try {
-    const campaignUpdate = await CampaignPosts.insert(newCampaignUpdate);
-    if (campaignUpdate) {
-      log.info(campaignUpdate);
-      res.status(201).json({ campaignUpdate, msg: 'Campaign update added to database' });
-    }
-  } catch (err) {
-    log.error(err.message);
-    res.status(500).json({ err, msg: 'Unable to add update' });
-  }
-});
-
 router.put('/:id', S3Upload.upload.single('photo'), async (req, res) => {
   const { id } = req.params;
   const changes = {};
@@ -106,6 +86,7 @@ router.put('/:id', S3Upload.upload.single('photo'), async (req, res) => {
   }
 });
 
+// TODO: Delete
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {

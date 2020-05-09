@@ -147,6 +147,30 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   }
 });
 
+router.post('/update/:id', S3Upload.upload.single('photo'), async (req, res) => {
+  const newCampaignUpdate = pick(req.body, ['description']);
+
+  newCampaignUpdate.campaign_id = req.params.id;
+
+  newCampaignUpdate.is_update = true;
+  if (req.file) {
+    newCampaignUpdate.image = req.file.location;
+  }
+
+  try {
+    const campaignUpdate = await CampaignPosts.insert(newCampaignUpdate);
+    if (campaignUpdate) {
+      log.info(campaignUpdate);
+      res
+        .status(201)
+        .json({ campaignUpdate, msg: 'Campaign update added to database' });
+    }
+  } catch (err) {
+    log.error(err.message);
+    res.status(500).json({ err, msg: 'Unable to add update' });
+  }
+});
+
 router.put('/:id', S3Upload.upload.single('photo'), async (req, res) => {
   const { id } = req.params;
 
