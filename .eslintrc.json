@@ -18,8 +18,10 @@
     "rules": {
         "camelcase": "warn",
         "consistent-return": "off",
-        "max-len": [ "warn", { "code": 120 }],
+        "max-len": "off",
+        "no-console": "error",
         "no-param-reassign": "warn",
-        "no-unused-vars": [ "error", { "argsIgnorePattern": "Promise|err" }]
+        "no-unused-vars": [ "error", { "argsIgnorePattern": "Promise|err" }],
+        "object-curly-newline": [ "error", { "consistent": true }]
     }
 }
