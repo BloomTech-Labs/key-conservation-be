@@ -106,8 +106,14 @@ async function findById(id) {
   } else if (user.roles === 'supporter') {
     user = await db('users')
       .leftJoin('supporters as sup', 'sup.user_id', 'users.id')
+      .leftJoin('skills', 'skills.user_id', 'users.id')
       .where('users.id', id)
-      .select('users.*', 'sup.name')
+      .select(
+        'users.*',
+        'sup.name',
+        db.raw('array_to_json(array_agg(skills.skill)) as skills'),
+      )
+      .groupBy('users.id', 'sup.name')
       .first();
     user.bookmarks = await Bookmarks.findUserBookmarks(id);
   }
