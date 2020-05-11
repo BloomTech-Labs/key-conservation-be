@@ -2,7 +2,7 @@ const { WebSocketManager } = require('./app/websockets');
 const app = require('./app');
 const log = require('./app/logger');
 
-WebSocketManager.start();
+WebSocketManager.start(app);
 
 const port = process.env.PORT || 8000;
 
