@@ -121,7 +121,7 @@ async function findAllCampaignUpdatesByCampaignId(campaignId) {
 }
 
 async function insert(post) {
-  return db('campaign_posts').insert(post);
+  return db('campaign_posts').insert(post).returning('*');
 }
 
 async function updateById(id, changes) {

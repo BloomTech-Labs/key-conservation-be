@@ -5,6 +5,7 @@ const log = require('../../logger');
 const router = express.Router();
 
 const CampaignPosts = require('../../database/models/campaignPostsModel');
+const Campaigns = require('../../database/models/campaignModel');
 const Users = require('../../database/models/usersModel');
 const Reports = require('../../database/models/reportModel');
 
@@ -64,11 +65,12 @@ router.delete('/:id', async (req, res) => {
   try {
     const usr = await Users.findBySub(req.user.sub);
     const post = await CampaignPosts.findById(id);
+    const campaign = await Campaigns.findById(post.campaign_id);
 
-    if (post.user_id !== usr.id) {
+    if (campaign.user_id !== usr.id) {
       if (usr.admin) {
         // Strike this user because an admin had to remove their post
-        const targetUsr = await Users.findById(post.user_id);
+        const targetUsr = await Users.findById(campaign.user_id);
 
         if (!targetUsr.is_deactivated) {
           const updates = {

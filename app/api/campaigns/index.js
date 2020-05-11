@@ -13,6 +13,8 @@ const S3Upload = require('../../middleware/s3Upload');
 const SkillsEnum = require('../../database/models/skillsEnum');
 const pick = require('../../../util/pick');
 
+const { sendWSMessage } = require('../../websockets');
+
 router.get('/', async (req, res) => {
   let { skill } = req.query;
 
@@ -105,6 +107,12 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
       if (skilledImpactRequests) await SkilledImpactRequests.insert(skilledImpactRequests, campaignId);
       const newCampaigns = await Campaigns.findById(campaignId);
       log.info(`inserted campaign ${name}`, newCampaigns);
+
+      // Send over WebSockets
+      sendWSMessage({
+        feed: newCampaigns,
+      });
+
       res.status(201).json({ newCampaigns, msg: 'Campaign added to database' });
       // eslint-disable-next-line camelcase
     } else if (!image || !name || !description || !call_to_action) {
@@ -119,29 +127,33 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   }
 });
 
-router.post('/update/:id', S3Upload.upload.single('photo'), async (req, res) => {
-  const newCampaignUpdate = pick(req.body, ['description']);
+router.post(
+  '/update/:id',
+  S3Upload.upload.single('photo'),
+  async (req, res) => {
+    const newCampaignUpdate = pick(req.body, ['description']);
 
-  newCampaignUpdate.campaign_id = req.params.id;
+    newCampaignUpdate.campaign_id = req.params.id;
 
-  newCampaignUpdate.is_update = true;
-  if (req.file) {
-    newCampaignUpdate.image = req.file.location;
-  }
-
-  try {
-    const campaignUpdate = await CampaignPosts.insert(newCampaignUpdate);
-    if (campaignUpdate) {
-      log.info(campaignUpdate);
-      res
-        .status(201)
-        .json({ campaignUpdate, msg: 'Campaign update added to database' });
+    newCampaignUpdate.is_update = true;
+    if (req.file) {
+      newCampaignUpdate.image = req.file.location;
     }
-  } catch (err) {
-    log.error(err.message);
-    res.status(500).json({ err, msg: 'Unable to add update' });
-  }
-});
+
+    try {
+      const campaignUpdate = await CampaignPosts.insert(newCampaignUpdate);
+      if (campaignUpdate) {
+        log.info(campaignUpdate);
+        res
+          .status(201)
+          .json({ campaignUpdate, msg: 'Campaign update added to database' });
+      }
+    } catch (err) {
+      log.error(err.message);
+      res.status(500).json({ err, msg: 'Unable to add update' });
+    }
+  },
+);
 
 // Get reactions on a campaign post
 router.get('/:id/reactions', async (req, res) => {
@@ -153,7 +165,10 @@ router.get('/:id/reactions', async (req, res) => {
     const { id: userId } = await Users.findBySub(sub);
 
     const reactions = await Emojis.findByCampaignPost(id);
-    const [userReaction] = await Emojis.findUserReactionByCampaignPost(id, userId);
+    const [userReaction] = await Emojis.findUserReactionByCampaignPost(
+      id,
+      userId,
+    );
 
     return res.status(200).json({
       reactions,
@@ -182,7 +197,9 @@ router.put('/:id/reactions', async (req, res) => {
     } else if (emoji && emoji.trim() && emoji.trim().length <= 3) {
       await Emojis.addUserReactionToPost(id, userId, emoji);
     } else {
-      return res.status(400).json({ message: 'Invalid Emoji - Input too large' });
+      return res
+        .status(400)
+        .json({ message: 'Invalid Emoji - Input too large' });
     }
 
     return res.sendStatus(200);
