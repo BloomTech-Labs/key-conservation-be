@@ -1,14 +1,18 @@
 const db = require('../dbConfig');
 
-async function getMostRecentPosts(startAt = 0, size = 8, filters = {}) {
+async function getMostRecentPosts(startAt = 0, size = 8, date, filters = {}) {
   const { skill } = filters;
+
+  const zero = new Date(0);
+
   let posts = db('campaign_posts')
     .join('campaigns', 'campaign_posts.campaign_id', 'campaigns.id')
     .join('users', 'campaigns.user_id', 'users.id')
     .leftJoin('conservationists', 'users.id', 'conservationists.user_id')
     .leftJoin('comments', 'comments.campaign_id', 'campaign_posts.campaign_id')
-    .whereNot('users.is_deactivated', true)
     .orderBy('campaign_posts.id', 'desc')
+    .whereNot('users.is_deactivated', true)
+    .andWhere('campaign_posts.created_at', '>=', date || zero.toISOString())
     .select(
       'campaign_posts.*',
       'campaigns.name',
@@ -19,7 +23,7 @@ async function getMostRecentPosts(startAt = 0, size = 8, filters = {}) {
       'conservationists.name as org_name',
       db.raw(
         // eslint-disable-next-line quotes
-        `ARRAY_AGG(json_build_object('id', comments.id, 'user_id', comments.user_id, 'created_at', comments.created_at, 'body', comments.body)) filter (where comments.id is not null) as comments`,
+        `ARRAY_AGG(json_build_object('id', comments.id, 'user_id', comments.user_id, 'created_at', comments.created_at, 'body', comments.body)) filter (where comments.id is not null) as comments`
       ),
     )
     .groupBy(
@@ -29,19 +33,22 @@ async function getMostRecentPosts(startAt = 0, size = 8, filters = {}) {
       'users.id',
       'users.location',
       'users.profile_image',
-      'conservationists.name',
+      'conservationists.name'
     )
     .limit(72);
 
   if (skill) {
-    posts = posts.join(
-      'skilled_impact_requests',
-      'skilled_impact_requests.campaign_id',
-      'campaigns.id',
-    ).select(
-      'skilled_impact_requests.skill',
-      'skilled_impact_requests.id as skilled_imact_request_id',
-    ).where('skilled_impact_requests.skill', skill);
+    posts = posts
+      .join(
+        'skilled_impact_requests',
+        'skilled_impact_requests.campaign_id',
+        'campaigns.id'
+      )
+      .select(
+        'skilled_impact_requests.skill',
+        'skilled_impact_requests.id as skilled_imact_request_id'
+      )
+      .where('skilled_impact_requests.skill', skill);
   }
   posts = await posts;
 
@@ -61,7 +68,7 @@ async function getPostsByUserId(id, startAt = 0, size = 8) {
       'campaign_posts.*',
       'campaigns.urgency',
       'campaigns.name',
-      'campaigns.user_id',
+      'campaigns.user_id'
     )
     .orderBy('campaign_posts.created_at', 'desc');
 
@@ -92,7 +99,7 @@ async function findById(id) {
       'users.is_deactivated',
       'users.location',
       'users.profile_image',
-      'conservationists.name as org_name',
+      'conservationists.name as org_name'
     )
     .first();
 }
@@ -116,7 +123,7 @@ async function findAllCampaignUpdatesByCampaignId(campaignId) {
       'campaigns.name as campaign_name',
       'users.profile_image',
       'users.location',
-      'conservationists.name as org_name',
+      'conservationists.name as org_name'
     );
 }
 

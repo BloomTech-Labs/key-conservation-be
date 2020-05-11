@@ -7,10 +7,10 @@ router.get('/', async (req, res) => {
   // size: Size of data to send back
   // startAt: Which post to start sending data from,
   // 0 being newest post
-  const { size, startAt } = req.query;
+  const { size, startAt, date } = req.query;
 
   try {
-    const feed = await CampaignPosts.getMostRecentPosts(startAt, size);
+    const feed = await CampaignPosts.getMostRecentPosts(startAt, size, date);
     return res.status(200).json(feed);
   } catch (err) {
     return res.status(500).json({
