@@ -9,7 +9,6 @@ class WebSocketManager {
 
   static start(server) {
     this.wss = new WebSocket.Server({
-      port: process.env.WEBSOCKET_PORT || 8080,
       server,
     });
   }
