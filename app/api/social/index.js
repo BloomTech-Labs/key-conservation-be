@@ -4,11 +4,18 @@ const log = require('../../logger');
 const router = express.Router();
 
 const Social = require('../../database/models/socialModel');
-const Campaigns = require('../../database/models/campaignModel');
+const Users = require('../../database/models/usersModel');
 
 router.post('/bookmark/:id', async (req, res) => {
   try {
-    const data = await Social.insertBookmark(req.body);
+    const usr = await Users.findBySub(req.user.sub);
+
+    const bookmark = {
+      user_id: usr.id,
+      campaign_id: req.params.id,
+    };
+
+    const data = await Social.insertBookmark(bookmark);
     if (data) {
       res.status(201).json({ data, msg: 'Bookmark added to database' });
     } else {
@@ -20,9 +27,10 @@ router.post('/bookmark/:id', async (req, res) => {
   }
 });
 
-router.delete('/bookmark/:id/:user', async (req, res) => {
+router.delete('/bookmark/:id', async (req, res) => {
   try {
-    const data = await Social.removeBookmark(req.params.id, req.params.user);
+    const usr = await Users.findBySub(req.user.sub);
+    const data = await Social.removeBookmark(req.params.id, usr.id);
     if (data) {
       res.status(200).json({ data, msg: 'Bookmark removed from the database' });
     } else {
@@ -34,13 +42,13 @@ router.delete('/bookmark/:id/:user', async (req, res) => {
   }
 });
 
-router.get('/bookmark/:user', async (req, res) => {
+router.get('/bookmark', async (req, res) => {
   try {
-    const bookmarks = await Social.findUserBookmarks(req.params.user);
-    const savedCampaigns = await Promise.all(bookmarks.map((b) => Campaigns.findById(b.campaign_id)));
-    res.status(200).json(savedCampaigns);
+    const usr = await Users.findBySub(req.user.sub);
+    const bookmarks = await Social.findUserBookmarks(usr.id);
+    res.status(200).json(bookmarks);
   } catch (err) {
-    log.error(err);
+    log.error('There was an error', err);
     res.status(500).json({ err, msg: 'Unable to fetch bookmarks' });
   }
 });
