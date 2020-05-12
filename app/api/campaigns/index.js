@@ -150,7 +150,6 @@ router.post(
         sendWSMessage({
           feed: post,
         });
-
         res
           .status(201)
           .json({ campaignUpdate, msg: 'Campaign update added to database' });
