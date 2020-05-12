@@ -10,63 +10,15 @@ const Emojis = require('../../database/models/emojiModel');
 const ApplicationSubmissions = require('../../database/models/applicationSubmissionsModel');
 const SkilledImpactRequests = require('../../database/models/skilledImpactRequestsModel');
 const S3Upload = require('../../middleware/s3Upload');
-const SkillsEnum = require('../../database/models/skillsEnum');
 const pick = require('../../../util/pick');
 
 const { sendWSMessage } = require('../../websockets');
-
-router.get('/', async (req, res) => {
-  let { skill } = req.query;
-
-  // verify skill if passed in
-  if (skill) {
-    skill = skill.toUpperCase().replace(' ', '_');
-    if (!Object.keys(SkillsEnum).includes(skill)) {
-      res.status(400).json({ message: 'Invalid skill entered' });
-    }
-  }
-
-  const filters = { skill };
-
-  try {
-    const campaigns = await Campaigns.findAll(filters);
-    res.status(200).json({ campaigns, msg: 'The campaigns were found' });
-  } catch (err) {
-    log.error(err);
-    res.status(500).json({ err, msg: 'Unable to make request to server' });
-  }
-});
-
-router.get('/:id', async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const campaign = await Campaigns.findById(id);
-    if (!campaign) {
-      return res
-        .status(400)
-        .json({ msg: 'Campaign was not found in the database' });
-    }
-    if (campaign.is_deactivated) {
-      const user = await Users.findBySub(req.user.sub);
-      if (!user || !user.admin) {
-        return res.status(401).json({
-          msg: 'This campaign may only be viewed by an administrator',
-        });
-      }
-    }
-    return res.status(200).json({ campaign, msg: 'The campaign was found' });
-  } catch (err) {
-    log.error(err);
-    res.status(500).json({ err, msg: 'Unable to make request to server' });
-  }
-});
 
 router.get('/:id/submissions', async (req, res) => {
   const { id } = req.params;
   try {
     const applicationSubmissions = await ApplicationSubmissions.findAllByCampaignId(
-      id,
+      id
     );
     res.status(200).json({ applicationSubmissions, error: null });
   } catch (error) {
@@ -104,7 +56,8 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
         description,
         is_update: false,
       });
-      if (skilledImpactRequests) await SkilledImpactRequests.insert(skilledImpactRequests, campaignId);
+      if (skilledImpactRequests)
+        await SkilledImpactRequests.insert(skilledImpactRequests, campaignId);
       const newCampaigns = await Campaigns.findById(campaignId);
       log.info(`inserted campaign ${name}`, newCampaigns);
 
@@ -150,6 +103,7 @@ router.post(
         sendWSMessage({
           feed: post,
         });
+
         res
           .status(201)
           .json({ campaignUpdate, msg: 'Campaign update added to database' });
@@ -158,7 +112,7 @@ router.post(
       log.error(err.message);
       res.status(500).json({ err, msg: 'Unable to add update' });
     }
-  },
+  }
 );
 
 // Get reactions on a campaign post
@@ -173,7 +127,7 @@ router.get('/:id/reactions', async (req, res) => {
     const reactions = await Emojis.findByCampaignPost(id);
     const [userReaction] = await Emojis.findUserReactionByCampaignPost(
       id,
-      userId,
+      userId
     );
 
     return res.status(200).json({

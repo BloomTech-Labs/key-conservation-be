@@ -1,5 +1,6 @@
 const express = require('express');
 const CampaignPosts = require('../../database/models/campaignPostsModel');
+const SkillsEnum = require('../../database/models/skillsEnum');
 
 const router = express.Router();
 
@@ -9,8 +10,23 @@ router.get('/', async (req, res) => {
   // 0 being newest post
   const { size, startAt, date } = req.query;
 
+  let { skill } = req.query;
+
+  // verify skill if passed in
+  if (skill) {
+    skill = skill.toUpperCase().replace(' ', '_');
+    if (!Object.keys(SkillsEnum).includes(skill)) {
+      res.status(400).json({ message: 'Invalid skill entered' });
+    }
+  }
+
   try {
-    const feed = await CampaignPosts.getMostRecentPosts(startAt, size, date);
+    const feed = await CampaignPosts.getMostRecentPosts(
+      startAt,
+      size,
+      date,
+      skill
+    );
     return res.status(200).json(feed);
   } catch (err) {
     return res.status(500).json({
