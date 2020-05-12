@@ -141,9 +141,15 @@ router.post(
     }
 
     try {
-      const campaignUpdate = await CampaignPosts.insert(newCampaignUpdate);
+      const [campaignUpdate] = await CampaignPosts.insert(newCampaignUpdate);
       if (campaignUpdate) {
         log.info(campaignUpdate);
+
+        const post = await CampaignPosts.findById(campaignUpdate.id);
+
+        sendWSMessage({
+          feed: post,
+        });
         res
           .status(201)
           .json({ campaignUpdate, msg: 'Campaign update added to database' });
