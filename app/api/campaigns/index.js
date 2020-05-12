@@ -141,7 +141,7 @@ router.post(
     }
 
     try {
-      const campaignUpdate = await CampaignPosts.insert(newCampaignUpdate);
+      const [campaignUpdate] = await CampaignPosts.insert(newCampaignUpdate);
       if (campaignUpdate) {
         log.info(campaignUpdate);
 
