@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
       startAt,
       size,
       date,
-      skill
+      skill,
     );
     return res.status(200).json(feed);
   } catch (err) {

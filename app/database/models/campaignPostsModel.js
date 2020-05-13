@@ -23,7 +23,7 @@ async function getMostRecentPosts(startAt = 0, size = 8, date, filters = {}) {
       'conservationists.name as org_name',
       db.raw(
         // eslint-disable-next-line quotes
-        `ARRAY_AGG(json_build_object('id', comments.id, 'user_id', comments.user_id, 'created_at', comments.created_at, 'body', comments.body)) filter (where comments.id is not null) as comments`
+        `ARRAY_AGG(json_build_object('id', comments.id, 'user_id', comments.user_id, 'created_at', comments.created_at, 'body', comments.body)) filter (where comments.id is not null) as comments`,
       ),
     )
     .groupBy(
@@ -33,7 +33,7 @@ async function getMostRecentPosts(startAt = 0, size = 8, date, filters = {}) {
       'users.id',
       'users.location',
       'users.profile_image',
-      'conservationists.name'
+      'conservationists.name',
     )
     .limit(72);
 
@@ -42,11 +42,11 @@ async function getMostRecentPosts(startAt = 0, size = 8, date, filters = {}) {
       .join(
         'skilled_impact_requests',
         'skilled_impact_requests.campaign_id',
-        'campaigns.id'
+        'campaigns.id',
       )
       .select(
         'skilled_impact_requests.skill',
-        'skilled_impact_requests.id as skilled_imact_request_id'
+        'skilled_impact_requests.id as skilled_imact_request_id',
       )
       .where('skilled_impact_requests.skill', skill);
   }
@@ -68,7 +68,7 @@ async function getPostsByUserId(id, startAt = 0, size = 8) {
       'campaign_posts.*',
       'campaigns.urgency',
       'campaigns.name',
-      'campaigns.user_id'
+      'campaigns.user_id',
     )
     .orderBy('campaign_posts.created_at', 'desc');
 
@@ -99,7 +99,7 @@ async function findById(id) {
       'users.is_deactivated',
       'users.location',
       'users.profile_image',
-      'conservationists.name as org_name'
+      'conservationists.name as org_name',
     )
     .first();
 }
@@ -123,7 +123,7 @@ async function findAllCampaignUpdatesByCampaignId(campaignId) {
       'campaigns.name as campaign_name',
       'users.profile_image',
       'users.location',
-      'conservationists.name as org_name'
+      'conservationists.name as org_name',
     );
 }
 
