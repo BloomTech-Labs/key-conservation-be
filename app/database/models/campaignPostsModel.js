@@ -45,7 +45,7 @@ async function getMostRecentPosts(startAt = 0, size = 8, date, filters = {}) {
     )
     .select(
       'skilled_impact_requests.skill',
-      'skilled_impact_requests.id as skilled_imact_request_id',
+      'skilled_impact_requests.id as skilled_impact_request_id',
     )
   posts = await posts;
 
