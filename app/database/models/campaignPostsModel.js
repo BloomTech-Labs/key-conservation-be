@@ -5,9 +5,14 @@ async function getMostRecentPosts(startAt = 0, size = 8, date, filters = {}) {
 
   const zero = new Date(0);
 
-  let posts = db('campaign_posts')
+  const posts = await db('campaign_posts')
     .join('campaigns', 'campaign_posts.campaign_id', 'campaigns.id')
     .join('users', 'campaigns.user_id', 'users.id')
+    .join(
+      'skilled_impact_requests',
+      'skilled_impact_requests.campaign_id',
+      'campaigns.id',
+    )
     .leftJoin('conservationists', 'users.id', 'conservationists.user_id')
     .leftJoin('comments', 'comments.campaign_id', 'campaign_posts.campaign_id')
     .orderBy('campaign_posts.id', 'desc')
@@ -21,6 +26,8 @@ async function getMostRecentPosts(startAt = 0, size = 8, date, filters = {}) {
       'users.location',
       'users.profile_image',
       'conservationists.name as org_name',
+      'skilled_impact_requests.skill',
+      'skilled_impact_requests.id as skilled_impact_request_id',
       db.raw(
         // eslint-disable-next-line quotes
         `ARRAY_AGG(json_build_object('id', comments.id, 'user_id', comments.user_id, 'created_at', comments.created_at, 'body', comments.body)) filter (where comments.id is not null) as comments`,
@@ -34,20 +41,9 @@ async function getMostRecentPosts(startAt = 0, size = 8, date, filters = {}) {
       'users.location',
       'users.profile_image',
       'conservationists.name',
+      'skilled_impact_requests.skill'
     )
     .limit(72);
-
-  posts = posts
-    .join(
-      'skilled_impact_requests',
-      'skilled_impact_requests.campaign_id',
-      'campaigns.id',
-    )
-    .select(
-      'skilled_impact_requests.skill',
-      'skilled_impact_requests.id as skilled_impact_request_id',
-    )
-  posts = await posts;
 
   return posts.slice(startAt, size);
 }
