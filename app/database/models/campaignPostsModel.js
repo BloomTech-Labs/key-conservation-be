@@ -37,19 +37,16 @@ async function getMostRecentPosts(startAt = 0, size = 8, date, filters = {}) {
     )
     .limit(72);
 
-  if (skill) {
-    posts = posts
-      .join(
-        'skilled_impact_requests',
-        'skilled_impact_requests.campaign_id',
-        'campaigns.id',
-      )
-      .select(
-        'skilled_impact_requests.skill',
-        'skilled_impact_requests.id as skilled_imact_request_id',
-      )
-      .where('skilled_impact_requests.skill', skill);
-  }
+  posts = posts
+    .join(
+      'skilled_impact_requests',
+      'skilled_impact_requests.campaign_id',
+      'campaigns.id',
+    )
+    .select(
+      'skilled_impact_requests.skill',
+      'skilled_impact_requests.id as skilled_impact_request_id',
+    )
   posts = await posts;
 
   return posts.slice(startAt, size);
