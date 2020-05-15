@@ -41,6 +41,7 @@ async function getMostRecentPosts(startAt = 0, size = 8, date, filters = {}) {
       'users.location',
       'users.profile_image',
       'conservationists.name',
+      'skilled_impact_requests.id',
       'skilled_impact_requests.skill'
     )
     .limit(72);
