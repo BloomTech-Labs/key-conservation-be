@@ -9,19 +9,16 @@ async function getMostRecentPosts(startAt = undefined, size = 8, date) {
     start = new Date(Date.now()).toISOString();
   }
 
+  console.log(start, typeof start);
+
   let posts = db('campaign_posts')
     .join('campaigns', 'campaign_posts.campaign_id', 'campaigns.id')
     .join('users', 'campaigns.user_id', 'users.id')
-    .join(
-      'skilled_impact_requests',
-      'skilled_impact_requests.campaign_id',
-      'campaigns.id',
-    )
     .leftJoin('conservationists', 'users.id', 'conservationists.user_id')
     .leftJoin('comments', 'comments.campaign_id', 'campaign_posts.campaign_id')
-    .orderBy('campaign_posts.created_at', 'desc')
     .whereNot('users.is_deactivated', true)
-    .andWhere('campaign_posts.created_at', '>=', date || zero.toISOString())
+    .where('campaign_posts.created_at', '<', start)
+    .orderBy('campaign_posts.created_at', 'desc')
     .select(
       'campaign_posts.*',
       'campaigns.name',
@@ -32,8 +29,8 @@ async function getMostRecentPosts(startAt = undefined, size = 8, date) {
       'conservationists.name as org_name',
       db.raw(
         // eslint-disable-next-line quotes
-        `ARRAY_AGG(json_build_object('id', comments.id, 'user_id', comments.user_id, 'created_at', comments.created_at, 'body', comments.body)) filter (where comments.id is not null) as comments`,
-      ),
+        `ARRAY_AGG(json_build_object('id', comments.id, 'user_id', comments.user_id, 'created_at', comments.created_at, 'body', comments.body)) filter (where comments.id is not null) as comments`
+      )
     )
     .groupBy(
       'campaign_posts.id',
@@ -42,23 +39,15 @@ async function getMostRecentPosts(startAt = undefined, size = 8, date) {
       'users.id',
       'users.location',
       'users.profile_image',
-      'conservationists.name',
+      'conservationists.name'
     )
     .limit(72);
 
   posts = await posts;
 
-  let startIndex = posts.findIndex((post) => {
-    const postDate = new Date(post.created_at).getTime();
-    const startDate = new Date(start).getTime();
-    return postDate < startDate;
-  });
+  posts = posts.filter((post) => post.created_at > date || zero.toISOString());
 
-  if (startIndex === -1) {
-    startIndex = 0;
-  }
-
-  return posts.slice(startIndex || 0, (startIndex || 0) + size);
+  return posts.slice(0, size);
 }
 
 async function getPostsByUserId(id, startAt = undefined, size = 8) {
@@ -80,7 +69,7 @@ async function getPostsByUserId(id, startAt = undefined, size = 8) {
       'campaign_posts.*',
       'campaigns.urgency',
       'campaigns.name',
-      'campaigns.user_id',
+      'campaigns.user_id'
     )
     .orderBy('campaign_posts.created_at', 'desc');
 
@@ -113,7 +102,7 @@ async function findById(id) {
       'users.is_deactivated',
       'users.location',
       'users.profile_image',
-      'conservationists.name as org_name',
+      'conservationists.name as org_name'
     )
     .first();
 }
@@ -137,7 +126,7 @@ async function findAllCampaignUpdatesByCampaignId(campaignId) {
       'campaigns.name as campaign_name',
       'users.profile_image',
       'users.location',
-      'conservationists.name as org_name',
+      'conservationists.name as org_name'
     );
 }
 
