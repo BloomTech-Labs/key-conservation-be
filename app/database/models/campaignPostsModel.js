@@ -9,8 +9,6 @@ async function getMostRecentPosts(startAt = undefined, size = 8, date) {
     start = new Date(Date.now()).toISOString();
   }
 
-  console.log(start, typeof start);
-
   let posts = db('campaign_posts')
     .join('campaigns', 'campaign_posts.campaign_id', 'campaigns.id')
     .join('users', 'campaigns.user_id', 'users.id')
@@ -29,8 +27,8 @@ async function getMostRecentPosts(startAt = undefined, size = 8, date) {
       'conservationists.name as org_name',
       db.raw(
         // eslint-disable-next-line quotes
-        `ARRAY_AGG(json_build_object('id', comments.id, 'user_id', comments.user_id, 'created_at', comments.created_at, 'body', comments.body)) filter (where comments.id is not null) as comments`
-      )
+        `ARRAY_AGG(json_build_object('id', comments.id, 'user_id', comments.user_id, 'created_at', comments.created_at, 'body', comments.body)) filter (where comments.id is not null) as comments`,
+      ),
     )
     .groupBy(
       'campaign_posts.id',
@@ -39,13 +37,16 @@ async function getMostRecentPosts(startAt = undefined, size = 8, date) {
       'users.id',
       'users.location',
       'users.profile_image',
-      'conservationists.name'
+      'conservationists.name',
     )
     .limit(72);
 
   posts = await posts;
 
-  posts = posts.filter((post) => new Date(post.created_at).getTime() > new Date(date).getTime() || zero.toISOString());
+  posts = posts.filter(
+    (post) => new Date(post.created_at).getTime() > new Date(date).getTime()
+      || zero.toISOString(),
+  );
 
   return posts.slice(0, size);
 }
@@ -69,7 +70,7 @@ async function getPostsByUserId(id, startAt = undefined, size = 8) {
       'campaign_posts.*',
       'campaigns.urgency',
       'campaigns.name',
-      'campaigns.user_id'
+      'campaigns.user_id',
     )
     .orderBy('campaign_posts.created_at', 'desc');
 
@@ -102,7 +103,7 @@ async function findById(id) {
       'users.is_deactivated',
       'users.location',
       'users.profile_image',
-      'conservationists.name as org_name'
+      'conservationists.name as org_name',
     )
     .first();
 }
@@ -126,7 +127,7 @@ async function findAllCampaignUpdatesByCampaignId(campaignId) {
       'campaigns.name as campaign_name',
       'users.profile_image',
       'users.location',
-      'conservationists.name as org_name'
+      'conservationists.name as org_name',
     );
 }
 
