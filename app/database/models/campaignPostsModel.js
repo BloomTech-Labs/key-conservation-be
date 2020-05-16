@@ -45,7 +45,7 @@ async function getMostRecentPosts(startAt = undefined, size = 8, date) {
 
   posts = await posts;
 
-  posts = posts.filter((post) => post.created_at > date || zero.toISOString());
+  posts = posts.filter((post) => new Date(post.created_at).getTime() > new Date(date).getTime() || zero.getTime());
 
   return posts.slice(0, size);
 }
