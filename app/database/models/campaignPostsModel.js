@@ -1,20 +1,22 @@
 const db = require('../dbConfig');
 
-async function getMostRecentPosts(startAt = 0, size = 8, date, dateOrder = 0) {
+async function getMostRecentPosts(startAt = undefined, size = 8, date) {
   const zero = new Date(0);
+
+  let start = startAt;
+
+  if (!start) {
+    start = new Date(Date.now()).toISOString();
+  }
 
   let posts = db('campaign_posts')
     .join('campaigns', 'campaign_posts.campaign_id', 'campaigns.id')
     .join('users', 'campaigns.user_id', 'users.id')
     .leftJoin('conservationists', 'users.id', 'conservationists.user_id')
     .leftJoin('comments', 'comments.campaign_id', 'campaign_posts.campaign_id')
-    .orderBy('campaign_posts.id', 'desc')
+    .orderBy('campaign_posts.created_at', 'desc')
     .whereNot('users.is_deactivated', true)
-    .andWhere(
-      'campaign_posts.created_at',
-      `${dateOrder === 0 ? '>=' : '<'}`,
-      date || zero.toISOString(),
-    )
+    .andWhere('campaign_posts.created_at', '>=', date || zero.toISOString())
     .select(
       'campaign_posts.*',
       'campaigns.name',
@@ -41,10 +43,26 @@ async function getMostRecentPosts(startAt = 0, size = 8, date, dateOrder = 0) {
 
   posts = await posts;
 
-  return posts.slice(startAt, size);
+  let startIndex = posts.findIndex((post) => {
+    const postDate = new Date(post.created_at).getTime();
+    const startDate = new Date(start).getTime();
+    return postDate < startDate;
+  });
+
+  if (startIndex === -1) {
+    startIndex = 0;
+  }
+
+  return posts.slice(startIndex || 0, (startIndex || 0) + size);
 }
 
-async function getPostsByUserId(id, startAt = 0, size = 8) {
+async function getPostsByUserId(id, startAt = undefined, size = 8) {
+  let start = startAt;
+
+  if (!start) {
+    start = new Date(Date.now()).toISOString();
+  }
+
   const posts = await db('campaign_posts')
     .join('campaigns', 'campaigns.id', 'campaign_posts.campaign_id')
     .where('campaigns.user_id', id)
@@ -61,7 +79,9 @@ async function getPostsByUserId(id, startAt = 0, size = 8) {
     )
     .orderBy('campaign_posts.created_at', 'desc');
 
-  return posts.slice(startAt, size);
+  const startIndex = posts.findIndex((post) => post.created_at < start);
+
+  return posts.slice(startIndex, size);
 }
 
 async function deleteById(id) {
