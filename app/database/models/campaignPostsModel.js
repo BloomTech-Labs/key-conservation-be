@@ -1,8 +1,6 @@
 const db = require('../dbConfig');
 
-async function getMostRecentPosts(startAt = 0, size = 8, date, filters = {}) {
-  const { skill } = filters;
-
+async function getMostRecentPosts(startAt = 0, size = 8, date, dateOrder = 0) {
   const zero = new Date(0);
 
   let posts = db('campaign_posts')
@@ -12,7 +10,11 @@ async function getMostRecentPosts(startAt = 0, size = 8, date, filters = {}) {
     .leftJoin('comments', 'comments.campaign_id', 'campaign_posts.campaign_id')
     .orderBy('campaign_posts.id', 'desc')
     .whereNot('users.is_deactivated', true)
-    .andWhere('campaign_posts.created_at', '>=', date || zero.toISOString())
+    .andWhere(
+      'campaign_posts.created_at',
+      `${dateOrder === 0 ? '>=' : '<'}`,
+      date || zero.toISOString(),
+    )
     .select(
       'campaign_posts.*',
       'campaigns.name',
@@ -37,19 +39,6 @@ async function getMostRecentPosts(startAt = 0, size = 8, date, filters = {}) {
     )
     .limit(72);
 
-  if (skill) {
-    posts = posts
-      .join(
-        'skilled_impact_requests',
-        'skilled_impact_requests.campaign_id',
-        'campaigns.id',
-      )
-      .select(
-        'skilled_impact_requests.skill',
-        'skilled_impact_requests.id as skilled_imact_request_id',
-      )
-      .where('skilled_impact_requests.skill', skill);
-  }
   posts = await posts;
 
   return posts.slice(startAt, size);
