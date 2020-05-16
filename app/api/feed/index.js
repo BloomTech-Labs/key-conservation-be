@@ -13,8 +13,6 @@ router.get('/', async (req, res) => {
   try {
     const feed = await CampaignPosts.getMostRecentPosts(startAt, size, date);
 
-    console.log(feed);
-
     return res.status(200).json(feed);
   } catch (err) {
     return res.status(500).json({
