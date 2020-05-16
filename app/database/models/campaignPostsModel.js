@@ -30,8 +30,6 @@ async function getMostRecentPosts(startAt = undefined, size = 8, date) {
       'users.location',
       'users.profile_image',
       'conservationists.name as org_name',
-      'skilled_impact_requests.skill',
-      'skilled_impact_requests.id as skilled_impact_request_id',
       db.raw(
         // eslint-disable-next-line quotes
         `ARRAY_AGG(json_build_object('id', comments.id, 'user_id', comments.user_id, 'created_at', comments.created_at, 'body', comments.body)) filter (where comments.id is not null) as comments`,
