@@ -21,6 +21,7 @@ async function getMostRecentPosts(startAt = undefined, size = 8, date) {
       'campaign_posts.*',
       'campaigns.name',
       'campaigns.urgency',
+      'campaigns.call_to_action',
       'users.id as user_id',
       'users.location',
       'users.profile_image',
@@ -34,6 +35,7 @@ async function getMostRecentPosts(startAt = undefined, size = 8, date) {
       'campaign_posts.id',
       'campaigns.name',
       'campaigns.urgency',
+      'campaigns.call_to_action',
       'users.id',
       'users.location',
       'users.profile_image',
@@ -71,6 +73,7 @@ async function getPostsByUserId(id, startAt = undefined, size = 8) {
       'campaigns.urgency',
       'campaigns.name',
       'campaigns.user_id',
+      'campaigns.call_to_action',
     )
     .orderBy('campaign_posts.created_at', 'desc');
 
@@ -99,6 +102,7 @@ async function findById(id) {
     .select(
       'campaign_posts.*',
       'campaigns.name',
+      'campaigns.call_to_action',
       'users.id as user_id',
       'users.is_deactivated',
       'users.location',
@@ -125,6 +129,7 @@ async function findAllCampaignUpdatesByCampaignId(campaignId) {
     .select(
       'campaign_posts.*',
       'campaigns.name as campaign_name',
+      'campaigns.call_to_action',
       'users.profile_image',
       'users.location',
       'conservationists.name as org_name',
