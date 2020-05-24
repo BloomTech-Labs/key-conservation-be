@@ -31,7 +31,7 @@ async function getMostRecentPosts(startAt = undefined, size = 8, date) {
       // use distinct to eliminate duplicate rows from left joins
       db.raw(
         // eslint-disable-next-line quotes
-        `ARRAY_AGG(DISTINCT jsonb_build_object('id', skilled_impact_requests.id, 'skill', skilled_impact_requests.skill, 'project_goals', (select json_agg(project_goals) FROM (SELECT * FROM project_goals WHERE skilled_impact_request_id = skilled_impact_requests.id) AS project_goals))) FILTER (WHERE skilled_impact_requests.id IS NOT null) AS skilled_impact_requests`,
+        `ARRAY_AGG(DISTINCT jsonb_build_object('id', skilled_impact_requests.id, 'skill', skilled_impact_requests.skill, 'project_goals', (select json_agg(project_goals) FROM (SELECT id, goal_title, description FROM project_goals WHERE skilled_impact_request_id = skilled_impact_requests.id) AS project_goals))) FILTER (WHERE skilled_impact_requests.id IS NOT null) AS skilled_impact_requests`,
       ),
       db.raw(
         // eslint-disable-next-line quotes
