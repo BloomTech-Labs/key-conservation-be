@@ -28,8 +28,18 @@ router.get('/:id', async (req, res) => {
 });
 
 router.get('/:id/original', async (req, res) => {
-  
-})
+  const { id } = req.params;
+
+  try {
+    const post = await CampaignPosts.findOriginalCampaignPostByCampaignId(id);
+
+    return res.status(200).json(post);
+  } catch (err) {
+    return res.status(500).json({
+      message: 'An internal server error occurred while retreiving that post',
+    });
+  }
+});
 
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
