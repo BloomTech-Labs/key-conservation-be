@@ -8,7 +8,7 @@ router.post('/', async (req, res) => {
   try {
     const reviews = [req.body.likely_to_recommend, req.body.supporter_communication, req.body.provided_value];
     const validMetrics = reviews.filter((r) => !r.isInteger() || r < 1 || r > 5).length === 0;
-    if (!constantBool) return res.status(400).json({ message: "Incorrect input for review" });
+    if (!validMetrics) return res.status(400).json({ message: "Incorrect input for review" });
     const [projectReview] = await ProjectReviews.insert(req.body);
     return res.status(201).json({ projectReview });
   } catch (error) {
