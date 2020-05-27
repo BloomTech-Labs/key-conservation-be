@@ -5,6 +5,7 @@ const router = express.Router();
 const db = require('../../database/dbConfig');
 const log = require('../../logger');
 
+const CampaignPosts = require('../../database/models/campaignPostsModel');
 const Reports = require('../../database/models/reportModel');
 const Users = require('../../database/models/usersModel');
 
@@ -37,12 +38,13 @@ router.get('/', async (req, res) => {
         break;
       case 'campaigns':
         response = response.filter(
-          (report) => report.table_name === 'campaigns'
-            || report.table_name === 'campaign_updates',
+          (report) => report.table_name === 'campaigns',
         );
         break;
       case 'comments':
-        response = response.filter((report) => report.table_name === 'comments');
+        response = response.filter(
+          (report) => report.table_name === 'comments',
+        );
         break;
     }
 
@@ -128,7 +130,9 @@ router.get('/:id', async (req, res) => {
     const response = await Reports.findById(req.params.id);
 
     if (!response) {
-      return res.status(404).json({ message: 'A report with that ID does not exist' });
+      return res
+        .status(404)
+        .json({ message: 'A report with that ID does not exist' });
     }
 
     let otherReports = await Reports.findWhere({
@@ -186,7 +190,7 @@ router.post('/', async (req, res) => {
     const error = checkFields(required, req.body);
     if (error) throw new Error(error);
 
-    const types = ['users', 'campaigns', 'campaign_updates', 'comments'];
+    const types = ['users', 'campaign_posts', 'comments'];
 
     // Make sure provided type is a valid table name
     if (!types.includes(req.body.postType)) {
@@ -214,32 +218,16 @@ router.post('/', async (req, res) => {
 
     switch (req.body.postType) {
       case types[1]: {
-        // Campaigns
+        // Campaigns posts
 
-        // Get the campaign
-        const [campaign] = await db('campaigns').where({
-          id: req.body.postId,
-        });
-        // Get 'user_id' from campaign
-        reportedUserId = campaign.user_id;
+        // Get the campaign post
+        const post = await CampaignPosts.findById(req.body.postId);
+
+        // Get 'user_id' from campaign post
+        reportedUserId = post.user_id;
         break;
       }
       case types[2]: {
-        // Campaign Updates
-
-        // Get campaign update
-        const [campaignUpdate] = await db('campaign_updates').where({
-          id: req.body.postId,
-        });
-        // Get campaign from campaign update
-        const [campaign] = await db('campaigns').where({
-          id: campaignUpdate.id,
-        });
-        // Get 'user_id' from campaign
-        reportedUserId = campaign.user_id;
-        break;
-      }
-      case types[3]: {
         // Comments
         // Get comment
         const [comment] = await db('comments').where({
@@ -255,7 +243,7 @@ router.post('/', async (req, res) => {
       }
     }
 
-    // Make sure this reported hasn't already been made
+    // Make sure this report hasn't already been made
     const duplicates = await Reports.findWhere({
       reported_by: userId,
       post_id: req.body.postId,
@@ -267,7 +255,6 @@ router.post('/', async (req, res) => {
       return res.sendStatus(200);
     }
 
-    // TODO?
     // Construct report object
     const report = {
       reported_by: userId,
