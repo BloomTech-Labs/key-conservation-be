@@ -5,6 +5,30 @@ const Comments = require('./commentsModel.js');
 const SkilledImpactRequests = require('./skilledImpactRequestsModel.js');
 const log = require('../../logger');
 
+async function findById(id) {
+  const campaign = await db('campaigns')
+    .where({ 'campaigns.id': id })
+    .join('users', 'users.id', 'campaigns.user_id')
+    .leftJoin('conservationists as cons', 'cons.user_id', 'campaigns.user_id')
+    .where({ 'campaigns.id': id })
+    .select(
+      'cons.name as org_name',
+      'users.profile_image',
+      'users.location',
+      'users.is_deactivated',
+      'campaigns.*',
+    )
+    .first();
+  if (!campaign) return campaign;
+  const { image, description } = await CampaignPosts.findOriginalCampaignPostByCampaignId(id);
+  campaign.image = image;
+  campaign.description = description;
+  campaign.updates = await CampaignPosts.findAllCampaignUpdatesByCampaignId(id);
+  campaign.comments = await Comments.findCampaignComments(id);
+  campaign.skilled_impact_requests = await SkilledImpactRequests.find(id);
+  return campaign;
+}
+
 async function findAll(filters) {
   const { skill } = filters;
   try {
@@ -30,7 +54,7 @@ async function findAll(filters) {
         )
         .select(
           'skilled_impact_requests.skill',
-          'skilled_impact_requests.id as skilled_imact_request_id',
+          'skilled_impact_requests.id as skilled_impact_request_id',
         )
         .where('skilled_impact_requests.skill', skill);
     }
@@ -50,54 +74,6 @@ async function findAll(filters) {
   } catch (err) {
     throw new Error(err.message);
   }
-}
-
-async function findById(id) {
-  const campaign = await db('campaigns')
-    .where({ 'campaigns.id': id })
-    .join('users', 'users.id', 'campaigns.user_id')
-    .leftJoin('conservationists as cons', 'cons.user_id', 'campaigns.user_id')
-    .where({ 'campaigns.id': id })
-    .select(
-      'cons.name as org_name',
-      'users.profile_image',
-      'users.location',
-      'users.is_deactivated',
-      'campaigns.*',
-    )
-    .first();
-  if (!campaign) return campaign;
-  const { image, description } = await CampaignPosts.findOriginalCampaignPostByCampaignId(id);
-  campaign.image = image;
-  campaign.description = description;
-  campaign.updates = await CampaignPosts.findAllCampaignUpdatesByCampaignId(id);
-  campaign.comments = await Comments.findCampaignComments(id);
-  campaign.skilled_impact_requests = await SkilledImpactRequests.find(id);
-  return campaign;
-}
-
-async function findCampaignByUserId(userId) {
-  const campaigns = await db('campaigns')
-    .where('campaigns.user_id', userId)
-    .join('users', 'users.id', 'campaigns.user_id')
-    .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
-    .select(
-      'cons.name as org_name',
-      'users.profile_image',
-      'users.location',
-      'campaigns.*',
-    );
-  const withUpdates = campaigns.map(async (campaign) => {
-    const { image, description } = await CampaignPosts.findOriginalCampaignPostByCampaignId(campaign.id);
-    return {
-      ...campaign,
-      image,
-      description,
-      updates: await CampaignPosts.findAllCampaignUpdatesByCampaignId(campaign.id),
-      comments: await Comments.findCampaignComments(campaign.id),
-    };
-  });
-  return Promise.all(withUpdates);
 }
 
 async function insert(campaign) {
@@ -128,5 +104,5 @@ async function remove(id) {
 }
 
 module.exports = {
-  findAll, findById, findCampaignByUserId, insert, remove, update,
+  findById, findAll, insert, remove, update,
 };

@@ -1,5 +1,5 @@
-const db = require('../dbConfig.js');
-const Campaigns = require('./campaignModel.js');
+const db = require('../dbConfig');
+const CampaignPosts = require('./campaignPostsModel');
 const Bookmarks = require('./socialModel');
 const Skills = require('./skillsEnum');
 const pick = require('../../../util/pick');
@@ -17,6 +17,7 @@ const userColumns = [
   'phone_number',
   'is_deactivated',
   'strikes',
+  'accepting_help_requests',
 ];
 
 // Columns of the user model that are stored in the conservationists table
@@ -97,13 +98,21 @@ async function findById(id) {
       )
       .groupBy('users.id', 'cons.id')
       .first();
+
     user.bookmarks = await Bookmarks.findUserBookmarks(id);
-    user.campaigns = await Campaigns.findCampaignByUserId(id);
+
+    user.campaigns = await CampaignPosts.getPostsByUserId(id);
   } else if (user.roles === 'supporter') {
     user = await db('users')
       .leftJoin('supporters as sup', 'sup.user_id', 'users.id')
+      .leftJoin('skills', 'skills.user_id', 'users.id')
       .where('users.id', id)
-      .select('users.*', 'sup.name')
+      .select(
+        'users.*',
+        'sup.name',
+        db.raw('array_to_json(array_agg(skills.skill)) as skills'),
+      )
+      .groupBy('users.id', 'sup.name')
       .first();
     user.bookmarks = await Bookmarks.findUserBookmarks(id);
   }
@@ -276,8 +285,10 @@ async function update(user, id) {
   const existingUser = await findById(id);
   const isEmpty = (obj) => Object.getOwnPropertyNames(obj).length === 0;
   const triggerUsers = !isEmpty(pick(user, userColumns));
-  const triggerConservationists = !isEmpty(pick(user, conservationistColumns)) && existingUser.roles === 'conservationist';
-  const triggerSupporters = !isEmpty(pick(user, supporterColumns)) && existingUser.roles === 'supporter';
+  const triggerConservationists = !isEmpty(pick(user, conservationistColumns))
+    && existingUser.roles === 'conservationist';
+  const triggerSupporters = !isEmpty(pick(user, supporterColumns))
+    && existingUser.roles === 'supporter';
   const triggerSkills = user.skills && Array.isArray(user.skills);
 
   if (triggerUsers) {
@@ -302,7 +313,7 @@ async function update(user, id) {
 // This is used for the getConnectionById function in connectionsModel
 const getNameAndAvatarByIds = async (ids) => {
   try {
-    const users = await db('users')
+    let users = await db('users')
       .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
       .leftJoin('supporters as sup', 'sup.user_id', 'users.id')
       .whereIn('users.id', ids)
@@ -312,13 +323,15 @@ const getNameAndAvatarByIds = async (ids) => {
         'users.profile_image',
         'cons.name as org_name',
         'sup.name as sup_name',
-      )
-      .map((user) => ({
+      );
+    if (users && users.length > 0) {
+      users = users.map((user) => ({
         id: user.id,
         name: user.org_name || user.sup_name || 'User',
         avatar: user.profile_image,
         role: user.roles,
       }));
+    }
     const usersById = {};
     for (let i = 0; i < users.length; i += 1) {
       const u = users[i];
