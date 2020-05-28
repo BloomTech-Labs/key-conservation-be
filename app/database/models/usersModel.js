@@ -337,6 +337,7 @@ const getNameAndAvatarByIds = async (ids) => {
       const u = users[i];
       usersById[u.id] = u;
     }
+
     return usersById;
   } catch (err) {
     throw new Error(err);

@@ -149,7 +149,7 @@ router.get('/:id', async (req, res) => {
 
     response.other_reports = await Promise.all(
       otherReports.map(async (report) => {
-        const reportedBy = users.find((u) => u.id === report.reported_by);
+        const reportedBy = users[report.reported_by];
 
         return {
           ...report,
