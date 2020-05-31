@@ -1,6 +1,8 @@
 const jwt = require('express-jwt');
 const jwksRsa = require('jwks-rsa');
 
+const log = require('../logger');
+
 // # Auth0 Middleware # //
 const authConfig = {
   domain: 'key-conservation.auth0.com',
@@ -27,7 +29,11 @@ const nullMiddleware = (req, res, next) => {
   next();
 };
 
-const disableAuth = process.env.DISABLE_AUTH && ['1', 'true', 'yes'].includes(process.env.DISABLE_AUTH.toLowerCase());
+const disableAuth = process.env.NODE_ENV !== 'production' && process.env.DISABLE_AUTH && ['1', 'true', 'yes'].includes(process.env.DISABLE_AUTH.toLowerCase());
+
+if (disableAuth) {
+  log.warn('AUTHENTICATION DISABLED - FOR LOCAL DEVELOPMENT ONLY!');
+}
 
 module.exports = disableAuth ? nullMiddleware : checkJwt;
 // # End Auth0 Middleware # //
