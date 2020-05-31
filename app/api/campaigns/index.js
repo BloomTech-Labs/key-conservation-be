@@ -78,8 +78,8 @@ router.get('/:id/submissions', async (req, res) => {
 
 router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   const { location: image } = req.file;
-  const skilledImpactRequests = typeof req.body.skilledImpactRequests === 'string' ?
-      JSON.parse(req.body.skilledImpactRequests) : req.body.skilledImpactRequests;
+  const skilledImpactRequests = typeof req.body.skilledImpactRequests === 'string'
+    ? JSON.parse(req.body.skilledImpactRequests) : req.body.skilledImpactRequests;
 
   const {
     // eslint-disable-next-line camelcase
