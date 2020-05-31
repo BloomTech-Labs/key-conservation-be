@@ -22,5 +22,12 @@ const checkJwt = jwt({
   algorithm: ['RS256'],
 });
 
-module.exports = checkJwt;
+const nullMiddleware = (req, res, next) => {
+  req.user = 'debug_sub';
+  next();
+};
+
+const disableAuth = process.env.DISABLE_AUTH && ['1', 'true', 'yes'].includes(process.env.DISABLE_AUTH.toLowerCase());
+
+module.exports = disableAuth ? nullMiddleware : checkJwt;
 // # End Auth0 Middleware # //

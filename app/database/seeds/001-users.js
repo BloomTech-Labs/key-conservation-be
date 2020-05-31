@@ -4,7 +4,7 @@ const TABLE_NAME = 'users';
 exports.seed = (knex, Promise) => knex(TABLE_NAME).del().then(() => knex(TABLE_NAME).insert([
   {
     // id: 1,
-    sub: generateRandomSub(),
+    sub: 'debug_sub',
     email: 'info@beavertown.org',
     location: 'Pittsburg, PA',
     roles: 'conservationist',
