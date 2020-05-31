@@ -7,12 +7,12 @@ exports.up = function(knex) {
         table.integer("supporter_communication").notNullable();
         table.integer("provided_value").notNullable();
         table.integer("supporter_user_id")
-            .references("supporters.sup_id")
+            .references("supporters.id")
             .onDelete("CASCADE")
             .onUpdate("CASCADE"); 
         table.integer("conservationist_user_id")
             .notNullable()
-            .references("conservationists.cons_id")
+            .references("conservationists.id")
             .onDelete("CASCADE")
             .onUpdate("CASCADE");   
         table.integer("skilled_impact_request_id")
