@@ -94,7 +94,7 @@ async function findById(id) {
         'cons.point_of_contact_email',
         'cons.latitude',
         'cons.longitude',
-        db.raw('array_agg(json_build_object(\'skill\', skills.skill, \'description\', COALESCE(skills.description, \'\'))) as skills'),
+        db.raw('array_agg(json_build_object(\'skill\', skills.skill, \'description\', COALESCE(skills.description, \'\'))) FILTER (WHERE NOT skills.skill = \'null\') as skills'),
       )
       .groupBy('users.id', 'cons.id')
       .first();
@@ -110,7 +110,7 @@ async function findById(id) {
       .select(
         'users.*',
         'sup.name',
-        db.raw('array_agg(json_build_object(\'skill\', skills.skill, \'description\', COALESCE(skills.description, \'\'))) as skills'),
+        db.raw('array_agg(json_build_object(\'skill\', skills.skill, \'description\', COALESCE(skills.description, \'\'))) FILTER (WHERE NOT skills.skill = \'null\') as skills'),
       )
       .groupBy('users.id', 'sup.name')
       .first();
