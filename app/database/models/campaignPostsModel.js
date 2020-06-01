@@ -48,7 +48,6 @@ function getPostsWhere(where) {
       'users.location',
       'users.profile_image',
       'conservationists.name',
-      'skilled_impact_requests.id',
     );
 }
 
