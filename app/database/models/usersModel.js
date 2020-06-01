@@ -111,6 +111,7 @@ async function findById(id) {
         'users.*',
         'sup.name',
         db.raw(`array_agg(json_build_object('skill', skills.skill, 'description', COALESCE(skills.description, ''))) as skills`),
+
       )
       .groupBy('users.id', 'sup.name')
       .first();
@@ -274,7 +275,6 @@ async function updateSkillsTable(user, id) {
     const insertQuery = db('skills')
       .insert(skills.map((skillObj) => ({ user_id: id, skill: skillObj.skill, description: skillObj.description })))
       .toQuery();
-    console.log(insertQuery)
     await db.raw(`${insertQuery} ON CONFLICT (user_id, skill) DO UPDATE SET description = EXCLUDED.description`);
   }
 

@@ -66,7 +66,7 @@ router.get('/:id/submissions', async (req, res) => {
   const { id } = req.params;
   try {
     const applicationSubmissions = await ApplicationSubmissions.findAllByCampaignId(
-      id
+      id,
     );
     res.status(200).json({ applicationSubmissions, error: null });
   } catch (error) {
@@ -78,7 +78,9 @@ router.get('/:id/submissions', async (req, res) => {
 
 router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   const { location: image } = req.file;
-  const { skilledImpactRequests } = req.body;
+  const skilledImpactRequests = typeof req.body.skilledImpactRequests === 'string'
+    ? JSON.parse(req.body.skilledImpactRequests) : req.body.skilledImpactRequests;
+
   const {
     // eslint-disable-next-line camelcase
     user_id,
@@ -162,7 +164,7 @@ router.post(
       log.error(err.message);
       res.status(500).json({ err, msg: 'Unable to add update' });
     }
-  }
+  },
 );
 
 // Get reactions on a campaign post
@@ -177,7 +179,7 @@ router.get('/:id/reactions', async (req, res) => {
     const reactions = await Emojis.findByCampaignPost(id);
     const [userReaction] = await Emojis.findUserReactionByCampaignPost(
       id,
-      userId
+      userId,
     );
 
     return res.status(200).json({
