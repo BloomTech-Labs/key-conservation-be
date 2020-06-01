@@ -4,6 +4,20 @@ const log = require('../../logger');
 
 const Vetting = require('../../database/models/vettingModel');
 
+router.get('/', async (req, res) => {
+  const allUsers = Vetting.findAll();
+  try {
+    if (allUsers) {
+      return res.status(200).json(allUsers);
+    } else {
+      return res.status(404).json({ message: 'No users in vetting database' });
+    }
+  } catch (error) {
+    log.error(error);
+    return res.status(500).json({ message: error.message, error });
+  }
+});
+
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -61,15 +75,15 @@ router.put('/:id', async (req, res) => {
   try {
     const approvedUser = Vetting.approveUser(user);
     if (approvedUser) {
-      return res
-        .status(201)
-        .json({
-          approvedUser,
-          message: 'The user was moved successfully to the users table',
-        });
+      return res.status(201).json({
+        approvedUser,
+        message: 'The user was moved successfully to the users table',
+      });
     }
   } catch (error) {
     log.error(error);
     return res.status(500).json({ message: error.message, error });
   }
 });
+
+module.exports = router;

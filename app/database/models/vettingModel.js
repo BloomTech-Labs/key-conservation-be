@@ -1,13 +1,6 @@
 const db = require('../dbConfig');
 const Users = require('../models/usersModel');
 
-module.exports = {
-  addVettingUser,
-  findVettingUserById,
-  approveUser,
-  deleteUser,
-};
-
 const addVettingUser = async (user) => {
   const newUser = await db('vetting').insert(user, 'id');
   return newUser;
@@ -16,6 +9,10 @@ const addVettingUser = async (user) => {
 const findVettingUserById = async (id) => {
   const user = await db('vetting').where({ id }).first();
   return user;
+};
+
+const findAll = async () => {
+  return db('vetting');
 };
 
 // copies user to users and conservationists table and deletes them from vetting table
@@ -33,4 +30,12 @@ const deleteUser = async (id) => {
   } else {
     return 0;
   }
+};
+
+module.exports = {
+  addVettingUser,
+  findVettingUserById,
+  approveUser,
+  deleteUser,
+  findAll,
 };

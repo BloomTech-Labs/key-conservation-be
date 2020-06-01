@@ -13,33 +13,25 @@ afterAll(async () => {
 
 describe('campaign routes', () => {
   it(' will not let you access social route without a token', async () => {
-    await supertest(server)
-      .get('/api/campaigns')
-      .expect(401);
+    await supertest(server).get('/api/campaigns').expect(401);
   });
 });
-
 
 describe('campaign routes', () => {
   it(' will not let you access social route without a token', async () => {
-    await supertest(server)
-      .get('/api/updates')
-      .expect(401);
+    await supertest(server).get('/api/updates').expect(401);
   });
 });
+
 describe('comment route', () => {
   it('will not give a 200 without a token', async () => {
-    await supertest(server)
-      .get('/api/comments')
-      .expect(401);
+    await supertest(server).get('/api/comments').expect(401);
   });
 });
 
 describe('social routes', () => {
   it(' will not let you access social route without a token', async () => {
-    await supertest(server)
-      .get('/api/social')
-      .expect(401);
+    await supertest(server).get('/api/social').expect(401);
   });
 });
 
