@@ -47,6 +47,13 @@ router.get('/', restricted, async (req, res) => {
 
   const users = (await query).rows;
 
+  let i;
+  for (i = 0; i < users.length; i += 1) {
+    users[i].average_rating = users[i].total_stars / users[i].total_reviews;
+    delete users[i].total_reviews;
+    delete users[i].total_stars;
+  }
+
   res.status(200).send(users);
 });
 
