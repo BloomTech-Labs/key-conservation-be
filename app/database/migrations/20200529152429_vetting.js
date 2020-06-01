@@ -10,6 +10,8 @@ exports.up = function (knex) {
       );
     tbl.timestamp("created_at").defaultTo(knex.fn.now());
     tbl.string("location", 250);
+    tbl.string("city", 250);
+    tbl.string("country", 250);
     tbl.string("mini_bio", 280);
     tbl.text("species_and_habitats", 1000);
     tbl.string("twitter", 150);
@@ -24,6 +26,8 @@ exports.up = function (knex) {
     tbl.text("about_us", 1000);
     tbl.text("issues", 1000);
     tbl.text("support_us", 1000);
+    tbl.double("longitude", 10);
+    tbl.double("latitude", 10);
   });
 };
 
