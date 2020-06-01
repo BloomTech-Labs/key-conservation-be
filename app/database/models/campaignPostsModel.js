@@ -61,7 +61,7 @@ async function getMostRecentPosts(startAt = undefined, size = 8, date) {
     start = new Date(Date.now()).toISOString();
   }
 
-  let posts = await getPostsWhere(function () {
+  let posts = await getPostsWhere(function olderThan() {
     this.where('campaign_posts.created_at', '<', start);
   }).limit(72);
 
