@@ -23,6 +23,7 @@ const approveUser = async (id) => {
   const user = await findVettingUserById(id);
   const newUser = await Users.add(user);
   deleteUser(id);
+  return newUser;
 };
 
 const deleteUser = async (id) => {
