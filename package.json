@@ -13,6 +13,7 @@
     "db:rollback": "knex migrate:rollback",
     "db:seed": "knex seed:run"
   },
+  "jest": "cross-env DB_ENV=testing",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/labs14-key-conservation/backend.git"
