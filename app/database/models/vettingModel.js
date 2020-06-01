@@ -5,6 +5,7 @@ module.exports = {
   addVettingUser,
   findVettingUserById,
   approveUser,
+  deleteUser,
 };
 
 const addVettingUser = async (user) => {
@@ -20,10 +21,14 @@ const findVettingUserById = async (id) => {
 // copies user to users and conservationists table and deletes them from vetting table
 const approveUser = async (id) => {
   const user = await findVettingUserById(id);
-  const newUser = Users.add(user);
+  const newUser = await Users.add(user);
+  deleteUser(id);
+};
+
+const deleteUser = async (id) => {
   const deleted = await db('vetting').where({ id }).del();
-  if (deleted && newUser) {
-    return newUser;
+  if (deleted) {
+    return id;
   } else {
     return 0;
   }
