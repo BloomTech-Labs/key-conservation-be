@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const log = require('../../logger');
+const S3Upload = require('../../middleware/s3Upload');
 
 const Vetting = require('../../database/models/vettingModel');
 
 router.get('/', async (req, res) => {
-  const allUsers = Vetting.findAll();
+  const allUsers = await Vetting.findAll();
   try {
     if (allUsers) {
       return res.status(200).json(allUsers);
@@ -21,7 +22,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const user = Vetting.findVettingUserById(id);
+    const user = await Vetting.findVettingUserById(id);
     if (user) {
       return res.status(200).json({ user, message: 'The user was found' });
     } else {
@@ -35,14 +36,20 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
-  const user = req.body;
+router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
+  let user = {
+    ...req.body,
+    profile_image: req.file ? req.file.location : undefined,
+  };
+  const newUser = await Vetting.addVettingUser(user);
   try {
-    const newUser = Vetting.addVettingUser(user);
-    if (user) {
-      return res
-        .status(200)
-        .json({ user, message: 'The user was successfully added' });
+    if (newUser) {
+      return res.status(201).json({
+        newUser,
+        message: 'The user was successfully added to vetting database',
+      });
+    } else {
+      return res.status(404).json({ message: 'nope' });
     }
   } catch (error) {
     log.error(error);
@@ -70,15 +77,16 @@ router.delete('/:id', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-  const { id } = req.params;
-  const user = Vetting.findVettingUserById(id);
+  const id = req.params.id;
   try {
-    const approvedUser = Vetting.approveUser(user);
+    const approvedUser = await Vetting.approveUser(id);
     if (approvedUser) {
       return res.status(201).json({
         approvedUser,
         message: 'The user was moved successfully to the users table',
       });
+    } else {
+      return res.status(404);
     }
   } catch (error) {
     log.error(error);
