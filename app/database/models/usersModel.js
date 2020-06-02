@@ -115,7 +115,7 @@ async function findById(id) {
       .groupBy('users.id', 'sup.name')
       .first();
     user.bookmarks = await Bookmarks.findUserBookmarks(id);
-    
+
     user.skills = user.skills.filter((skillObj) => skillObj.skill !== null);
   }
 
