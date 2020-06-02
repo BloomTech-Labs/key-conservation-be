@@ -79,11 +79,12 @@ async function getPostsByUserId(id, startAt = undefined, size = 8) {
     start = new Date(Date.now()).toISOString();
   }
 
-  const posts = await getPostsWhere({ 'campaigns.user_id': id });
+  const posts = await getPostsWhere(function olderThan() {
+    this.where('campaigns.user_id', '=', id);
+    this.where('campaign_posts.created_at', '<', start);
+  });
 
-  const startIndex = posts.findIndex((post) => post.created_at < start);
-
-  return posts.slice(startIndex, size);
+  return posts.slice(0, size);
 }
 
 async function deleteById(id) {
