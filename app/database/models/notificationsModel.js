@@ -1,5 +1,4 @@
 const db = require('../dbConfig.js');
-const pick = require('../../../util/pick');
 
 /* FUNCTIONS
 
@@ -14,67 +13,53 @@ const pick = require('../../../util/pick');
 */
 
 function get(UID) {
-
-    return db('notifications')
-        .where('user_id', UID);
-
+  return db('notifications')
+    .where('user_id', UID);
 }
 
 function getByID(UID, NID) {
-
-    return db('notifications')
-        .select('*')
-        .where('user_id', UID)
-        .andWhere('notification_id', NID)
-        .first();
-
+  return db('notifications')
+    .select('*')
+    .where('user_id', UID)
+    .andWhere('notification_id', NID)
+    .first();
 }
 
 function mark(UID, NID) {
-
-    return db('notifications')
-        .select('*')
-        .where('user_id', UID)
-        .andWhere('notification_id', NID)
-        .first()
-        .update({ 'new_notification': false });
-
+  return db('notifications')
+    .select('*')
+    .where('user_id', UID)
+    .andWhere('notification_id', NID)
+    .first()
+    .update({ new_notification: false });
 }
 
 function markAll(UID) {
-
-    return db('notifications')
-        .select('*')
-        .where('user_id', UID)
-        .update({ 'new_notification': false });
-
+  return db('notifications')
+    .select('*')
+    .where('user_id', UID)
+    .update({ new_notification: false });
 }
 
 function deleteByID(UID, NID) {
-
-    return db('notifications')
-        .select('*')
-        .where('user_id', UID)
-        .andWhere('notification_id', NID)
-        .first()
-        .del();
-
+  return db('notifications')
+    .select('*')
+    .where('user_id', UID)
+    .andWhere('notification_id', NID)
+    .first()
+    .del();
 }
 
 function deleteAll(UID) {
-
-    return db('notifications')
-        .select('*')
-        .where('user_id', UID)
-        .del();
-
+  return db('notifications')
+    .select('*')
+    .where('user_id', UID)
+    .del();
 }
 
 function create(data) {
-
-    return db('notifications')
-        .insert(data);
-
+  return db('notifications')
+    .insert(data);
 }
 
 module.exports = {
@@ -84,5 +69,5 @@ module.exports = {
   markAll,
   deleteByID,
   deleteAll,
-  create
+  create,
 };
