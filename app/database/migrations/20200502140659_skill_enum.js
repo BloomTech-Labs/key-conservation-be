@@ -51,6 +51,7 @@ const skills = [
 ];
 
 exports.up = function (knex) {
+  console.log("sadf");
   return knex.schema.createTable('skill_enum', (tbl) => {
     tbl.string('skill').primary();
   })
@@ -65,5 +66,5 @@ exports.up = function (knex) {
 };
 
 exports.down = function () {
-
+  return knex.schema.dropTable('skill_enum');
 };
