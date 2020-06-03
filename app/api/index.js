@@ -8,6 +8,7 @@ const router = express.Router();
 router.use('/users', require('./users'));
 
 // private routes
+router.use('/notifications', require('./notifications')); // Our notifications API
 router.use('/campaigns', checkJwt, checkDeactivated, require('./campaigns'));
 router.use('/updates', checkJwt, checkDeactivated, require('./updates'));
 router.use('/comments', checkJwt, checkDeactivated, require('./comments'));
