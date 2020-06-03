@@ -89,6 +89,7 @@ router.get('/sub/:sub', restricted, async (req, res) => {
     }
     return res.status(404).json({ message: 'User not found in the database' });
   } catch (err) {
+    log.error(err);
     return res
       .status(500)
       .json({ err, message: 'Unable to make request to server' });

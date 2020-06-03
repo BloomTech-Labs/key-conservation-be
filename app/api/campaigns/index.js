@@ -3,16 +3,17 @@ const log = require('../../logger');
 
 const router = express.Router();
 
-const Reports = require('../../database/models/reportModel');
 const Users = require('../../database/models/usersModel');
 const Campaigns = require('../../database/models/campaignModel');
 const CampaignPosts = require('../../database/models/campaignPostsModel');
 const Emojis = require('../../database/models/emojiModel');
 const ApplicationSubmissions = require('../../database/models/applicationSubmissionsModel');
 const SkilledImpactRequests = require('../../database/models/skilledImpactRequestsModel');
-const S3Upload = require('../../middleware/s3Upload');
 const SkillsEnum = require('../../database/models/skillsEnum');
+const S3Upload = require('../../middleware/s3Upload');
 const pick = require('../../../util/pick');
+
+const { sendWSMessage } = require('../../websockets');
 
 router.get('/', async (req, res) => {
   let { skill } = req.query;
@@ -61,38 +62,11 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.get('/camp/:id', async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    let user = await Users.findUser(id);
-    if (!user) {
-      return res
-        .status(404)
-        .json({ msg: 'Did not find the campaign by this user id' });
-    }
-    if (user.is_deactivated) {
-      user = await Users.findBySub(req.user.sub);
-      if (!user || !user.admin) {
-        return res.status(401).json({
-          msg: "This user's campaigns may only be viewed by an administrator",
-        });
-      }
-    }
-    const campaign = await Campaigns.findCampaignByUserId(id);
-    return res
-      .status(200)
-      .json({ campaign, msg: 'The campaigns were found for this org' });
-  } catch (err) {
-    res.status(500).json({ msg: err.message });
-  }
-});
-
 router.get('/:id/submissions', async (req, res) => {
   const { id } = req.params;
   try {
     const applicationSubmissions = await ApplicationSubmissions.findAllByCampaignId(
-      id,
+      id
     );
     res.status(200).json({ applicationSubmissions, error: null });
   } catch (error) {
@@ -109,6 +83,7 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
     // eslint-disable-next-line camelcase
     user_id,
     name,
+    // eslint-disable-next-line camelcase
     call_to_action,
     urgency,
     description,
@@ -124,16 +99,24 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   try {
     const campaignId = await Campaigns.insert(postCampaign);
     if (campaignId) {
-      await CampaignPosts.insert({
+      const [post] = await CampaignPosts.insert({
         campaign_id: campaignId,
         image,
         description,
         is_update: false,
       });
-      if (skilledImpactRequests) await SkilledImpactRequests.insert(skilledImpactRequests, campaignId);
-      const newCampaigns = await Campaigns.findById(campaignId);
+      if (skilledImpactRequests) {
+        await SkilledImpactRequests.insert(skilledImpactRequests, campaignId);
+      }
+      const newCampaigns = await CampaignPosts.findById(post.id);
       log.info(`inserted campaign ${name}`, newCampaigns);
+
       res.status(201).json({ newCampaigns, msg: 'Campaign added to database' });
+      // Send over WebSockets
+      sendWSMessage({
+        feed: newCampaigns,
+      });
+
       // eslint-disable-next-line camelcase
     } else if (!image || !name || !description || !call_to_action) {
       log.info('no data');
@@ -147,85 +130,40 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   }
 });
 
-router.put('/:id', S3Upload.upload.single('photo'), async (req, res) => {
-  const { id } = req.params;
+router.post(
+  '/update/:id',
+  S3Upload.upload.single('photo'),
+  async (req, res) => {
+    const newCampaignUpdate = pick(req.body, ['description']);
 
-  const newCampaigns = pick(req.body, [
-    'user_id',
-    'name',
-    'call_to_action',
-    'urgency',
-  ]);
-  const newCampaignPost = {};
-  if (req.file) newCampaignPost.image = req.file.location;
-  if (req.body.description) newCampaignPost.description = req.body.description;
+    newCampaignUpdate.campaign_id = req.params.id;
 
-  try {
-    const campaign = await Campaigns.findById(id);
-    const user = await Users.findBySub(req.user.sub);
-
-    if (!campaign) {
-      return res.status(404).json({ msg: 'The campaign would not be updated' });
-    }
-    if (campaign.user_id !== user.id && !user.admin) {
-      return res
-        .status(401)
-        .json({ msg: 'Unauthorized: You may not modify this campaign' });
-    }
-    const updatedCampaign = await Campaigns.update(newCampaigns, id);
-    const updatedCampaignPost = req.file || req.body.description
-      ? await CampaignPosts.updateOriginalPostByCampaignId(
-        id,
-        newCampaignPost,
-      )
-      : {};
-    const editCampaign = { ...updatedCampaign, ...updatedCampaignPost };
-    res
-      .status(200)
-      .json({ msg: 'Successfully updated campaign', editCampaign });
-  } catch (err) {
-    log.error(err);
-    res
-      .status(500)
-      .json({ err, msg: 'Unable to update campaign to the server' });
-  }
-});
-
-router.delete('/:id', async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const user = await Users.findBySub(req.user.sub);
-    const campaign = await Campaigns.findById(id);
-
-    if (!campaign) {
-      return res.status(404).json({ msg: 'Unable to find campaign ID' });
+    newCampaignUpdate.is_update = true;
+    if (req.file) {
+      newCampaignUpdate.image = req.file.location;
     }
 
-    if (campaign.user_id !== user.id) {
-      if (user.admin) {
-        // Strike this user
-        const targetUsr = await Users.findById(campaign.user_id);
-        if (!targetUsr.is_deactivated) {
-          await Users.update({ strikes: targetUsr.strikes + 1 }, targetUsr.id);
-        }
-      } else {
-        return res
-          .status(401)
-          .json({ msg: 'Unauthorized: You may not delete this campaign' });
+    try {
+      const [campaignUpdate] = await CampaignPosts.insert(newCampaignUpdate);
+      if (campaignUpdate) {
+        log.info(campaignUpdate);
+
+        const post = await CampaignPosts.findById(campaignUpdate.id);
+
+        sendWSMessage({
+          feed: post,
+        });
+
+        res
+          .status(201)
+          .json({ campaignUpdate, msg: 'Campaign update added to database' });
       }
+    } catch (err) {
+      log.error(err.message);
+      res.status(500).json({ err, msg: 'Unable to add update' });
     }
-
-    const campaigns = await Campaigns.remove(id);
-
-    // Remove all reports relating to this post
-    await Reports.removeWhere({ post_id: id, table_name: 'campaigns' });
-
-    res.status(200).json(campaigns);
-  } catch (err) {
-    res.status(500).json({ err, msg: 'Unable to delete campaign from server' });
   }
-});
+);
 
 // Get reactions on a campaign post
 router.get('/:id/reactions', async (req, res) => {
@@ -237,7 +175,10 @@ router.get('/:id/reactions', async (req, res) => {
     const { id: userId } = await Users.findBySub(sub);
 
     const reactions = await Emojis.findByCampaignPost(id);
-    const [userReaction] = await Emojis.findUserReactionByCampaignPost(id, userId);
+    const [userReaction] = await Emojis.findUserReactionByCampaignPost(
+      id,
+      userId
+    );
 
     return res.status(200).json({
       reactions,
@@ -266,7 +207,9 @@ router.put('/:id/reactions', async (req, res) => {
     } else if (emoji && emoji.trim() && emoji.trim().length <= 3) {
       await Emojis.addUserReactionToPost(id, userId, emoji);
     } else {
-      return res.status(400).json({ message: 'Invalid Emoji - Input too large' });
+      return res
+        .status(400)
+        .json({ message: 'Invalid Emoji - Input too large' });
     }
 
     return res.sendStatus(200);

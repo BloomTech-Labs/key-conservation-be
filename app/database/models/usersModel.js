@@ -1,5 +1,5 @@
-const db = require('../dbConfig.js');
-const Campaigns = require('./campaignModel.js');
+const db = require('../dbConfig');
+const CampaignPosts = require('./campaignPostsModel');
 const Bookmarks = require('./socialModel');
 const Skills = require('./skillsEnum');
 const pick = require('../../../util/pick');
@@ -17,6 +17,7 @@ const userColumns = [
   'phone_number',
   'is_deactivated',
   'strikes',
+  'accepting_help_requests',
 ];
 
 // Columns of the user model that are stored in the conservationists table
@@ -97,13 +98,21 @@ async function findById(id) {
       )
       .groupBy('users.id', 'cons.id')
       .first();
+
     user.bookmarks = await Bookmarks.findUserBookmarks(id);
-    user.campaigns = await Campaigns.findCampaignByUserId(id);
+
+    user.campaigns = await CampaignPosts.getPostsByUserId(id);
   } else if (user.roles === 'supporter') {
     user = await db('users')
       .leftJoin('supporters as sup', 'sup.user_id', 'users.id')
+      .leftJoin('skills', 'skills.user_id', 'users.id')
       .where('users.id', id)
-      .select('users.*', 'sup.name')
+      .select(
+        'users.*',
+        'sup.name',
+        db.raw('array_to_json(array_agg(skills.skill)) as skills'),
+      )
+      .groupBy('users.id', 'sup.name')
       .first();
     user.bookmarks = await Bookmarks.findUserBookmarks(id);
   }
