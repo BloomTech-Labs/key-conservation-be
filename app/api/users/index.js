@@ -4,13 +4,17 @@ const log = require('../../logger');
 const router = express.Router();
 
 const Users = require('../../database/models/usersModel');
+const CampaignPosts = require('../../database/models/campaignPostsModel');
 const Reports = require('../../database/models/reportModel');
 const Connections = require('../../database/models/connectionsModel');
 const ApplicationSubmission = require('../../database/models/applicationSubmissionsModel');
 
 const S3Upload = require('../../middleware/s3Upload');
 const restricted = require('../../middleware/authJwt.js');
-const { checkConnection, checkUniqueIds } = require('../../middleware/connections');
+const {
+  checkConnection,
+  checkUniqueIds,
+} = require('../../middleware/connections');
 
 router.get('/', restricted, async (req, res) => {
   try {
@@ -63,6 +67,24 @@ router.get('/:id', restricted, async (req, res) => {
   } catch (err) {
     log.error(err);
     return res.status(500).json({ message: err.message, err });
+  }
+});
+
+router.get('/:id/posts', async (req, res) => {
+  const { id } = req.params;
+
+  const { startAt, size } = req.query;
+
+  try {
+    const posts = await CampaignPosts.getPostsByUserId(id, startAt, size);
+
+    return res.status(200).json(posts);
+  } catch (err) {
+    return res.status(500).json({
+      message:
+        err.message
+        || 'An internal server occurred while trying to retreive this users posts',
+    });
   }
 });
 
@@ -155,7 +177,9 @@ router.get('/:id/submissions', async (req, res) => {
       }));
       res.status(200).json({ submissions, error: null });
     } else {
-      res.status(404).json({ message: 'Submissions not found in the database' });
+      res
+        .status(404)
+        .json({ message: 'Submissions not found in the database' });
     }
   } catch (error) {
     res
@@ -163,7 +187,6 @@ router.get('/:id/submissions', async (req, res) => {
       .json({ error, message: 'Unable to make request to server' });
   }
 });
-
 
 router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   let user = {
@@ -201,7 +224,9 @@ router.put(
       const reqUsr = await Users.findBySub(req.user.sub);
 
       if (Number(reqUsr.id) !== Number(id) && !reqUsr.admin) {
-        return res.status(401).json({ message: 'You may not modify this profile!' });
+        return res
+          .status(401)
+          .json({ message: 'You may not modify this profile!' });
       }
 
       const user = await Users.update(newUser, id);

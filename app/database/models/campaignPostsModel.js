@@ -1,23 +1,24 @@
 const db = require('../dbConfig');
 
-async function getMostRecentPosts(startAt = undefined, size = 8, date) {
-  const zero = new Date(0);
-
-  let start = startAt;
-
-  if (!start) {
-    start = new Date(Date.now()).toISOString();
-  }
-
-  let posts = db('campaign_posts')
+// Helper function
+function getPostsWhere(where) {
+  return db('campaign_posts')
     .join('campaigns', 'campaign_posts.campaign_id', 'campaigns.id')
     .join('users', 'campaigns.user_id', 'users.id')
-    .leftJoin('skilled_impact_requests', 'campaigns.id', 'skilled_impact_requests.campaign_id')
-    .leftJoin('project_goals', 'skilled_impact_requests.id', 'project_goals.skilled_impact_request_id')
+    .leftJoin(
+      'skilled_impact_requests',
+      'campaigns.id',
+      'skilled_impact_requests.campaign_id',
+    )
+    .leftJoin(
+      'project_goals',
+      'skilled_impact_requests.id',
+      'project_goals.skilled_impact_request_id',
+    )
     .leftJoin('conservationists', 'users.id', 'conservationists.user_id')
     .leftJoin('comments', 'comments.campaign_id', 'campaign_posts.campaign_id')
     .whereNot('users.is_deactivated', true)
-    .where('campaign_posts.created_at', '<', start)
+    .where(where)
     .orderBy('campaign_posts.created_at', 'desc')
     .select(
       'campaign_posts.*',
@@ -47,11 +48,21 @@ async function getMostRecentPosts(startAt = undefined, size = 8, date) {
       'users.location',
       'users.profile_image',
       'conservationists.name',
-      'skilled_impact_requests.id',
-    )
-    .limit(72);
+    );
+}
 
-  posts = await posts;
+async function getMostRecentPosts(startAt = undefined, size = 8, date) {
+  const zero = new Date(0);
+
+  let start = startAt;
+
+  if (!start) {
+    start = new Date(Date.now()).toISOString();
+  }
+
+  let posts = await getPostsWhere(function olderThan() {
+    this.where('campaign_posts.created_at', '<', start);
+  }).limit(72);
 
   posts = posts.filter(
     (post) => new Date(post.created_at).getTime() > new Date(date).getTime()
@@ -68,26 +79,12 @@ async function getPostsByUserId(id, startAt = undefined, size = 8) {
     start = new Date(Date.now()).toISOString();
   }
 
-  const posts = await db('campaign_posts')
-    .join('campaigns', 'campaigns.id', 'campaign_posts.campaign_id')
-    .where('campaigns.user_id', id)
-    .join('users', 'users.id', 'campaigns.user_id')
-    .leftJoin('conservationists as cons', 'cons.user_id', 'users.id')
-    .select(
-      'cons.name as org_name',
-      'users.profile_image',
-      'users.location',
-      'campaign_posts.*',
-      'campaigns.urgency',
-      'campaigns.name',
-      'campaigns.user_id',
-      'campaigns.call_to_action',
-    )
-    .orderBy('campaign_posts.created_at', 'desc');
+  const posts = await getPostsWhere(function olderThan() {
+    this.where('campaigns.user_id', '=', id);
+    this.where('campaign_posts.created_at', '<', start);
+  });
 
-  const startIndex = posts.findIndex((post) => post.created_at < start);
-
-  return posts.slice(startIndex, size);
+  return posts.slice(0, size);
 }
 
 async function deleteById(id) {
@@ -101,47 +98,15 @@ async function deleteById(id) {
 }
 
 async function findById(id) {
-  return db('campaign_posts')
-    .join('campaigns', 'campaign_posts.campaign_id', 'campaigns.id')
-    .join('users', 'campaigns.user_id', 'users.id')
-    .leftJoin('conservationists', 'users.id', 'conservationists.user_id')
-    .where('campaign_posts.id', id)
-    .andWhere('users.is_deactivated', false)
-    .select(
-      'campaign_posts.*',
-      'campaigns.name',
-      'campaigns.call_to_action',
-      'users.id as user_id',
-      'users.is_deactivated',
-      'users.location',
-      'users.profile_image',
-      'conservationists.name as org_name',
-    )
-    .first();
+  return getPostsWhere({ 'campaign_posts.id': id }).first();
 }
 
 async function findOriginalCampaignPostByCampaignId(campaignId) {
-  return db('campaign_posts')
-    .where({ campaign_id: campaignId })
-    .where('is_update', false)
-    .first();
+  return getPostsWhere({ is_update: false, 'campaign_posts.campaign_id': campaignId }).first();
 }
 
 async function findAllCampaignUpdatesByCampaignId(campaignId) {
-  return db('campaign_posts')
-    .join('campaigns', 'campaign_posts.campaign_id', 'campaigns.id')
-    .join('users', 'campaigns.user_id', 'users.id')
-    .leftJoin('conservationists', 'users.id', 'conservationists.user_id')
-    .where('campaign_posts.campaign_id', campaignId)
-    .where('campaign_posts.is_update', true)
-    .select(
-      'campaign_posts.*',
-      'campaigns.name as campaign_name',
-      'campaigns.call_to_action',
-      'users.profile_image',
-      'users.location',
-      'conservationists.name as org_name',
-    );
+  return getPostsWhere({ 'campaign_posts.campaign_id': campaignId });
 }
 
 async function insert(post) {

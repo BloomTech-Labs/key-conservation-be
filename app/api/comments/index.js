@@ -72,7 +72,8 @@ router.get('/com/:id', async (req, res) => {
     const comment = await Comments.findById(id);
     const usr = await Users.findById(comment.user_id);
 
-    const campaign = await Campaigns.findById(comment.campaign);
+    const campaign = await Campaigns.findById(comment.campaign_id);
+
 
     if (campaign.is_deactivated || usr.is_deactivated) {
       const reqUsr = await Users.findBySub(req.user.sub);
