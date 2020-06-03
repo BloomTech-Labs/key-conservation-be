@@ -53,7 +53,7 @@ async function insert(skilledRequests, campaignId) {
       const projectGoalsArr = projectGoals2DArr.map((data, index) => data.map((row) => ({
         ...row,
         skilled_impact_request_id: idArr[index],
-      })));
+      }))).flat();
       await db('project_goals').transacting(transaction).insert(projectGoalsArr);
       log.info(`Inserted skiled impact requests and project goals for campaign ${campaignId}`);
       await transaction.commit();
