@@ -17,7 +17,7 @@ router.use('/maps', checkJwt, checkDeactivated, require('./maps'));
 router.use('/reports', checkJwt, checkDeactivated, require('./reports'));
 router.use('/contributors', checkJwt, checkDeactivated, require('./contributors'));
 router.use('/submissions', checkJwt, checkDeactivated, require('./application_submissions'));
-router.use('/feed', checkJwt, checkDeactivated, require('./feed'));
+router.use('/feed', require('./feed'));
 router.use('/posts', checkJwt, checkDeactivated, require('./posts'));
 
 // router.use('/connections', checkJwt, checkDeactivated, require('./connections'));
