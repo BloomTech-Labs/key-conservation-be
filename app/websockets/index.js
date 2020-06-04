@@ -16,7 +16,9 @@ class WebSocketManager {
 
 function sendWSMessage(message) {
   WebSocketManager.getClients().forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) { client.send(JSON.stringify(message)); }
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(message));
+    }
   });
 }
 

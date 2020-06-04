@@ -1,38 +1,39 @@
 const TABLE_NAME = 'skills';
-exports.seed = (knex, Promise) => knex(TABLE_NAME).del().then(() => knex(TABLE_NAME).insert([
-  {
-    // id: 1,
-    user_id: 1,
-    skill: 'ARCHITECTURE',
-  },
-  {
-    // id: 2,
-    user_id: 1,
-    skill: 'DRONE',
-  },
-  {
-    // id: 3,
-    user_id: 1,
-    skill: 'FUNDRAISING',
-  },
-  {
-    // id: 4,
-    user_id: 2,
-    skill: 'LEGAL',
-  },
-  {
-    // id: 5,
-    user_id: 2,
-    skill: 'FUNDRAISING',
-  },
-  {
-    // id: 6,
-    user_id: 3,
-    skill: 'PHOTOGRAPHY',
-  },
-  {
-    // id: 7,
-    user_id: 4,
-    skill: 'RESEARCH',
-  },
-]));
+exports.seed = (knex, Promise) => {
+  knex(TABLE_NAME)
+    .del()
+    .then(() => {
+      knex(TABLE_NAME).insert([
+        {
+          user_id: 92,
+          skill: 'APP_DEVELOPMENT',
+          description: '',
+        },
+        {
+          user_id: 92,
+          skill: 'DATABASE_MANAGEMENT',
+          description: '',
+        },
+        {
+          user_id: 92,
+          skill: 'WEB_DEVELOPMENT',
+          description: '',
+        },
+        {
+          user_id: 92,
+          skill: 'WEB_DESIGN',
+          description: '',
+        },
+        {
+          user_id: 92,
+          skill: 'ART',
+          description: '',
+        },
+        {
+          user_id: 92,
+          skill: 'AUTO',
+          description: '',
+        },
+      ]);
+    });
+};

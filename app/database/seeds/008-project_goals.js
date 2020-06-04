@@ -1,45 +1,74 @@
 const TABLE_NAME = 'project_goals';
-exports.seed = (knex, Promise) => knex(TABLE_NAME).del().then(() => knex(TABLE_NAME).insert([
-  {
-    // id: 1,
-    goal_title: 'Design a dam',
-    description: 'Design a dam for a family of beavers',
-    skilled_impact_request_id: 1,
-  },
-  {
-    // id: 2,
-    goal_title: 'Write instructions for building a dam',
-    description: 'Should include materials required and progress pictures',
-    skilled_impact_request_id: 1,
-  },
-  {
-    // id: 3,
-    goal_title: 'Take pictures of pandas and their pillows',
-    description: 'Please shoot on film! Our director prefers that.',
-    skilled_impact_request_id: 2,
-  },
-  {
-    // id: 4,
-    goal_title: 'Send photos',
-    description: 'Please scan/develop your photos and send them to as via email.',
-    skilled_impact_request_id: 2,
-  },
-  {
-    // id: 5,
-    goal_title: 'Make any necessary edits',
-    description: 'Our director will reach out to you if she\'d like to request any changes',
-    skilled_impact_request_id: 2,
-  },
-  {
-    // id: 6,
-    goal_title: 'Collect seeds',
-    description: 'You can pick up seeds from our center.',
-    skilled_impact_request_id: 3,
-  },
-  {
-    // id: 7,
-    goal_title: 'Spray seeds around park via drone',
-    description: 'Please don\'t let the seeds fall too far',
-    skilled_impact_request_id: 3,
-  },
-]));
+exports.seed = (knex, Promise) => {
+  knex(TABLE_NAME)
+    .del()
+    .then(() => {
+      knex(TABLE_NAME).insert([
+        {
+          goal_title: 'A1',
+          description: 'A description 1',
+          skilled_impact_request_id: 15,
+        },
+        {
+          goal_title: 'B1',
+          description: 'B description 1',
+          skilled_impact_request_id: 15,
+        },
+        {
+          goal_title: 'Drone 1',
+          description: 'Drone description 1',
+          skilled_impact_request_id: 16,
+        },
+        {
+          goal_title: 'A1',
+          description: 'A1',
+          skilled_impact_request_id: 17,
+        },
+        {
+          goal_title: 'A2',
+          description: 'A2',
+          skilled_impact_request_id: 17,
+        },
+        {
+          goal_title: 'A3',
+          description: 'A3',
+          skilled_impact_request_id: 17,
+        },
+        {
+          goal_title: 'Great art',
+          description: 'Create something',
+          skilled_impact_request_id: 18,
+        },
+        {
+          goal_title: 'Get that Drone flying',
+          description: 'Fly me to the moon',
+          skilled_impact_request_id: 19,
+        },
+        {
+          goal_title: 'Game 1',
+          description: 'Description of Game 1',
+          skilled_impact_request_id: 21,
+        },
+        {
+          goal_title: 'Game 2',
+          description: 'Description of Game 2',
+          skilled_impact_request_id: 21,
+        },
+        {
+          goal_title: 'Hum1',
+          description: 'Hum1 description',
+          skilled_impact_request_id: 22,
+        },
+        {
+          goal_title: 'Hum2',
+          description: 'Hum2 description',
+          skilled_impact_request_id: 22,
+        },
+        {
+          goal_title: 'Hum3',
+          description: 'Hum3 description',
+          skilled_impact_request_id: 22,
+        },
+      ]);
+    });
+};
