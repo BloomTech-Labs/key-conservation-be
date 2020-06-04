@@ -12,7 +12,6 @@ exports.down = function (knex, Promise) {
   return knex.schema.table('users', (tbl) => {
     tbl
       .string('username', 30)
-      .notNullable()
       .unique();
   }).alterTable('conservationists', (tbl) => {
     tbl.string('org_name', 50).alter();

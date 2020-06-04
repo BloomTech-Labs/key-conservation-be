@@ -94,7 +94,9 @@ async function findById(id) {
         'cons.point_of_contact_email',
         'cons.latitude',
         'cons.longitude',
-        db.raw('array_agg(json_build_object(\'skill\', skills.skill, \'description\', COALESCE(skills.description, \'\'))) as skills'),
+        db.raw(
+          "array_agg(json_build_object('skill', skills.skill, 'description', COALESCE(skills.description, ''))) as skills",
+        ),
       )
       .groupBy('users.id', 'cons.id')
       .first();
@@ -110,7 +112,9 @@ async function findById(id) {
       .select(
         'users.*',
         'sup.name',
-        db.raw('array_agg(json_build_object(\'skill\', skills.skill, \'description\', COALESCE(skills.description, \'\'))) as skills'),
+        db.raw(
+          "array_agg(json_build_object('skill', skills.skill, 'description', COALESCE(skills.description, ''))) as skills",
+        ),
       )
       .groupBy('users.id', 'sup.name')
       .first();
@@ -265,22 +269,33 @@ async function updateSupportersTable(user, id) {
 
 async function updateSkillsTable(user, id) {
   const skills = user.skills
-    .map((skillObj) => {
-      skillObj.skill = skillObj.skill.toUpperCase().replace(' ', '_');
-      return skillObj;
-    })
+    .map((skillObj) => ({
+      ...skillObj,
+      skill: skillObj.skill.toUpperCase().replace(' ', '_'),
+    }))
     .filter((skillObj) => skillObj.skill in Skills);
 
   if (skills.length > 0) {
     // Need to manually build a query with a conflict statement here as Knex doesn't support Postgres conflicts
     const insertQuery = db('skills')
-      .insert(skills.map((skillObj) => ({ user_id: id, skill: skillObj.skill, description: skillObj.description })))
+      .insert(
+        skills.map((skillObj) => ({
+          user_id: id,
+          skill: skillObj.skill,
+          description: skillObj.description,
+        })),
+      )
       .toQuery();
-    await db.raw(`${insertQuery} ON CONFLICT (user_id, skill) DO UPDATE SET description = EXCLUDED.description`);
+    await db.raw(
+      `${insertQuery} ON CONFLICT (user_id, skill) DO UPDATE SET description = EXCLUDED.description`,
+    );
   }
 
   await db('skills')
-    .whereNotIn('skill', skills.map((skillObj) => skillObj.skill))
+    .whereNotIn(
+      'skill',
+      skills.map((skillObj) => skillObj.skill),
+    )
     .andWhere('user_id', id)
     .delete();
 }
