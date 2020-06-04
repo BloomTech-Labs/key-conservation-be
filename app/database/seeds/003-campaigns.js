@@ -1,5 +1,3 @@
-// User_id update to correct values
-
 const TABLE_NAME = 'campaigns';
 // COMPLETED
 exports.seed = (knex, Promise) => {

@@ -1,5 +1,5 @@
 // COMPLETED
-// NOTE: the last 2 objects were removed because their
+// NOTE: the last 2 objects were removed bec
 
 const TABLE_NAME = 'user_reports';
 exports.seed = (knex, Promise) => {

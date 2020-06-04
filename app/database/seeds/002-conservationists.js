@@ -1,3 +1,4 @@
+// Complete
 const TABLE_NAME = 'conservationists';
 exports.seed = (knex, Promise) => {
   knex(TABLE_NAME)
@@ -5,8 +6,9 @@ exports.seed = (knex, Promise) => {
     .then(() => {
       knex(TABLE_NAME).insert([
         {
+          // newid: 1
           // id: 23,
-          user_id: 98,
+          user_id: 44,
           name: 'Desert Spider Society',
           link_url: 'https://spiders.com',
           link_text: null,
@@ -23,8 +25,9 @@ exports.seed = (knex, Promise) => {
           latitude: 35.1456319,
         },
         {
+          // newid: 2
           // id: 28,
-          user_id: 133,
+          user_id: 57,
           name: 'Bat Action Network',
           link_url: 'https://bats.org',
           link_text: null,
@@ -41,8 +44,9 @@ exports.seed = (knex, Promise) => {
           latitude: 51.2715316,
         },
         {
+          // newid: 3
           // id: 5,
-          user_id: 19,
+          user_id: 11,
           name: 'Save the Sloths',
           link_url: 'https://www.google.com',
           link_text: null,
@@ -58,8 +62,9 @@ exports.seed = (knex, Promise) => {
           latitude: 40.7127281,
         },
         {
+          // newid: 4
           // id: 24,
-          user_id: 129,
+          user_id: 45,
           name: 'Global Tiger Force',
           link_url: 'https://keyconservation.org',
           link_text: null,
@@ -76,8 +81,9 @@ exports.seed = (knex, Promise) => {
           latitude: 18.9387711,
         },
         {
+          // newid: 5
           // id: 22,
-          user_id: 97,
+          user_id: 58,
           name: 'Everglades Wildlife Foundations',
           link_url: 'https://keyconservation.org',
           link_text: null,
@@ -94,8 +100,9 @@ exports.seed = (knex, Promise) => {
           latitude: 25.1418871,
         },
         {
+          // newid: 6
           // id: 3,
-          user_id: 13,
+          user_id: 3,
           name: 'Organization',
           link_url: 'https://www.google.com',
           link_text: null,
@@ -111,8 +118,9 @@ exports.seed = (knex, Promise) => {
           latitude: 25.7742658,
         },
         {
+          // newid: 7
           // id: 25,
-          user_id: 130,
+          user_id: 47,
           name: 'Outback Conservancy',
           link_url: 'https://keyconservation.org',
           link_text: null,
@@ -129,8 +137,9 @@ exports.seed = (knex, Promise) => {
           latitude: -23.6983884,
         },
         {
+          // newid: 8
           // id: 6,
-          user_id: 22,
+          user_id: 1,
           name: 'Save The Bears',
           link_url: 'https://bears.com',
           link_text: 'Bears.com',
@@ -146,8 +155,9 @@ exports.seed = (knex, Promise) => {
           latitude: 33.7490987,
         },
         {
+          // newid: 9
           // id: 21,
-          user_id: 95,
+          user_id: 54,
           name: 'Western Raptor Center',
           link_url: 'https://keyconservation.org',
           link_text: null,
@@ -164,8 +174,9 @@ exports.seed = (knex, Promise) => {
           latitude: 43.479965,
         },
         {
+          // newid: 10
           // id: 26,
-          user_id: 131,
+          user_id: 55,
           name: 'Coral Alliance',
           link_url: 'https://donate.org',
           link_text: null,
@@ -182,8 +193,9 @@ exports.seed = (knex, Promise) => {
           latitude: -0.8687303,
         },
         {
+          // newid: 11
           // id: 9,
-          user_id: 45,
+          user_id: 9,
           name: 'Bri’s second org',
           link_url: 'https://google.com',
           link_text: null,
@@ -199,8 +211,9 @@ exports.seed = (knex, Promise) => {
           latitude: 0.4215778,
         },
         {
+          // newid: 12
           // id: 27,
-          user_id: 132,
+          user_id: 56,
           name: 'Urban Forest Working Group',
           link_url: 'https://donate.org',
           link_text: null,
@@ -217,8 +230,9 @@ exports.seed = (knex, Promise) => {
           latitude: -33.4377968,
         },
         {
+          // newid: 13
           // id: 4,
-          user_id: 14,
+          user_id: 76,
           name: 'Sylvester Foundation',
           link_url: 'https://wings',
           link_text: null,
@@ -234,8 +248,9 @@ exports.seed = (knex, Promise) => {
           latitude: 36.7014631,
         },
         {
+          // newid: 14
           // id: 7,
-          user_id: 27,
+          user_id: 18,
           name: 'Save the Sloths ',
           link_url: 'https://google.com',
           link_text: null,
@@ -251,8 +266,9 @@ exports.seed = (knex, Promise) => {
           latitude: -24.7761086,
         },
         {
+          // newid: 15
           // id: 8,
-          user_id: 44,
+          user_id: 39,
           name: 'Doggo Domination',
           link_url: 'https://doggo.com',
           link_text: 'Doggo.com',
@@ -269,8 +285,9 @@ exports.seed = (knex, Promise) => {
           latitude: 33.7490987,
         },
         {
+          // newid: 16
           // id: 20,
-          user_id: 93,
+          user_id: 41,
           name: 'Save the somethings whatever',
           link_url: 'https://ucsd.edu/',
           link_text: null,

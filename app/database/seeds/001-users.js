@@ -1,4 +1,4 @@
-const generateRandomSub = require('../../../util/generateRandomSub');
+// const generateRandomSub = require('../../../util/generateRandomSub');
 
 const TABLE_NAME = 'users';
 exports.seed = (knex, Promise) => {
@@ -29,8 +29,6 @@ exports.seed = (knex, Promise) => {
           strikes: 1,
           full_text_weighted: "'katiefelten':1A 'new2@gmail.com':2A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 2
@@ -54,8 +52,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'mtourjoman01@hotmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 3
@@ -79,8 +75,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'bri':1A 'org1@gmail.com':2A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 4
@@ -104,8 +98,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'katiefelten@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 5
@@ -129,8 +121,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'bri@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 6
@@ -154,8 +144,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'katiefelten':1A 'neworg@gmail.com':2A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 7
@@ -179,8 +167,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'jasminekh96@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 8
@@ -204,8 +190,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'gg@gg.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 9
@@ -229,8 +213,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'bri':1A 'org2@gmail.com':2A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 10
@@ -254,8 +236,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'arizephyr123@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 11
@@ -279,8 +259,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'jasminekh@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 12
@@ -304,8 +282,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'bhsfgghffh@blah.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 13
@@ -329,8 +305,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'blah@blah.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 14
@@ -354,8 +328,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'blah@blah.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 15
@@ -379,8 +351,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'blah@blah.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 16
@@ -404,8 +374,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'brianna.workman@hotmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 17
@@ -429,8 +397,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'eight@eight.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 18
@@ -454,8 +420,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'jasmine@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 19
@@ -479,8 +443,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'ataneja@ucsd.edu':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 20
@@ -504,8 +466,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'seven@seven.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 21
@@ -529,8 +489,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'blahhh@blah.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 22
@@ -554,8 +512,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'blahh6h@blah.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 23
@@ -579,8 +535,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'mtourjoman0@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 24
@@ -604,8 +558,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'all197@ucsd.edu':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 25
@@ -629,8 +581,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'smhariha@ucsd.edu':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 26
@@ -654,8 +604,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'a22@g.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 27
@@ -679,8 +627,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'katiefelten':1A 'test2@gmail.com':2A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 28
@@ -704,8 +650,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'sumeetbansal@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 29
@@ -730,8 +674,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'katiefelten@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 30
@@ -756,8 +698,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'develop':1A 'dl@keyconservation.org':2A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 31
@@ -781,8 +721,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'jessnovak2@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 32
@@ -806,8 +744,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'ataneja@ucsd.edu':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 33
@@ -831,8 +767,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'moreira.kd@outlook.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 34
@@ -856,8 +790,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'katiesup@mail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 35
@@ -881,8 +813,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'katiesup3@mail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 36
@@ -906,8 +836,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'katiesup44@mail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 37
@@ -931,8 +859,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'katiesup55@mail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 38
@@ -956,8 +882,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'robertdstepanov@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 39
@@ -981,8 +905,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'katiefelten':1A 'org@gmail.com':2A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 40
@@ -1006,8 +928,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'alex.oddlogic@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 41
@@ -1031,8 +951,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'conservationist@ucsd.edu':2A 'dacp12':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 42
@@ -1056,8 +974,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'gohorelalex@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 43
@@ -1080,8 +996,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'test@g.cv':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 44
@@ -1106,8 +1020,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'develop':1A 'dss@keyconservation.org':2A",
           accepting_help_requests: 't',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 45
@@ -1132,8 +1044,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'develop':1A 'gtf@keyconservation.org':2A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 46
@@ -1157,8 +1067,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'thomasligreat11@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 47
@@ -1183,8 +1091,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'develop':1A 'oc@keyconservation.org':2A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 48
@@ -1207,8 +1113,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'test@test.gov':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 49
@@ -1231,8 +1135,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'tralala@lala.tra':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 50
@@ -1256,8 +1158,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'email@lambda.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 51
@@ -1280,8 +1180,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'afia@g.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 52
@@ -1305,8 +1203,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'nlapolla@ucsd.edu':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 53
@@ -1330,8 +1226,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'dac012':1A 'supporter@ucsd.edu':2A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 54
@@ -1356,8 +1250,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'develop':1A 'wrc@keyconservation.org':2A",
           accepting_help_requests: 't',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 55
@@ -1382,8 +1274,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'ca@keyconservation.org':2A 'develop':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 56
@@ -1408,8 +1298,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'develop':1A 'ufwg@keyconservation.org':2A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 57
@@ -1434,8 +1322,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'ban@keyconservation.org':2A 'develop':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 58
@@ -1460,8 +1346,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'develop':1A 'ewf@keyconservation.org':2A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 59
@@ -1486,8 +1370,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'develop':1A 'ms@keyconservation.org':2A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 60
@@ -1510,8 +1392,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'fhdasjfhas@jkdasflds.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 61
@@ -1534,8 +1414,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'hello@hello.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 62
@@ -1558,8 +1436,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'callahan@callahan.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 63
@@ -1582,8 +1458,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'jessica@keyconservation.org':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 64
@@ -1607,8 +1481,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'mikecallahan@callahan.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 65
@@ -1632,8 +1504,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'rmchado@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 66
@@ -1657,8 +1527,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'jsjsj@djdjm.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 67
@@ -1681,8 +1549,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'leohdus33@yahoo.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 68
@@ -1705,8 +1571,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'rmchao@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 69
@@ -1730,8 +1594,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'email@email.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 70
@@ -1754,8 +1616,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'h273hdi@yahoo.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 71
@@ -1779,8 +1639,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'daniel-kyman@lambdastudents.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 72
@@ -1804,8 +1662,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'callahanmichaele@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 73
@@ -1829,8 +1685,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'leonardo@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 74
@@ -1853,8 +1707,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'theleopard@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 75
@@ -1877,8 +1729,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'develop':1A 'ews@keyconservation.org':2A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 76
@@ -1902,8 +1752,6 @@ exports.seed = (knex, Promise) => {
           strikes: 11,
           full_text_weighted: "'anothertest@org.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 77
@@ -1926,8 +1774,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'derrickha32@bmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 78
@@ -1951,8 +1797,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'robot@yahoo.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 79
@@ -1975,8 +1819,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'hehehshs@yahoo.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 80
@@ -1999,8 +1841,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'hdiwhd73@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 81
@@ -2025,8 +1865,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'develop':1A 'lk@keyconservation.org':2A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 82
@@ -2050,8 +1888,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'hector4444@icloud.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 83
@@ -2074,8 +1910,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'theshwudhwdheu@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 84
@@ -2099,8 +1933,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'freddy837274@gmail.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 85
@@ -2123,8 +1955,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'leo@yahoo.com':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
         {
           // newid: 86
@@ -2149,8 +1979,6 @@ exports.seed = (knex, Promise) => {
           strikes: 0,
           full_text_weighted: "'megan@keyconservation.org':1A",
           accepting_help_requests: 'f',
-          total_stars: '',
-          total_reviews: '',
         },
       ]);
     });
