@@ -3,7 +3,8 @@ const TABLE_NAME = 'conservationists';
 exports.seed = (knex, Promise) => {
   return knex(TABLE_NAME)
     .del()
-    .then(() => knex(TABLE_NAME).insert([
+    .then(() =>
+      knex(TABLE_NAME).insert([
         {
           // newid: 1
           // id: 23,

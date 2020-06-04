@@ -4,7 +4,8 @@ const TABLE_NAME = 'connections';
 exports.seed = (knex, Promise) => {
   return knex(TABLE_NAME)
     .del()
-    .then(() => knex(TABLE_NAME).insert([
+    .then(() =>
+      knex(TABLE_NAME).insert([
         {
           // id: '1',
           connector_id: 3, // old 13
@@ -371,5 +372,6 @@ exports.seed = (knex, Promise) => {
           connected_id: 30, // old 127,
           status: 'Pending',
         },
-      ]));
+      ])
+    );
 };

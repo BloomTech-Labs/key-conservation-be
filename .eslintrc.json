@@ -21,8 +21,18 @@
         "max-len": "off",
         "no-console": "error",
         "no-param-reassign": "warn",
-        "no-unused-vars": [ "error", { "argsIgnorePattern": "Promise|err" }],
-        "object-curly-newline": [ "error", { "consistent": true }]
+        "no-unused-vars": [
+            "error",
+            {
+                "argsIgnorePattern": "Promise|err"
+            }
+        ],
+        "object-curly-newline": [
+            "error",
+            {
+                "consistent": true
+            }
+        ]
     },
     "parser": "babel-eslint"
 }

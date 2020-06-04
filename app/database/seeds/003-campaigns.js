@@ -3,7 +3,8 @@ const TABLE_NAME = 'campaigns';
 exports.seed = (knex, Promise) => {
   return knex(TABLE_NAME)
     .del()
-    .then(() => knex(TABLE_NAME).insert([
+    .then(() =>
+      knex(TABLE_NAME).insert([
         {
           // new: 1
           // id: '1',
@@ -248,5 +249,6 @@ exports.seed = (knex, Promise) => {
           call_to_action: 'https://none',
           urgency: '',
         },
-      ]));
+      ])
+    );
 };
