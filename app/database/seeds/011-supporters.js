@@ -1,10 +1,11 @@
 const TABLE_NAME = 'supporters';
 // complete AC MC AG
 exports.seed = (knex, Promise) => {
-  knex(TABLE_NAME)
+
+  return knex(TABLE_NAME)
     .del()
-    .then(() => {
-      knex(TABLE_NAME).insert([
+    .then(() => knex(TABLE_NAME).insert([
+
         {
           // id: '10',
           user_id: 5,
@@ -210,6 +211,5 @@ exports.seed = (knex, Promise) => {
           user_id: 83,
           name: 'Tallahassee ',
         },
-      ]);
-    });
+      ]));
 };

@@ -51,20 +51,33 @@ const skills = [
 ];
 
 exports.up = function (knex) {
-  console.log("sadf");
-  return knex.schema.createTable('skill_enum', (tbl) => {
-    tbl.string('skill').primary();
-  })
+  // console.log("sadf");
+  return knex.schema
+    .createTable('skill_enum', (tbl) => {
+      tbl.string('skill').primary();
+    })
     .then(() => knex('skill_enum').insert(skills.map((skill) => ({ skill }))))
-    .then(() => knex.schema.alterTable('skills', (tbl) => {
-      tbl.string('skill').notNullable().references('skill_enum.skill').alter();
-    }))
-    .then(() => knex.schema.alterTable('skilled_impact_requests', (tbl) => {
-      tbl.string('skill').notNullable().references('skill_enum.skill').alter();
-    }))
+    .then(() =>
+      knex.schema.alterTable('skills', (tbl) => {
+        tbl
+          .string('skill')
+          .notNullable()
+          .references('skill_enum.skill')
+          .alter();
+      })
+    )
+    .then(() =>
+      knex.schema.alterTable('skilled_impact_requests', (tbl) => {
+        tbl
+          .string('skill')
+          .notNullable()
+          .references('skill_enum.skill')
+          .alter();
+      })
+    )
     .then(() => knex.raw('DROP TYPE enum_skills'));
 };
 
-exports.down = function () {
+exports.down = function (knex) {
   return knex.schema.dropTable('skill_enum');
 };

@@ -2,9 +2,9 @@
 
 const TABLE_NAME = 'skilled_impact_requests';
 exports.seed = (knex, Promise) => {
-  knex(TABLE_NAME)
+  return knex(TABLE_NAME)
     .del()
-    .then(() => {
+    .then(() =>
       knex(TABLE_NAME).insert([
         {
           // new: 1
@@ -105,6 +105,6 @@ exports.seed = (knex, Promise) => {
           welcome_message: 'Welcome\t',
           our_contribution: 'None',
         },
-      ]);
-    });
+      ])
+    );
 };

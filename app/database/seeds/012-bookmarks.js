@@ -1,10 +1,11 @@
 const TABLE_NAME = 'bookmarks';
 // COMPLETED
 exports.seed = (knex, Promise) => {
-  knex(TABLE_NAME)
+
+  return knex(TABLE_NAME)
     .del()
-    .then(() => {
-      knex(TABLE_NAME).insert([
+    .then(() => knex(TABLE_NAME).insert([
+
         {
           // new: 1
           // id: '104',
@@ -113,6 +114,6 @@ exports.seed = (knex, Promise) => {
           user_id: 59,
           campaign_id: 22,
         },
-      ]);
-    });
+
+      ]));
 };

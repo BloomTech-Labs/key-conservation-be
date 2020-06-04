@@ -3,9 +3,10 @@
 
 const TABLE_NAME = 'user_reports';
 exports.seed = (knex, Promise) => {
-  knex(TABLE_NAME)
+
+  return knex(TABLE_NAME)
     .del()
-    .then(() => {
+    .then(() =>
       knex(TABLE_NAME).insert([
         {
           // id: '10',
@@ -17,6 +18,7 @@ exports.seed = (knex, Promise) => {
           reported_at: '2020-05-27 18:03:47.087311-05',
           is_archived: 'f',
         },
-      ]);
-    });
+
+      ])
+    );
 };

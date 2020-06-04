@@ -3,10 +3,10 @@ const TABLE_NAME = 'comments';
 // COMPLETED
 
 exports.seed = (knex, Promise) => {
-  knex(TABLE_NAME)
+  return knex(TABLE_NAME)
     .del()
-    .then(() => {
-      knex(TABLE_NAME).insert([
+    .then(() => knex(TABLE_NAME).insert([
+
         {
           user_id: 3,
           campaign_id: 2,
@@ -370,6 +370,6 @@ exports.seed = (knex, Promise) => {
           created_at: '2020-05-30 19:35:53.254567-05',
           body: "they're even cooler when they work",
         },
-      ]);
-    });
+      ]));
+
 };
