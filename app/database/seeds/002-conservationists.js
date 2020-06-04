@@ -4,6 +4,7 @@ exports.seed = (knex, Promise) => {
   return knex(TABLE_NAME)
     .del()
     .then(() =>
+
       knex(TABLE_NAME).insert([
         {
           // newid: 1
@@ -302,6 +303,7 @@ exports.seed = (knex, Promise) => {
           longitude: -84.3901849,
           latitude: 33.7490987,
         },
+
       ])
     );
 };

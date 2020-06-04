@@ -2,6 +2,7 @@
 
 const TABLE_NAME = 'connections';
 exports.seed = (knex, Promise) => {
+
   return knex(TABLE_NAME)
     .del()
     .then(() =>
@@ -372,6 +373,7 @@ exports.seed = (knex, Promise) => {
           connected_id: 30, // old 127,
           status: 'Pending',
         },
+
       ])
     );
 };

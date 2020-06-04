@@ -4,6 +4,7 @@ exports.seed = (knex, Promise) => {
   return knex(TABLE_NAME)
     .del()
     .then(() => knex(TABLE_NAME).insert([
+
         {
           goal_title: 'A1',
           description: 'A description 1',
@@ -69,5 +70,6 @@ exports.seed = (knex, Promise) => {
           description: 'Hum3 description',
           skilled_impact_request_id: 11,
         },
+
       ]));
 };

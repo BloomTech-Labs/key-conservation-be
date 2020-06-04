@@ -2,9 +2,11 @@
 
 const TABLE_NAME = 'application_submissions';
 exports.seed = (knex, Promise) => {
+
   return knex(TABLE_NAME)
     .del()
     .then(() => knex(TABLE_NAME).insert([
+
         {
           // id: '1',
           skilled_impact_request_id: 1,
@@ -45,5 +47,6 @@ exports.seed = (knex, Promise) => {
           why_project: 'Because I absolutely love Drones!',
           relevant_experience: 'Own a drone',
         },
+
       ]));
 };

@@ -4,6 +4,7 @@ exports.seed = (knex, Promise) => {
   return knex(TABLE_NAME)
     .del()
     .then(() =>
+
       knex(TABLE_NAME).insert([
         {
           // newid: 1

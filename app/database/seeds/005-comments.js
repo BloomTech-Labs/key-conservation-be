@@ -6,6 +6,7 @@ exports.seed = (knex, Promise) => {
   return knex(TABLE_NAME)
     .del()
     .then(() => knex(TABLE_NAME).insert([
+
         {
           user_id: 3,
           campaign_id: 2,
@@ -370,4 +371,5 @@ exports.seed = (knex, Promise) => {
           body: "they're even cooler when they work",
         },
       ]));
+
 };
