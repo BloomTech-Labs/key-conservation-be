@@ -1,10 +1,9 @@
 // Complete
 const TABLE_NAME = 'conservationists';
 exports.seed = (knex, Promise) => {
-  knex(TABLE_NAME)
+  return knex(TABLE_NAME)
     .del()
-    .then(() => {
-      knex(TABLE_NAME).insert([
+    .then(() => knex(TABLE_NAME).insert([
         {
           // newid: 1
           // id: 23,
@@ -302,6 +301,6 @@ exports.seed = (knex, Promise) => {
           longitude: -84.3901849,
           latitude: 33.7490987,
         },
-      ]);
-    });
+      ])
+    );
 };

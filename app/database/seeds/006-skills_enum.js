@@ -1,10 +1,9 @@
 const TABLE_NAME = 'skill_enum';
 // COMPLETED
 exports.seed = (knex, Promise) => {
-  knex(TABLE_NAME)
+  return knex(TABLE_NAME)
     .del()
-    .then(() => {
-      knex(TABLE_NAME).insert([
+    .then(() => knex(TABLE_NAME).insert([
         {
           skill: 'ACCOUNTING',
         },
@@ -155,6 +154,5 @@ exports.seed = (knex, Promise) => {
         {
           skill: 'ARTIFICIAL_INTELLIGENCE',
         },
-      ]);
-    });
+      ]));
 };

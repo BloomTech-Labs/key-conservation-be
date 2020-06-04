@@ -1,10 +1,9 @@
 // COMPLETED
 const TABLE_NAME = 'campaign_posts';
 exports.seed = (knex, Promise) => {
-  knex(TABLE_NAME)
+  return knex(TABLE_NAME)
     .del()
-    .then(() => {
-      knex(TABLE_NAME).insert([
+    .then(() => knex(TABLE_NAME).insert([
         {
           // newid: 1
           // id: 1,
@@ -342,6 +341,5 @@ exports.seed = (knex, Promise) => {
           is_update: false,
           created_at: '2020-06-03T06:43:00Z',
         },
-      ]);
-    });
+      ]));
 };
