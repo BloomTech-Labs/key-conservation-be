@@ -39,7 +39,9 @@ router.get('/:id', async (req, res) => {
 router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   let user = {
     ...req.body,
-    profile_image: req.file ? req.file.location : undefined,
+    profile_image: req.file
+      ? req.file.location
+      : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
   };
   const newUser = await Vetting.addVettingUser(user);
   try {

@@ -95,8 +95,8 @@ async function findById(id) {
         'cons.latitude',
         'cons.longitude',
         db.raw(
-          "array_agg(json_build_object('skill', skills.skill, 'description', COALESCE(skills.description, ''))) as skills",
-        ),
+          "array_agg(json_build_object('skill', skills.skill, 'description', COALESCE(skills.description, ''))) as skills"
+        )
       )
       .groupBy('users.id', 'cons.id')
       .first();
@@ -112,17 +112,9 @@ async function findById(id) {
       .select(
         'users.*',
         'sup.name',
-<<<<<<< HEAD
-<<<<<<< HEAD
-        db.raw('array_to_json(array_agg(skills.skill)) as skills')
-=======
-        db.raw('array_agg(json_build_object(\'skill\', skills.skill, \'description\', COALESCE(skills.description, \'\'))) as skills'),
->>>>>>> 135d66a5bd90691bfc6fa63954e0ac591a2899b4
-=======
         db.raw(
-          "array_agg(json_build_object('skill', skills.skill, 'description', COALESCE(skills.description, ''))) as skills",
-        ),
->>>>>>> 3b11b68c1430ded5039c2f3efd8a5d116c8fa1f6
+          "array_agg(json_build_object('skill', skills.skill, 'description', COALESCE(skills.description, ''))) as skills"
+        )
       )
       .groupBy('users.id', 'sup.name')
       .first();
@@ -291,18 +283,18 @@ async function updateSkillsTable(user, id) {
           user_id: id,
           skill: skillObj.skill,
           description: skillObj.description,
-        })),
+        }))
       )
       .toQuery();
     await db.raw(
-      `${insertQuery} ON CONFLICT (user_id, skill) DO UPDATE SET description = EXCLUDED.description`,
+      `${insertQuery} ON CONFLICT (user_id, skill) DO UPDATE SET description = EXCLUDED.description`
     );
   }
 
   await db('skills')
     .whereNotIn(
       'skill',
-      skills.map((skillObj) => skillObj.skill),
+      skills.map((skillObj) => skillObj.skill)
     )
     .andWhere('user_id', id)
     .delete();

@@ -1,5 +1,6 @@
 const db = require('../dbConfig');
 const Users = require('../models/usersModel');
+const log = require('../../logger');
 
 const findVettingUserById = async (id) => {
   const user = await db('vetting').where({ id }).first();
@@ -7,9 +8,14 @@ const findVettingUserById = async (id) => {
 };
 
 const addVettingUser = async (user) => {
-  const [id] = await db('vetting').insert(user, 'id');
-  const newUser = findVettingUserById(id);
-  return newUser;
+  try {
+    log.verbose(`Inserting new vetting user ${user}`);
+    const [id] = await db('vetting').insert(user, 'id');
+    const newUser = findVettingUserById(id);
+    return newUser;
+  } catch (e) {
+    log.error(`Error inserting user: ${e}`);
+  }
 };
 
 const findAll = async () => {
