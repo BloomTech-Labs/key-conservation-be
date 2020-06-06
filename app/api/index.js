@@ -9,6 +9,7 @@ router.use('/users', require('./users'));
 router.use('/vetting', require('./vetting'));
 
 // private routes
+router.use('/notifications', require('./notifications')); // Our notifications API
 router.use('/campaigns', checkJwt, checkDeactivated, require('./campaigns'));
 router.use('/comments', checkJwt, checkDeactivated, require('./comments'));
 router.use('/social', checkJwt, checkDeactivated, require('./social'));
@@ -27,7 +28,7 @@ router.use(
   checkDeactivated,
   require('./application_submissions')
 );
-router.use('/feed', checkJwt, checkDeactivated, require('./feed'));
+router.use('/feed', require('./feed'));
 router.use('/posts', checkJwt, checkDeactivated, require('./posts'));
 
 // router.use('/connections', checkJwt, checkDeactivated, require('./connections'));
