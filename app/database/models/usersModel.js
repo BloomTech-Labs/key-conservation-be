@@ -93,10 +93,7 @@ async function findById(id) {
         'cons.point_of_contact_name',
         'cons.point_of_contact_email',
         'cons.latitude',
-        'cons.longitude',
-        db.raw(
-          "array_agg(json_build_object('skill', skills.skill, 'description', COALESCE(skills.description, ''))) as skills"
-        )
+        'cons.longitude'
       )
       .groupBy('users.id', 'cons.id')
       .first();
