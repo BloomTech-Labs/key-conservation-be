@@ -59,11 +59,11 @@ router.post('/', S3Upload.upload.single('photo'), async (req, res) => {
   }
 });
 
-router.delete('/:sub', async (req, res) => {
-  const { sub } = req.params;
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
   try {
-    const deleted = await Vetting.deleteUser(sub);
-    if (deleted === sub) {
+    const deleted = await Vetting.deleteUser(id);
+    if (deleted === id) {
       res.status(200).json({
         msg: `User has been deleted from vetting table.`,
       });
@@ -78,10 +78,10 @@ router.delete('/:sub', async (req, res) => {
   }
 });
 
-router.put('/:sub', async (req, res) => {
-  const sub = req.params.sub;
+router.put('/:id', async (req, res) => {
+  const id = req.params.id;
   try {
-    const approvedUser = await Vetting.approveUser(sub);
+    const approvedUser = await Vetting.approveUser(id);
     if (approvedUser) {
       return res.status(201).json({
         approvedUser,

@@ -28,20 +28,20 @@ const findAll = async () => {
   return db('vetting');
 };
 
-const deleteUser = async (sub) => {
-  const deleted = await db('vetting').where({ sub }).del();
+const deleteUser = async (id) => {
+  const deleted = await db('vetting').where({ id }).del();
   if (deleted) {
-    return sub;
+    return id;
   } else {
     return 0;
   }
 };
 
 // copies user to users and conservationists table and deletes them from vetting table
-const approveUser = async (sub) => {
-  const user = await findVettingUserBySub(sub);
+const approveUser = async (id) => {
+  const user = await findVettingUserById(id);
   const newUser = await Users.add(user);
-  deleteUser(sub);
+  deleteUser(id);
   return newUser;
 };
 
