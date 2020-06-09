@@ -4,7 +4,6 @@ const log = require('../../logger');
 
 const findVettingUserBySub = async (sub) => {
   const user = await db('vetting').where({ sub }).first();
-  console.log('user from findVettingUserBySub', user);
   return user;
 };
 
@@ -29,9 +28,10 @@ const findAll = async () => {
 };
 
 const deleteUser = async (id) => {
+  const user = await findVettingUserById(id);
   const deleted = await db('vetting').where({ id }).del();
-  if (deleted) {
-    return id;
+  if (deleted === 1) {
+    return user;
   } else {
     return 0;
   }

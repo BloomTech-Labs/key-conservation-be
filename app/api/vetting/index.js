@@ -63,8 +63,9 @@ router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const deleted = await Vetting.deleteUser(id);
-    if (deleted === id) {
+    if (deleted) {
       res.status(200).json({
+        sub: deleted.sub,
         msg: `User has been deleted from vetting table.`,
       });
     } else {
