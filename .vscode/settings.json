@@ -1,5 +1,6 @@
 {
     "eslint.alwaysShowStatus": true,
     "eslint.format.enable": true,
-    "eslint.run": "onSave"
+    "eslint.run": "onSave",
+    "extensions.ignoreRecommendations": true
 }
