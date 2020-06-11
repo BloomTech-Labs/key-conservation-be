@@ -59,7 +59,7 @@ describe('notifications endpoint', () => {
             expect(res.status).toBe(200);
         })
     
-    }); // There. 
+    });
 
     describe('DELETE/', () => {
         it('should return an empty object when notification has been deleted', async () => {
@@ -68,6 +68,24 @@ describe('notifications endpoint', () => {
             expect(res.body).toEqual({"message": "Notification deleted"});
         })
     })
+
+    describe('POST/', () => {
+        it('should return status 200 when notification has been created', async () => {
+            Notifications.create = () => {return {}}
+            const res = await supertest(server).post('/api/notifications/', {"userID":1, "notifID":1})
+            expect(res.status).toBe(200);
+        })
+    })
     
 
 });
+
+// You do, yeah. Didn't save. Look at the output, not correct.
+
+// '/:UID' - This is a GET endpoint. It fetches ALL of the users notifications.
+// '/:UID/:NID' - This is a GET endpoint. It fetches a specific notification.
+// '/:ID' - This is a PUT endpoint. It sets the provided notifications as READ.
+// '/:ID' - This is a DELETE endpoint. It deletes the provided notification.
+// '/all/' - This is a PUT endpoint. It marks ALL of the users notifications as READ.
+// '/all/' - This is a DELETE endpoint. It deletes ALL of the users notifications.
+// '/' - This is a POST endpoint. It creates a new notification.
