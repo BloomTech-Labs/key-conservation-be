@@ -28,6 +28,7 @@ describe('notifications endpoint', () => {
             const res = await supertest(server).get('/api/notifications/0/0')
             expect(res.status).toBe(200)
         })
+
         it('should return one notification', async () => {
             Notifications.getByID = () => {return["notification 1"]}
             const res = await supertest(server).get('/api/notifications/0/0');
@@ -35,12 +36,38 @@ describe('notifications endpoint', () => {
         })
     })
 
-describe('PUT/', () =>{
-    it('should return a 200 when notification has been updated', async ()=> {
-Notifications.mark = () => { return  ["notification 1"]}
- const res = await supertest(server).put('/api/notifications', {"userID":1, "notifID":1})
- expect(res.body).toEqual({"message": 'Notification updated', "notification": ["notification 1"]})
+    describe('PUT/', () =>{
+        it('should return an object with a message and notification when notification has been updated', async ()=> {
+            Notifications.mark = () => { return  ["notification 1"]}
+            const res = await supertest(server).put('/api/notifications', {"userID":1, "notifID":1})
+            expect(res.body).toEqual({"message": 'Notification updated', "notification": ["notification 1"]})
+         }) 
     })
 
-})
-}) 
+    describe('PUT/', () =>{
+        it('should return a 200 when notification has been updated', async ()=> {
+            Notifications.mark = () => { return  ["notification 1"]}
+            const res = await supertest(server).put('/api/notifications', {"userID":1, "notifID":1})
+            expect(res.status).toBe(200)    
+        })
+    })
+    
+    describe('DELETE/', () => {
+        it('should return a 200 when notification has been deleted', async ()=> {
+            Notifications.deleteByID = () => { return 1; }
+            const res = await supertest(server).delete('/api/notifications/', {"userID":1, "notifID":1})
+            expect(res.status).toBe(200);
+        })
+    
+    }); // There. 
+
+    describe('DELETE/', () => {
+        it('should return an empty object when notification has been deleted', async () => {
+            Notifications.deleteByID = () => { return 1; }
+            const res = await supertest(server).delete('/api/notifications/', {"userID":1, "notifID":1})
+            expect(res.body).toEqual({"message": "Notification deleted"});
+        })
+    })
+    
+
+});
