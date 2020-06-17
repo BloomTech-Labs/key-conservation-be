@@ -44,7 +44,7 @@ function getConnectionById(id) {
 function addConnection(data) {
   return db('connections')
     .insert(data)
-    .returning('connection_id')
+    .returning('id')
     .then((res) => {
       const [id] = res;
       return getConnectionById(id);

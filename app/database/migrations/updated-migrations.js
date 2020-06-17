@@ -152,7 +152,7 @@ exports.up = (knex, Promise) => knex.schema
     tbl.text('relevant_experience');
   })
   .createTable('connections', (tbl) => { // DONE
-    tbl.increments('connection_id');
+    tbl.increments('id');
     tbl.integer('connector_id').unsigned()
       .notNullable().references('users.id')
       .onUpdate('CASCADE').onDelete('CASCADE');
