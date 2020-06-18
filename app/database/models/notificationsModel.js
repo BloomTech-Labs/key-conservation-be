@@ -41,12 +41,24 @@ function mark(UID, NID) {
 
 }
 
-function markAll(UID) {
+function markAll(UID, notificationType) {
 
-    return db('notifications')
-        .select('*')
-        .where('user_id', UID)
-        .update({ 'new_notification': false });
+    if (notificationType === 8) { // If 8, mark literally everything for this user.
+
+        return db('notifications')
+            .select('*')
+            .where('user_id', UID)
+            .update({ 'new_notification': false });
+
+    } else {
+
+        return db('notifications')
+            .select('*')
+            .where('user_id', UID)
+            .andWhere('notification_type', notificationType)
+            .update({ 'new_notification': false });
+
+    }
 
 }
 
@@ -61,12 +73,24 @@ function deleteByID(UID, NID) {
 
 }
 
-function deleteAll(UID) {
+function deleteAll(UID, notificationType) {
 
-    return db('notifications')
-        .select('*')
-        .where('user_id', UID)
-        .del();
+    if (notificationType === 8) { // If 8, delete literally everything for this user.
+
+        return db('notifications')
+            .select('*')
+            .where('user_id', UID)
+            .del();
+
+    } else {
+
+        return db('notifications')
+            .select('*')
+            .where('user_id', UID)
+            .andWhere('notification_type', notificationType)
+            .del();
+
+    }
 
 }
 

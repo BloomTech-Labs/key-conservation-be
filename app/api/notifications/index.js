@@ -177,11 +177,12 @@ router.delete('/', async (req, res) => {
 
 // });
 
+// Yeehaw from Texas.
 router.put('/all', async (req, res) => {
 
     try {
 
-        let notifications = await Notifications.markAll(req.body.userID);
+        let notifications = await Notifications.markAll(req.body.userID, req.body.notificationType);
 
         if (notifications) 
             res.status(200).json({ message: 'Notifications updated' });
