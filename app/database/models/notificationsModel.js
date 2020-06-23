@@ -16,7 +16,8 @@ const pick = require('../../../util/pick');
 function get(UID) {
 
     return db('notifications')
-        .where('user_id', UID);
+        .where('user_id', UID)
+        .orderBy('notification_id', 'desc');
 
 }
 
