@@ -1,7 +1,11 @@
 const WebSocket = require('ws');
 
 class WebSocketManager {
-  static wss;
+  // static wss;
+
+  constructor() {
+    this.wss;
+  }
 
   static getClients() {
     return this.wss.clients;
